@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Editorial Luxe Studio｜短影音爆款企劃工作台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  if (window.tailwind) tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          champagne: '#F9F6F0',
+          oat: '#FFFFFF',
+          line: '#E6DFD5',
+          ink: '#1C1815',
+          gold: '#A8824A',
+          mute: '#7A7068',
+        },
+        fontFamily: {
+          display: ['"Playfair Display"', '"Noto Serif TC"', 'serif'],
+          serif: ['"Noto Serif TC"', 'serif'],
+          sans: ['"Noto Sans TC"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root { --gold: #A8824A; --ink: #1C1815; --line: #E6DFD5; --paper: #F9F6F0; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Noto Sans TC", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 110% -10%, rgba(168,130,74,.12), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(168,130,74,.08), transparent 60%);
+    background-attachment: fixed;
+  }
+  .glass { background: rgba(255,255,255,.78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--line); }
+  .hairline { border-color: var(--line); }
+  .gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: #D9CFC1; border-radius: 99px; }
+  .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+
+  /* editable fields */
+  [contenteditable] { outline: none; border-radius: 6px; transition: background .2s, box-shadow .2s; cursor: text; }
+  [contenteditable]:hover { background: rgba(168,130,74,.06); }
+  [contenteditable]:focus { background: #FFFDF8; box-shadow: 0 0 0 1px var(--gold), 0 0 0 4px rgba(168,130,74,.12); }
+  [contenteditable]:empty::before { content: attr(data-placeholder); color: #B8ADA0; }
+
+  /* tabs */
+  .tab-btn { position: relative; transition: color .2s; }
+  .tab-btn[aria-selected="true"] { color: var(--ink); }
+  .tab-btn[aria-selected="true"]::after { content: ""; position: absolute; left: 18%; right: 18%; bottom: -1px; height: 2px; background: var(--gold); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: #F9F6F0; border-color: var(--ink); }
+
+  /* animation */
+  @keyframes dropIn { 0% { opacity: 0; transform: translateY(-14px) scale(.98); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+  @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(168,130,74,.45); } 100% { box-shadow: 0 0 0 14px rgba(168,130,74,0); } }
+  .just-in { animation: dropIn .5s cubic-bezier(.2,.8,.2,1), glow 1.1s ease-out .15s; }
+  .lib-card { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s; }
+  .lib-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -18px rgba(28,24,21,.35); border-color: #D6C6AE; }
+  .block { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s; }
+  .block:hover { box-shadow: 0 18px 40px -26px rgba(28,24,21,.35); }
+
+  /* toast */
+  #toast { transition: opacity .3s, transform .3s; }
+
+  /* teleprompter */
+  #prompter { transition: opacity .25s; }
+  #prompterScroll { scroll-behavior: auto; }
+  .mirror { transform: scaleX(-1); }
+  .reading-line { background: linear-gradient(180deg, transparent, rgba(168,130,74,.14) 45%, rgba(168,130,74,.14) 55%, transparent); }
+  .pause-mark { color: #A8824A; font-size: .6em; vertical-align: middle; letter-spacing: .1em; }
+
+  /* cover */
+  .cover { aspect-ratio: 9 / 16; background:
+      linear-gradient(180deg, rgba(28,24,21,.0) 40%, rgba(28,24,21,.55)),
+      linear-gradient(160deg, #EFE6D8 0%, #D9C7AC 55%, #B9986A 100%); }
+  input[type=range] { accent-color: var(--gold); }
+  @media (prefers-reduced-motion: reduce) { .just-in, .lib-card, .block { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============ MASTHEAD & TOP ACTION BAR ============ -->
+<header class="sticky top-0 z-30 glass border-x-0 border-t-0">
+  <div class="max-w-[1480px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-6 gap-y-3">
+    <div class="flex items-baseline gap-3 min-w-0">
+      <span class="font-display italic text-gold text-sm tracking-wide hidden sm:inline">Édition N°01</span>
+      <h1 class="font-display text-2xl sm:text-[28px] leading-none tracking-tight whitespace-nowrap">
+        Editorial <em class="text-gold">Luxe</em> Studio
+      </h1>
+      <span class="font-serif text-sm text-mute hidden md:inline whitespace-nowrap">短影音爆款企劃工作台</span>
+    </div>
+
+    <div class="flex items-center gap-2 ml-auto flex-wrap">
+      <span id="safeBadge" class="hidden lg:inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border hairline text-mute bg-white/70" title="自動檢查腳本中是否有攻擊品牌或貶低產品的字眼">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>品牌友善檢查・通過
+      </span>
+      <button id="btnPrompter" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink text-champagne text-sm hover:bg-black transition">
+        <span aria-hidden="true">🎙️</span>提詞器模式
+      </button>
+      <button id="btnCopy" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold text-gold text-sm bg-white/80 hover:bg-gold hover:text-white transition">
+        <span aria-hidden="true">📋</span>一鍵複製腳本
+      </button>
+      <button id="btnSample" class="inline-flex items-center gap-2 px-3 py-2 rounded-full border hairline text-sm text-mute bg-white/70 hover:text-ink transition" title="重新載入美妝保養範例腳本">
+        <span aria-hidden="true">✦</span><span class="hidden sm:inline">載入範例</span>
+      </button>
+      <button id="btnClear" class="inline-flex items-center gap-2 px-3 py-2 rounded-full border hairline text-sm text-mute bg-white/70 hover:text-red-700 hover:border-red-200 transition">
+        <span aria-hidden="true">🗑️</span><span class="hidden sm:inline">清空畫布</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1480px] mx-auto px-4 sm:px-6 py-6 grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)] items-start">
+
+  <!-- ============ LEFT: CARD DRAWER ============ -->
+  <aside class="lg:sticky lg:top-[84px] glass rounded-2xl overflow-hidden flex flex-col max-h-[72vh] lg:max-h-[calc(100vh-108px)]">
+    <div class="px-5 pt-5 pb-3">
+      <p class="font-display italic text-gold text-sm">The Inspiration Drawer</p>
+      <h2 class="font-serif text-xl font-bold mt-0.5">爆款靈感卡牌庫</h2>
+      <p class="text-xs text-mute mt-1 leading-relaxed">點一下卡牌，就會插入右側腳本畫布。插入後可以直接點文字改成你的版本。</p>
+    </div>
+    <div role="tablist" class="grid grid-cols-3 border-y hairline text-sm text-mute bg-white/60">
+      <button role="tab" class="tab-btn py-3" data-tab="hook" aria-selected="true"><span class="font-display italic text-gold mr-1">A</span>黃金 3 秒 Hook</button>
+      <button role="tab" class="tab-btn py-3" data-tab="scene" aria-selected="false"><span class="font-display italic text-gold mr-1">B</span>分鏡模組</button>
+      <button role="tab" class="tab-btn py-3" data-tab="cta" aria-selected="false"><span class="font-display italic text-gold mr-1">C</span>互動 CTA</button>
+    </div>
+    <div id="hookFilters" class="px-4 pt-3 pb-1 flex gap-1.5 flex-wrap"></div>
+    <div id="library" class="p-4 pt-3 space-y-3 overflow-y-auto thin-scroll flex-1"></div>
+  </aside>
+
+  <!-- ============ RIGHT: CANVAS ============ -->
+  <section class="min-w-0 space-y-6">
+
+    <div class="glass rounded-2xl">
+      <!-- canvas header -->
+      <div class="px-5 sm:px-8 pt-6 pb-5 border-b hairline">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div class="min-w-0">
+            <p class="font-display italic text-gold text-sm">The Script Canvas</p>
+            <h2 id="scriptTitle" contenteditable="true" spellcheck="false" data-placeholder="輸入本支影片主題…" class="font-serif text-2xl sm:text-3xl font-bold leading-snug mt-1 -mx-1 px-1"></h2>
+          </div>
+          <dl class="flex gap-6 text-right">
+            <div><dt class="text-[11px] tracking-[.2em] text-mute">DURATION</dt><dd class="font-display text-2xl"><span id="statTime">0</span><span class="text-sm text-mute ml-0.5">秒</span></dd></div>
+            <div><dt class="text-[11px] tracking-[.2em] text-mute">WORDS</dt><dd class="font-display text-2xl"><span id="statWords">0</span><span class="text-sm text-mute ml-0.5">字</span></dd></div>
+            <div><dt class="text-[11px] tracking-[.2em] text-mute">CARDS</dt><dd class="font-display text-2xl"><span id="statCards">0</span><span class="text-sm text-mute ml-0.5">張</span></dd></div>
+          </dl>
+        </div>
+        <!-- timeline strip -->
+        <div class="mt-5">
+          <div id="timeline" class="flex h-2 rounded-full overflow-hidden bg-line/60 gap-[2px]"></div>
+          <div class="flex flex-wrap justify-between gap-2 mt-2 text-[11px] text-mute">
+            <div class="flex gap-4">
+              <span class="inline-flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-ink"></i>Hook</span>
+              <span class="inline-flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-gold"></i>分鏡</span>
+              <span class="inline-flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-[#CDB89A]"></i>CTA</span>
+            </div>
+            <label class="inline-flex items-center gap-2">語速
+              <input id="rateCanvas" type="range" min="3" max="7" step="0.5" value="4.5" class="w-24" />
+              <span><b id="rateCanvasVal" class="text-ink">4.5</b> 字/秒</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- blocks -->
+      <ol id="canvas" class="p-4 sm:p-6 space-y-4"></ol>
+
+      <div id="emptyState" class="hidden px-6 pb-12 pt-4 text-center">
+        <p class="font-display italic text-4xl text-gold/70">Blank Page.</p>
+        <p class="font-serif text-lg mt-3">畫布是空的，從左邊抽一張卡牌開始吧</p>
+        <p class="text-sm text-mute mt-2">建議順序：1 張 Hook → 3～4 張分鏡 → 1 張 CTA，總長抓 30～45 秒最好完播。</p>
+      </div>
+    </div>
+
+    <!-- covers & hashtags -->
+    <div class="glass rounded-2xl p-5 sm:p-8">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="font-display italic text-gold text-sm">Cover Lines &amp; Tags</p>
+          <h2 class="font-serif text-xl font-bold mt-0.5">爆款封面大字・Hashtag</h2>
+          <p class="text-xs text-mute mt-1">3 組封面標題都能直接點擊修改，挑一組最想點進去的當封面。</p>
+        </div>
+        <button id="btnShuffleCover" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border hairline bg-white/80 text-sm hover:border-gold hover:text-gold transition">
+          <span aria-hidden="true">↻</span>換一組封面靈感
+        </button>
+      </div>
+      <div id="covers" class="mt-5 grid grid-cols-3 gap-3 sm:gap-5 max-w-[640px]"></div>
+
+      <div class="mt-7">
+        <p class="text-[11px] tracking-[.2em] text-mute mb-2">HASHTAGS</p>
+        <div id="tags" class="flex flex-wrap gap-2"></div>
+        <form id="tagForm" class="mt-3 flex gap-2 max-w-sm">
+          <input id="tagInput" type="text" maxlength="20" placeholder="新增 Hashtag，例如 敏感肌" class="flex-1 min-w-0 px-4 py-2 rounded-full border hairline bg-white text-sm focus:outline-none focus:border-gold" />
+          <button class="px-4 py-2 rounded-full bg-ink text-champagne text-sm">新增</button>
+        </form>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-mute pb-6">
+      <span class="font-display italic">Editorial Luxe Studio</span> ・ 內容自動儲存在這台裝置的瀏覽器中 ・ 腳本範例僅供創作參考，效果描述請依實際使用狀況調整
+    </p>
+  </section>
+</main>
+
+<!-- ============ TELEPROMPTER ============ -->
+<div id="prompter" class="fixed inset-0 z-50 hidden opacity-0 bg-black/90 backdrop-blur-md text-white" role="dialog" aria-modal="true" aria-label="提詞器">
+  <div class="absolute inset-x-0 top-0 z-20 px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3 bg-gradient-to-b from-black via-black/80 to-transparent">
+    <span class="font-display italic text-gold text-lg">Teleprompter</span>
+    <button id="tpPlay" class="px-4 py-1.5 rounded-full bg-gold text-black text-sm font-medium min-w-[92px]">▶ 開始</button>
+    <button id="tpRestart" class="px-3 py-1.5 rounded-full border border-white/25 text-sm hover:border-white/60">⟲ 從頭</button>
+    <label class="inline-flex items-center gap-2 text-sm text-white/80">語速
+      <input id="tpRate" type="range" min="3" max="7" step="0.5" value="4.5" class="w-24" />
+      <b id="tpRateVal" class="text-white w-8">4.5</b><span class="text-white/50 -ml-1">字/秒</span>
+    </label>
+    <div class="inline-flex items-center gap-1 text-sm">
+      <button id="tpSmaller" class="w-8 h-8 rounded-full border border-white/25 hover:border-white/60" aria-label="縮小字級">A−</button>
+      <button id="tpBigger" class="w-8 h-8 rounded-full border border-white/25 hover:border-white/60" aria-label="放大字級">A+</button>
+    </div>
+    <label class="inline-flex items-center gap-1.5 text-sm text-white/80"><input id="tpCues" type="checkbox" checked class="accent-[#A8824A]" />鏡頭提示</label>
+    <label class="inline-flex items-center gap-1.5 text-sm text-white/80"><input id="tpMirror" type="checkbox" class="accent-[#A8824A]" />鏡像</label>
+    <button id="tpClose" class="ml-auto w-9 h-9 rounded-full border border-white/25 hover:border-white/60 text-lg leading-none" aria-label="關閉提詞器">×</button>
+  </div>
+
+  <div class="reading-line pointer-events-none absolute inset-x-0 top-[38%] h-24 -translate-y-1/2 z-10"></div>
+  <div class="pointer-events-none absolute left-2 sm:left-6 top-[38%] -translate-y-1/2 z-10 text-gold text-2xl">▸</div>
+
+  <div id="prompterScroll" class="absolute inset-0 overflow-y-auto thin-scroll">
+    <div id="prompterBody" class="max-w-3xl mx-auto px-8 sm:px-12 pt-[38vh] pb-[70vh]"></div>
+  </div>
+
+  <div class="absolute inset-x-0 bottom-0 z-20 px-4 sm:px-6 pb-4 pt-8 bg-gradient-to-t from-black via-black/80 to-transparent">
+    <div class="max-w-3xl mx-auto">
+      <div class="h-1 bg-white/15 rounded-full overflow-hidden"><div id="tpProgress" class="h-full bg-gold w-0"></div></div>
+      <div class="flex justify-between text-xs text-white/60 mt-2">
+        <span>已唸 <b id="tpElapsed" class="text-white">0:00</b></span>
+        <span id="tpHint">空白鍵：播放／暫停 ・ ↑↓：微調 ・ Esc：離開</span>
+        <span>預估總長 <b id="tpTotal" class="text-white">0:00</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div id="confirm" class="fixed inset-0 z-40 hidden items-center justify-center bg-ink/40 backdrop-blur-sm p-4">
+  <div class="glass bg-white rounded-2xl max-w-sm w-full p-6 text-center">
+    <p class="font-display italic text-gold">Start Over?</p>
+    <p class="font-serif text-lg font-bold mt-1">確定要清空整個畫布嗎？</p>
+    <p class="text-sm text-mute mt-2">所有卡片都會移除，封面與 Hashtag 會保留。</p>
+    <div class="mt-5 flex gap-2 justify-center">
+      <button id="confirmNo" class="px-5 py-2 rounded-full border hairline text-sm">先不要</button>
+      <button id="confirmYes" class="px-5 py-2 rounded-full bg-ink text-champagne text-sm">清空重來</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed z-[60] left-1/2 bottom-8 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none px-5 py-3 rounded-full bg-ink text-champagne text-sm shadow-xl"></div>
+
+<script>
+/* =========================================================
+   DATA ・ 卡牌庫
+   ========================================================= */
+const HOOK_CATS = [
+  { id: 'insider',  name: '內行真相・聰明避坑', short: '內行真相', psy: '資訊落差：觀眾怕「只有自己不知道」，揭露內行做法立刻建立權威感。' },
+  { id: 'reversal', name: '情緒剝奪與反轉',     short: '情緒反轉', psy: '損失規避：先戳中「努力卻沒回報」的委屈，再給出口，情緒張力最大。' },
+  { id: 'counter',  name: '反人性直覺',         short: '反直覺',   psy: '認知失調：說出跟常識相反的結論，大腦會本能想知道「為什麼」。' },
+  { id: 'alarm',    name: '極端避坑警告',       short: '緊急止損', psy: '急迫感：用「停！」打斷滑動慣性，暗示不看會吃虧。' },
+  { id: 'bestie',   name: '閨蜜掏心私房話',     short: '閨蜜私話', psy: '親密感：「只跟自己人說」讓觀眾覺得被選中，信任門檻瞬間下降。' },
+];
+
+const HOOKS = [
+  { cat: 'insider',  audio: '保養做了十年才懂的一件事：價格高，不代表適合妳的皮膚。', visual: '正臉近景，手上拿著一瓶保養品慢慢轉向鏡頭後放下；說到「不代表」時直視鏡頭停半拍。', caption: '貴 ≠ 適合妳' },
+  { cat: 'insider',  audio: '美容師朋友私下跟我說了一句話，我到現在每天都在用。', visual: '半身側臉轉正，壓低音量像講悄悄話，鏡頭 1 秒內緩慢推近到臉部特寫。', caption: '內行人私下這樣做' },
+  { cat: 'insider',  audio: '同樣的保養品，只是換個順序，效果直接差一倍。', visual: '俯拍桌面兩瓶產品，手快速交換位置，畫面閃一下切到臉部特寫。', caption: '順序擦錯 = 白擦' },
+  { cat: 'reversal', audio: '妳以為妳在保養，其實是在親手把臉越養越脆弱⋯⋯', visual: '鏡子前認真拍化妝水的畫面，突然畫面定格變灰，字卡砸下。', caption: '妳以為妳在保養？' },
+  { cat: 'reversal', audio: '每天認真擦七八層，為什麼皮膚還是越來越乾？', visual: '快剪 7 個上保養品的手部特寫，每個 0.3 秒，最後一格切到困惑的正臉。', caption: '擦了 7 層還是乾？' },
+  { cat: 'reversal', audio: '我最努力保養的那幾年，反而是我皮膚最差的時候。', visual: '手機翻出舊照片對著鏡頭，再慢慢移開露出現在的臉。', caption: '最努力的那幾年 最差' },
+  { cat: 'counter',  audio: '為什麼皮膚最好的人，保養品反而擦得最少？', visual: '素顏臉部大特寫直視鏡頭；說到「最少」時，手把桌上一排瓶罐往畫面外一推。', caption: '皮膚好的人 都擦很少？' },
+  { cat: 'counter',  audio: '越想快點變白，臉反而越容易暗沉。', visual: '正臉中景，雙手比一個「停」，鏡頭急推 0.5 秒到臉。', caption: '越急 越暗沉' },
+  { cat: 'counter',  audio: '別再洗那麼乾淨了，妳的臉根本不需要妳這麼用力。', visual: '洗臉台前搓出一大坨泡泡，突然停手看向鏡頭。', caption: '洗太乾淨 才是問題' },
+  { cat: 'alarm',    audio: '停！如果妳還在做這個動作，難怪看起來老五歲⋯⋯', visual: '開場手掌直接擋住鏡頭，移開後露出正在用力搓眼周的示範動作。', caption: '停！這個動作讓妳顯老' },
+  { cat: 'alarm',    audio: '先別滑走！這三個習慣，正在偷偷讓妳的毛孔變大。', visual: '手指朝鏡頭比「3」，背景快速閃過三個生活場景。', caption: '3 個習慣 毛孔越來越大' },
+  { cat: 'alarm',    audio: '今晚就先停掉這一步，妳的皮膚屏障會謝謝妳。', visual: '手拿一瓶產品放進抽屜「啪」一聲關上，聲音放大。', caption: '今晚先停掉這一步' },
+  { cat: 'bestie',   audio: '拜託！這件事如果不是自己人，我真的不會拿出來講⋯⋯', visual: '身體往鏡頭靠近，一手半遮嘴，背景燈光調暗營造私密感。', caption: '只跟自己人說' },
+  { cat: 'bestie',   audio: '姊妹，我只說一次：我皮膚變好，靠的根本不是貴的東西。', visual: '坐在床邊、穿居家服，像視訊聊天一樣自然地對鏡頭說。', caption: '我皮膚變好的真正原因' },
+  { cat: 'bestie',   audio: '這是我壓箱底的私房步驟，看完記得先存起來。', visual: '從抽屜深處拿出一個小盒子打開，鏡頭俯拍推近。', caption: '壓箱底私房步驟' },
+];
+
+const SCENES = [
+  { tag: '特寫展示', title: '特寫展示：質地與用量', desc: '用微距放大質感，讓觀眾「看得到」。', visual: '微距鏡頭拍手背，擠出一顆珍珠大小的乳霜，手指慢慢推開，鏡頭跟著推近到肌理。字卡放畫面右上。', audio: '用量真的不用多，大概一顆珍珠大小，拍到吸收就好。重點是天天做，不是一次擦很多。', caption: '用量：珍珠大小' },
+  { tag: '錯誤避坑', title: '錯誤示範：常見的 NG 動作', desc: '先示範錯的，再給對的，記憶點最強。', visual: '同一個動作拍兩次：左邊打紅色 ✕ 的錯誤做法（用力搓），右邊打金色 ✓ 的正確做法（輕拍）。字卡置中下方。', audio: '很多人塗保養品習慣用力搓，以為比較好吸收，其實只是在摩擦皮膚。正確做法是輕輕按壓、拍勻就好。', caption: '✕ 用力搓  ✓ 輕輕按' },
+  { tag: '乾貨步驟', title: '乾貨步驟：01 / 02 / 03', desc: '數字化步驟，觀眾最愛收藏。', visual: '手持三瓶產品（瓶身用白色標籤遮住名稱），依序入鏡；每一步在畫面左上角跳出大字數字 01 / 02 / 03。', audio: '第一，溫和清潔，不要洗到緊繃；第二，一瓶夠用的保濕；第三，白天一定擦防曬。就這三步，先連續做一個月。', caption: '01 清潔・02 保濕・03 防曬' },
+  { tag: '前後對比', title: '前後對比：Day 1 vs Day 28', desc: '同光線同角度，說服力最強的一顆鏡頭。', visual: '同一盞燈、同一角度，左右分割畫面；中間一條細金線慢慢左右滑動揭曉。字卡放畫面頂部。', audio: '這是我在同樣光線下的第一天和第二十八天。泛紅少了，上妝也服貼很多。每個人膚況不同，但真的值得試試看。', caption: 'Day 1 → Day 28' },
+  { tag: '質地實測', title: '實測：倒過來也不會滴', desc: '把抽象形容變成看得到的實驗。', visual: '把產品擠在指尖後翻轉手指，鏡頭固定 3 秒拍它不滴落；再抹開拍出光澤。', audio: '我直接實測給妳看，倒過來三秒都不會滴，推開卻很好延展，這種質地早上上妝前用剛剛好。', caption: '實測：倒過來 3 秒' },
+  { tag: '生活情境', title: '生活情境：真實的一天', desc: '把產品放進生活，代入感拉滿。', visual: '早晨窗邊自然光，手持鏡頭跟拍：起床、洗臉、保養、出門，每段 1 秒快剪，配輕快節奏。', audio: '我早上就只花三分鐘：洗臉、保濕、防曬，出門前照一下鏡子，整天都不用補妝。', caption: '早晨 3 分鐘保養' },
+  { tag: '數據字卡', title: '重點字卡：一張圖講完', desc: '把重點濃縮成一張可截圖的字卡。', visual: '純色米白背景，大字標題 + 三行重點逐行跳出；人物縮小在右下角指著字卡。', audio: '幫妳整理成一張圖：早上保濕加防曬，晚上清潔加保濕，一週去角質不要超過一次。截圖存起來就不會忘。', caption: '截圖存起來' },
+  { tag: '真心總結', title: '真心總結：一句話收尾', desc: '情緒拉回人身上，建立信任。', visual: '回到正臉中景，燈光稍微柔和，鏡頭緩慢後拉；說完停頓半秒。', audio: '保養不是比誰擦得多，而是比誰更懂自己的皮膚。少一點焦慮，多一點耐心，臉真的會回報妳。', caption: '少一點，反而更好' },
+];
+
+const CTAS = [
+  { tag: '留言關鍵字', desc: '用關鍵字換資源，留言數直接拉高。', audio: '想要我的完整清單，留言「極簡」，我一個一個私訊給妳。', visual: '正臉中景，手指向下方留言區，畫面跳出留言框動畫。', caption: '留言「極簡」拿清單' },
+  { tag: '二選一投票', desc: '降低留言門檻，讓觀眾秒回。', audio: '妳是乾肌還是油肌？留言 A 或 B，下一支我就拍妳的版本。', visual: '左右手各比一個字母 A / B，畫面左右分割兩種膚質字卡。', caption: '乾肌 A ／ 油肌 B' },
+  { tag: '收藏轉發', desc: '乾貨類影片最適合，拉高收藏率。', audio: '這支先收藏起來，下次站在保養品前面不知道怎麼選的時候，打開來看一遍就懂。', visual: '手指點一下畫面右側收藏位置，配上「叮」的音效。', caption: '先收藏 再出門' },
+  { tag: '標記閨蜜', desc: '社交擴散，自然帶來新觀眾。', audio: '把這支傳給那個每天擦八層還在喊乾的姊妹，她會感謝妳。', visual: '對鏡頭眨眼，比出「傳給她」的手勢，畫面跳出分享箭頭。', caption: '傳給妳的姊妹' },
+  { tag: '追蹤系列', desc: '預告下一集，建立追蹤理由。', audio: '下一集我會拆解晚上的保養順序，追蹤我，不要錯過。', visual: '手拿下一集要介紹的產品（遮住名稱）晃一下就收走，畫面黑幕帶字卡。', caption: '下一集：晚間保養順序' },
+  { tag: '提問互動', desc: '開放式提問，延長留言串。', audio: '妳現在每天擦幾層？留言告訴我，我幫妳看看哪一步可以先拿掉。', visual: '雙手托腮看鏡頭，畫面下方出現手寫字「妳擦幾層？」', caption: '妳每天擦幾層？' },
+  { tag: '經驗募集', desc: '邀請觀眾分享，創造社群感。', audio: '妳有沒有哪個保養習慣，是後來才發現做錯的？留言分享，讓更多人少走冤枉路。', visual: '坐姿放鬆，微微前傾，鏡頭緩慢推近。', caption: '分享妳的保養心得' },
+];
+
+const COVER_SETS = [
+  ['保養做減法\n皮膚反而變好', '擦越少\n越漂亮？', '別再疊\n7 層了'],
+  ['皮膚好的人\n都不說的事', '3 分鐘\n極簡保養', '28 天\n素顏實測'],
+  ['妳不是皮膚差\n是擦太多', '保養順序\n擦對了嗎', '今晚先停掉\n這一步'],
+  ['敏感肌\n救星清單', '一張圖\n看懂保養', '姊妹\n我只說一次'],
+];
+
+const SAMPLE = {
+  title: '為什麼皮膚最好的人，保養品反而擦得最少？',
+  blocks: [
+    { type: 'hook', tag: '反直覺', title: '黃金 3 秒 Hook', audio: '為什麼皮膚最好的人，保養品反而擦得最少？', visual: '素顏臉部大特寫直視鏡頭；說到「最少」時，手把桌上一整排瓶瓶罐罐往畫面外一推。', caption: '皮膚好的人 都擦很少？' },
+    { type: 'scene', tag: '錯誤避坑', title: '錯誤示範：一口氣疊 7 層', audio: '很多人一焦慮就狂疊，一層精華、兩層乳霜，結果臉越擦越悶、越擦越敏感。不是東西不好，是妳的皮膚一次吃不下那麼多。', visual: '俯拍桌面，手依序拿起化妝水、精華、安瓶、乳液、乳霜、油、面膜快速排開（瓶身遮住名稱），鏡頭緩慢推近；畫面打上紅色 ✕。', caption: '疊越多 ≠ 越有效' },
+    { type: 'scene', tag: '乾貨步驟', title: '極簡三步：洗・保濕・防曬', audio: '我現在只做三件事：第一，溫和清潔，不要洗到緊繃；第二，一瓶夠用的保濕；第三，白天一定擦防曬。就這樣，連續做一個月。', visual: '手持三瓶產品（瓶身貼白色標籤遮住名稱）依序入鏡，每一步在畫面左上角跳出大字數字 01 / 02 / 03。', caption: '01 清潔・02 保濕・03 防曬' },
+    { type: 'scene', tag: '特寫展示', title: '質地特寫：一顆珍珠大小就夠', audio: '用量真的不用多，大概一顆珍珠大小，拍到吸收就好。重點是天天做，不是一次擦很多。', visual: '微距鏡頭拍手背，擠出珍珠大小的乳霜，手指慢慢推開，鏡頭跟著推近到肌理。字卡放右上。', caption: '用量：珍珠大小' },
+    { type: 'scene', tag: '前後對比', title: '28 天前後對比', audio: '這是我在同樣光線下的第一天和第二十八天。泛紅少了，上妝也服貼很多。每個人膚況不同，但做減法真的值得試試看。', visual: '同一盞燈、同一角度，左右分割畫面：Day 1 vs Day 28，中間一條細金線慢慢左右滑動揭曉。', caption: 'Day 1 → Day 28' },
+    { type: 'cta', tag: '提問互動', title: '互動 CTA', audio: '妳現在每天擦幾層？留言告訴我，我幫妳看看哪一步可以先拿掉。想要我的極簡清單，留言「極簡」就私訊給妳。', visual: '回到正臉中景，微笑比出數字手勢，畫面下方跳出留言框動畫。', caption: '留言「極簡」拿清單' },
+  ],
+  covers: COVER_SETS[0].slice(),
+  tags: ['極簡保養', '保養順序', '敏感肌', '保養小白', '皮膚屏障', '素顏實測'],
+};
+
+/* 品牌友善：避免攻擊品牌、貶低產品的字眼 */
+const UNSAFE_WORDS = ['智商稅', '黑心', '垃圾', '騙人', '騙錢', '割韭菜', '坑錢', '千萬別買', '雷品', '踩雷品牌', '爛貨', '廢物', '無良', '詐騙', '假貨', '黑幕'];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const STORE_KEY = 'editorial-luxe-studio-v1';
+let state;
+let coverSetIdx = 0;
+let rate = 4.5;
+let uid = 0;
+const newId = () => 'b' + Date.now().toString(36) + (uid++);
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function loadSample() {
+  const s = clone(SAMPLE);
+  s.blocks.forEach(b => b.id = newId());
+  return s;
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.blocks)) {
+        s.blocks.forEach(b => b.id = b.id || newId());
+        s.covers = Array.isArray(s.covers) && s.covers.length === 3 ? s.covers : COVER_SETS[0].slice();
+        s.tags = Array.isArray(s.tags) ? s.tags : [];
+        if (typeof s.rate === 'number') rate = s.rate;
+        return s;
+      }
+    }
+  } catch (e) {}
+  return loadSample();
+}
+let saveTimer;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...state, rate })); } catch (e) {}
+  }, 250);
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()⋯…—\-~～"'“”‘’／/·・✕✓→]/g, '').length;
+const secOf = b => Math.max(1.5, countChars(b.audio) / rate);
+const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const TYPE_META = {
+  hook:  { en: 'Hook',  zh: '黃金 3 秒', dot: 'bg-ink',        pace: '快狠準・語速 +10%・字字重音' },
+  scene: { en: 'Scene', zh: '分鏡',      dot: 'bg-gold',       pace: '穩定清楚・重點字放慢' },
+  cta:   { en: 'CTA',   zh: '互動結尾',  dot: 'bg-[#CDB89A]', pace: '放慢真誠・最後一句停半拍' },
+};
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 16px)'; }, 2000);
+}
+
+/* =========================================================
+   LIBRARY (left drawer)
+   ========================================================= */
+let activeTab = 'hook';
+let hookFilter = 'all';
+
+function renderFilters() {
+  const box = $('#hookFilters');
+  if (activeTab !== 'hook') { box.innerHTML = ''; box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  const chips = [{ id: 'all', short: '全部' }, ...HOOK_CATS];
+  box.innerHTML = chips.map(c => `<button class="chip text-xs px-3 py-1 rounded-full border hairline bg-white/80 text-mute hover:text-ink transition" data-filter="${c.id}" aria-pressed="${hookFilter === c.id}">${c.id === 'all' ? '' : '⚡'}${esc(c.short)}</button>`).join('');
+}
+
+function libCard({ idx, badge, title, desc, quote, sub }) {
+  return `
+  <article class="lib-card glass bg-white/90 rounded-xl p-4 cursor-pointer group" data-insert="${activeTab}:${idx}" tabindex="0">
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-[11px] tracking-wider text-gold font-medium">${badge}</span>
+      <span class="font-display italic text-xs text-line group-hover:text-gold transition">N°${String(idx + 1).padStart(2, '0')}</span>
+    </div>
+    ${title ? `<h3 class="font-serif font-bold mt-1.5">${esc(title)}</h3>` : ''}
+    <p class="font-serif ${title ? 'text-sm text-ink/80 mt-1' : 'text-[15px] mt-2 font-semibold'} leading-relaxed">「${esc(quote)}」</p>
+    ${sub ? `<p class="text-xs text-mute mt-2 leading-relaxed">${esc(sub)}</p>` : ''}
+    <div class="mt-3 pt-3 border-t hairline flex items-center justify-between">
+      <span class="text-[11px] text-mute">${esc(desc)}</span>
+      <button class="shrink-0 text-xs px-3 py-1.5 rounded-full border border-gold text-gold group-hover:bg-gold group-hover:text-white transition" data-insert-btn>+ 插入腳本</button>
+    </div>
+  </article>`;
+}
+
+function renderLibrary() {
+  renderFilters();
+  const lib = $('#library');
+  let html = '';
+  if (activeTab === 'hook') {
+    HOOKS.forEach((h, i) => {
+      if (hookFilter !== 'all' && h.cat !== hookFilter) return;
+      const c = HOOK_CATS.find(x => x.id === h.cat);
+      html += libCard({ idx: i, badge: '⚡ ' + esc(c.name), quote: h.audio, sub: c.psy, desc: '鏡頭：' + h.visual.slice(0, 14) + '…' });
+    });
+  } else if (activeTab === 'scene') {
+    SCENES.forEach((s, i) => html += libCard({ idx: i, badge: '◆ ' + esc(s.tag), title: s.title, quote: s.audio, sub: '🎥 ' + s.visual, desc: s.desc }));
+  } else {
+    CTAS.forEach((c, i) => html += libCard({ idx: i, badge: '✦ ' + esc(c.tag), quote: c.audio, desc: c.desc }));
+  }
+  lib.innerHTML = html;
+  lib.scrollTop = 0;
+}
+
+function insertFromLibrary(key) {
+  const [tab, i] = key.split(':');
+  const idx = +i;
+  let block;
+  if (tab === 'hook') {
+    const h = HOOKS[idx], c = HOOK_CATS.find(x => x.id === h.cat);
+    block = { type: 'hook', tag: c.short, title: '黃金 3 秒 Hook', audio: h.audio, visual: h.visual, caption: h.caption };
+  } else if (tab === 'scene') {
+    const s = SCENES[idx];
+    block = { type: 'scene', tag: s.tag, title: s.title, audio: s.audio, visual: s.visual, caption: s.caption };
+  } else {
+    const c = CTAS[idx];
+    block = { type: 'cta', tag: c.tag, title: '互動 CTA', audio: c.audio, visual: c.visual, caption: c.caption };
+  }
+  block.id = newId();
+
+  // 智慧排序：Hook 放在最前段、分鏡放在 CTA 之前、CTA 放最後
+  const B = state.blocks;
+  let pos = B.length;
+  if (block.type === 'hook') {
+    let last = -1; B.forEach((b, k) => { if (b.type === 'hook') last = k; });
+    pos = last + 1;
+  } else if (block.type === 'scene') {
+    const firstCta = B.findIndex(b => b.type === 'cta');
+    pos = firstCta === -1 ? B.length : firstCta;
+  }
+  B.splice(pos, 0, block);
+  renderCanvas(block.id);
+  save();
+  toast('已插入：' + (block.type === 'hook' ? 'Hook 開場' : block.type === 'scene' ? block.title : 'CTA 結尾'));
+}
+
+/* =========================================================
+   CANVAS (right)
+   ========================================================= */
+function field(b, name, label, cls, ph) {
+  return `<div class="grid sm:grid-cols-[64px_1fr] gap-1 sm:gap-3 items-start">
+    <span class="text-[11px] tracking-[.15em] text-mute pt-1.5">${label}</span>
+    <div contenteditable="true" spellcheck="false" data-id="${b.id}" data-field="${name}" data-placeholder="${ph}" class="${cls} -mx-1 px-1 py-0.5">${esc(b[name])}</div>
+  </div>`;
+}
+
+function renderCanvas(highlightId) {
+  const ol = $('#canvas');
+  let t = 0;
+  ol.innerHTML = state.blocks.map((b, i) => {
+    const m = TYPE_META[b.type];
+    const sec = secOf(b);
+    const range = fmt(t) + '–' + fmt(t + sec);
+    t += sec;
+    const isHook = b.type === 'hook';
+    return `
+    <li class="block relative bg-white/95 border hairline rounded-xl overflow-hidden ${b.id === highlightId ? 'just-in' : ''}" data-block="${b.id}">
+      <div class="absolute left-0 top-0 bottom-0 w-1 ${m.dot}"></div>
+      <div class="flex gap-4 sm:gap-6 p-4 sm:p-5 pl-5 sm:pl-7">
+        <div class="hidden sm:flex flex-col items-center pt-1 w-12 shrink-0">
+          <span class="font-display italic text-4xl leading-none ${isHook ? 'text-ink' : 'text-gold'}">${String(i + 1).padStart(2, '0')}</span>
+          <span class="mt-2 text-[10px] tracking-[.2em] text-mute uppercase">${m.en}</span>
+        </div>
+        <div class="flex-1 min-w-0 space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="sm:hidden font-display italic text-xl text-gold">${String(i + 1).padStart(2, '0')}</span>
+            <span class="text-[11px] px-2.5 py-0.5 rounded-full ${isHook ? 'bg-ink text-champagne' : 'border border-gold text-gold'}">${m.zh}${b.tag ? '・' + esc(b.tag) : ''}</span>
+            <span class="text-[11px] text-mute font-display" data-range="${b.id}">${range}</span>
+            <span class="text-[11px] text-mute">・約 <b class="text-ink" data-sec="${b.id}">${sec.toFixed(1)}</b> 秒</span>
+            <div class="ml-auto flex items-center gap-1">
+              <button class="w-8 h-8 rounded-full border hairline text-mute hover:text-ink hover:border-gold disabled:opacity-30 disabled:hover:border-line" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="上移" title="上移">↑</button>
+              <button class="w-8 h-8 rounded-full border hairline text-mute hover:text-ink hover:border-gold disabled:opacity-30 disabled:hover:border-line" data-act="down" ${i === state.blocks.length - 1 ? 'disabled' : ''} aria-label="下移" title="下移">↓</button>
+              <button class="w-8 h-8 rounded-full border hairline text-mute hover:text-ink hover:border-gold" data-act="dup" aria-label="複製這張卡" title="複製這張卡">⧉</button>
+              <button class="w-8 h-8 rounded-full border hairline text-mute hover:text-red-700 hover:border-red-200" data-act="del" aria-label="刪除" title="刪除">✕</button>
+            </div>
+          </div>
+          ${b.type === 'scene' ? `<div contenteditable="true" spellcheck="false" data-single data-id="${b.id}" data-field="title" data-placeholder="分鏡標題" class="font-serif text-lg font-bold -mx-1 px-1">${esc(b.title)}</div>` : ''}
+          ${field(b, 'audio', '口白', isHook ? 'font-serif text-xl sm:text-2xl font-bold leading-snug' : 'font-serif text-[17px] leading-relaxed', '輸入要唸的台詞…')}
+          ${field(b, 'visual', '畫面', 'text-sm text-ink/75 leading-relaxed', '手拿什麼？鏡頭怎麼動？')}
+          ${field(b, 'caption', '字卡', 'text-sm font-medium inline-block bg-champagne border hairline rounded-md', '畫面上的大字')}
+        </div>
+      </div>
+    </li>`;
+  }).join('');
+  $('#emptyState').classList.toggle('hidden', state.blocks.length > 0);
+  updateStats();
+  if (highlightId) {
+    const el = ol.querySelector(`[data-block="${highlightId}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function updateStats() {
+  let total = 0, words = 0, t = 0;
+  const tl = $('#timeline');
+  state.blocks.forEach(b => { total += secOf(b); words += countChars(b.audio); });
+  tl.innerHTML = state.blocks.map(b => `<div class="${TYPE_META[b.type].dot} h-full" style="flex:${secOf(b)}" title="${esc(b.title || b.tag)}・${secOf(b).toFixed(1)}s"></div>`).join('');
+  state.blocks.forEach(b => {
+    const sec = secOf(b);
+    const r = document.querySelector(`[data-range="${b.id}"]`); if (r) r.textContent = fmt(t) + '–' + fmt(t + sec);
+    const s = document.querySelector(`[data-sec="${b.id}"]`); if (s) s.textContent = sec.toFixed(1);
+    t += sec;
+  });
+  $('#statTime').textContent = Math.round(total);
+  $('#statWords').textContent = words;
+  $('#statCards').textContent = state.blocks.length;
+  checkSafety();
+}
+
+function checkSafety() {
+  const all = [state.title, ...state.blocks.flatMap(b => [b.title, b.audio, b.visual, b.caption]), ...state.covers].join(' ');
+  const hits = UNSAFE_WORDS.filter(w => all.includes(w));
+  const el = $('#safeBadge');
+  if (hits.length) {
+    el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>建議修改：${esc(hits.slice(0, 3).join('、'))}`;
+    el.classList.add('text-red-700', 'border-red-200');
+  } else {
+    el.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>品牌友善檢查・通過';
+    el.classList.remove('text-red-700', 'border-red-200');
+  }
+}
+
+/* =========================================================
+   COVERS & TAGS
+   ========================================================= */
+function renderCovers() {
+  $('#covers').innerHTML = state.covers.map((c, i) => `
+    <figure class="cover relative rounded-xl overflow-hidden border hairline shadow-[0_20px_40px_-28px_rgba(28,24,21,.6)]">
+      <div class="absolute top-3 left-3 right-3 flex justify-between text-[9px] sm:text-[10px] tracking-[.2em] text-ink/70">
+        <span class="font-display italic normal-case tracking-normal text-[11px] sm:text-xs text-ink">Luxe</span><span>N°0${i + 1}</span>
+      </div>
+      <div class="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+        <div class="h-px w-8 bg-white/80 mb-2"></div>
+        <div contenteditable="true" spellcheck="false" data-cover="${i}" data-placeholder="封面大字" class="font-serif font-black text-white text-[15px] sm:text-2xl leading-tight whitespace-pre-line drop-shadow-[0_2px_8px_rgba(0,0,0,.35)] focus:!bg-black/30">${esc(c)}</div>
+      </div>
+    </figure>`).join('');
+}
+function renderTags() {
+  $('#tags').innerHTML = state.tags.map((t, i) => `
+    <span class="inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full border hairline bg-white text-sm">
+      <span class="text-gold">#</span>${esc(t)}
+      <button class="w-5 h-5 rounded-full text-mute hover:bg-champagne hover:text-ink text-xs" data-tag-del="${i}" aria-label="移除 ${esc(t)}">✕</button>
+    </span>`).join('') || '<span class="text-sm text-mute">還沒有 Hashtag</span>';
+}
+
+/* =========================================================
+   COPY
+   ========================================================= */
+function buildScriptText() {
+  const line = '━━━━━━━━━━━━━━━━';
+  let t = 0, out = [];
+  let total = state.blocks.reduce((a, b) => a + secOf(b), 0);
+  out.push('【短影音爆款腳本】' + (state.title || ''));
+  out.push(`預估長度：約 ${Math.round(total)} 秒｜語速 ${rate} 字/秒｜共 ${state.blocks.length} 張卡`);
+  out.push('');
+  out.push('▍封面大字');
+  state.covers.forEach((c, i) => out.push(`  ${i + 1}. ${c.replace(/\n/g, ' ')}`));
+  out.push(line);
+  let sceneNo = 0;
+  state.blocks.forEach(b => {
+    const sec = secOf(b);
+    const range = `${fmt(t)}–${fmt(t + sec)}`;
+    t += sec;
+    let head;
+    if (b.type === 'hook') head = `▍HOOK 黃金 3 秒（${b.tag}）`;
+    else if (b.type === 'cta') head = `▍CTA 互動結尾（${b.tag}）`;
+    else head = `▍分鏡 ${++sceneNo}｜${b.title}`;
+    out.push(`${head}　${range}`);
+    out.push(`  🎙 口白：${b.audio}`);
+    out.push(`  🎥 畫面：${b.visual}`);
+    if (b.caption) out.push(`  🔤 字卡：${b.caption}`);
+    out.push('');
+  });
+  out.push(line);
+  if (state.tags.length) out.push(state.tags.map(x => '#' + x).join(' '));
+  return out.join('\n');
+}
+
+async function copyScript() {
+  if (!state.blocks.length) { toast('畫布是空的，先插入幾張卡牌吧'); return; }
+  const text = buildScriptText();
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    ta.remove();
+  }
+  toast('✓ 腳本已複製，可以貼到備忘錄或傳給剪輯師');
+}
+
+/* =========================================================
+   TELEPROMPTER
+   ========================================================= */
+const tp = { playing: false, raf: 0, last: 0, pos: 0, font: 44, total: 0 };
+
+function renderPrompter() {
+  let t = 0;
+  tp.total = state.blocks.reduce((a, b) => a + secOf(b), 0);
+  const showCues = $('#tpCues').checked;
+  $('#prompterBody').innerHTML = state.blocks.map(b => {
+    const sec = secOf(b), m = TYPE_META[b.type];
+    const label = b.type === 'scene' ? b.title : m.zh + '・' + b.tag;
+    const range = fmt(t) + '–' + fmt(t + sec); t += sec;
+    const audio = esc(b.audio).replace(/([。！？!?])/g, '$1<span class="pause-mark"> ⏸ </span>').replace(/(⋯⋯|……)/g, '$1<span class="pause-mark"> ⏸ </span>');
+    return `<section class="mb-[1.4em]">
+      <div class="flex flex-wrap items-center gap-2 text-sm mb-3" style="font-size:14px">
+        <span class="px-2.5 py-0.5 rounded-full ${b.type === 'hook' ? 'bg-gold text-black' : 'border border-gold/70 text-gold'}">${esc(label)}</span>
+        <span class="text-white/50 font-display">${range}・${sec.toFixed(1)}s</span>
+        <span class="text-white/40">｜${m.pace}</span>
+      </div>
+      ${showCues ? `<p class="text-white/45 italic mb-3" style="font-size:16px;line-height:1.6">🎥 ${esc(b.visual)}</p>` : ''}
+      <p class="font-serif font-bold leading-[1.55] ${b.type === 'hook' ? 'text-white' : 'text-white/90'}">${audio}</p>
+    </section>`;
+  }).join('') || '<p class="font-serif text-white/60 text-center">畫布是空的，先插入卡牌再來提詞吧。</p>';
+  $('#prompterBody').style.fontSize = tp.font + 'px';
+  $('#tpTotal').textContent = fmt(tp.total);
+}
+
+function tpMax() { const s = $('#prompterScroll'); return Math.max(1, s.scrollHeight - s.clientHeight); }
+// 可唸範圍：從第一段到最後一段結束（扣除上下留白）
+function tpRange() {
+  const body = $('#prompterBody');
+  const padTop = parseFloat(getComputedStyle(body).paddingTop);
+  const padBottom = parseFloat(getComputedStyle(body).paddingBottom);
+  return Math.max(1, body.scrollHeight - padTop - padBottom);
+}
+function tpUpdateProgress() {
+  const s = $('#prompterScroll');
+  const p = Math.min(1, s.scrollTop / tpRange());
+  $('#tpProgress').style.width = (p * 100).toFixed(1) + '%';
+  $('#tpElapsed').textContent = fmt(p * tp.total);
+}
+function tpStep(ts) {
+  if (!tp.playing) return;
+  const s = $('#prompterScroll');
+  const dt = tp.last ? (ts - tp.last) / 1000 : 0;
+  tp.last = ts;
+  const pxPerSec = tpRange() / Math.max(1, tp.total);
+  tp.pos = Math.min(tpMax(), (tp.pos ?? s.scrollTop) + pxPerSec * dt);
+  s.scrollTop = tp.pos;
+  tpUpdateProgress();
+  if (s.scrollTop >= tpRange() - 1 || tp.pos >= tpMax()) { tpPause(); $('#tpPlay').textContent = '✓ 完成'; return; }
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPlay() {
+  if (!state.blocks.length) return;
+  tp.playing = true; tp.last = 0; tp.pos = $('#prompterScroll').scrollTop;
+  $('#tpPlay').textContent = '❚❚ 暫停';
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPause() { tp.playing = false; cancelAnimationFrame(tp.raf); $('#tpPlay').textContent = '▶ 繼續'; }
+function openPrompter() {
+  if (!state.blocks.length) { toast('畫布是空的，先插入幾張卡牌吧'); return; }
+  $('#tpRate').value = rate; $('#tpRateVal').textContent = rate;
+  renderPrompter();
+  const p = $('#prompter');
+  p.classList.remove('hidden');
+  requestAnimationFrame(() => p.classList.remove('opacity-0'));
+  $('#prompterScroll').scrollTop = 0; tpUpdateProgress();
+  $('#tpPlay').textContent = '▶ 開始';
+  document.body.style.overflow = 'hidden';
+}
+function closePrompter() {
+  tpPause();
+  const p = $('#prompter');
+  p.classList.add('opacity-0');
+  setTimeout(() => p.classList.add('hidden'), 250);
+  document.body.style.overflow = '';
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+// tabs
+document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+  activeTab = btn.dataset.tab;
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b === btn));
+  renderLibrary();
+}));
+$('#hookFilters').addEventListener('click', e => {
+  const c = e.target.closest('[data-filter]'); if (!c) return;
+  hookFilter = c.dataset.filter; renderLibrary();
+});
+$('#library').addEventListener('click', e => {
+  const card = e.target.closest('[data-insert]'); if (card) insertFromLibrary(card.dataset.insert);
+});
+$('#library').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const card = e.target.closest('[data-insert]'); if (card) { e.preventDefault(); insertFromLibrary(card.dataset.insert); }
+});
+
+// canvas edit
+$('#canvas').addEventListener('input', e => {
+  const el = e.target.closest('[data-field]'); if (!el) return;
+  const b = state.blocks.find(x => x.id === el.dataset.id); if (!b) return;
+  b[el.dataset.field] = el.innerText.replace(/\n+$/, '');
+  updateStats(); save();
+});
+$('#canvas').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const id = btn.closest('[data-block]').dataset.block;
+  const B = state.blocks, i = B.findIndex(b => b.id === id);
+  const act = btn.dataset.act;
+  if (act === 'up' && i > 0) { [B[i - 1], B[i]] = [B[i], B[i - 1]]; renderCanvas(); }
+  else if (act === 'down' && i < B.length - 1) { [B[i + 1], B[i]] = [B[i], B[i + 1]]; renderCanvas(); }
+  else if (act === 'del') {
+    const li = btn.closest('[data-block]');
+    li.style.transition = 'opacity .25s, transform .25s'; li.style.opacity = '0'; li.style.transform = 'translateX(16px)';
+    setTimeout(() => { B.splice(i, 1); renderCanvas(); save(); }, 220);
+    toast('已刪除卡片'); return;
+  } else if (act === 'dup') {
+    const copy = { ...clone(B[i]), id: newId() }; B.splice(i + 1, 0, copy); renderCanvas(copy.id);
+  }
+  save();
+});
+// plain-text paste & single-line fields
+document.addEventListener('paste', e => {
+  const el = e.target.closest && e.target.closest('[contenteditable]'); if (!el) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, el.hasAttribute('data-single') ? text.replace(/\s*\n\s*/g, ' ') : text);
+});
+document.addEventListener('keydown', e => {
+  const el = e.target.closest && e.target.closest('[data-single]');
+  if (el && e.key === 'Enter') { e.preventDefault(); el.blur(); }
+});
+
+// title
+const titleEl = $('#scriptTitle');
+titleEl.setAttribute('data-single', '');
+titleEl.addEventListener('input', () => { state.title = titleEl.innerText.trim(); checkSafety(); save(); });
+
+// covers & tags
+$('#covers').addEventListener('input', e => {
+  const el = e.target.closest('[data-cover]'); if (!el) return;
+  state.covers[+el.dataset.cover] = el.innerText.replace(/\n+$/, ''); checkSafety(); save();
+});
+$('#btnShuffleCover').addEventListener('click', () => {
+  coverSetIdx = (coverSetIdx + 1) % COVER_SETS.length;
+  state.covers = COVER_SETS[coverSetIdx].slice();
+  renderCovers(); checkSafety(); save(); toast('已換上新一組封面大字');
+});
+$('#tags').addEventListener('click', e => {
+  const b = e.target.closest('[data-tag-del]'); if (!b) return;
+  state.tags.splice(+b.dataset.tagDel, 1); renderTags(); save();
+});
+$('#tagForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#tagInput').value.trim().replace(/^#+/, '').replace(/\s+/g, '');
+  if (!v) return;
+  if (!state.tags.includes(v)) state.tags.push(v);
+  $('#tagInput').value = ''; renderTags(); save();
+});
+
+// rate
+function setRate(v) {
+  rate = +v;
+  $('#rateCanvas').value = rate; $('#rateCanvasVal').textContent = rate;
+  $('#tpRate').value = rate; $('#tpRateVal').textContent = rate;
+  updateStats(); save();
+}
+$('#rateCanvas').addEventListener('input', e => setRate(e.target.value));
+$('#tpRate').addEventListener('input', e => {
+  const s = $('#prompterScroll');
+  const p = s.scrollTop / tpRange();
+  setRate(e.target.value); renderPrompter();
+  s.scrollTop = tp.pos = p * tpRange(); tpUpdateProgress();
+});
+
+// top bar
+$('#btnCopy').addEventListener('click', copyScript);
+$('#btnPrompter').addEventListener('click', openPrompter);
+$('#btnClear').addEventListener('click', () => { const c = $('#confirm'); c.classList.remove('hidden'); c.classList.add('flex'); });
+$('#confirmNo').addEventListener('click', () => { const c = $('#confirm'); c.classList.add('hidden'); c.classList.remove('flex'); });
+$('#confirmYes').addEventListener('click', () => {
+  state.blocks = []; state.title = ''; titleEl.textContent = '';
+  renderCanvas(); save();
+  const c = $('#confirm'); c.classList.add('hidden'); c.classList.remove('flex');
+  toast('畫布已清空，重新開始吧');
+});
+$('#btnSample').addEventListener('click', () => {
+  state = loadSample(); coverSetIdx = 0;
+  titleEl.textContent = state.title;
+  renderCanvas(); renderCovers(); renderTags(); save();
+  toast('已載入美妝保養爆款範例');
+});
+
+// prompter controls
+$('#tpPlay').addEventListener('click', () => {
+  if (tp.playing) return tpPause();
+  if ($('#prompterScroll').scrollTop >= tpRange() - 2) { $('#prompterScroll').scrollTop = 0; }
+  tpPlay();
+});
+$('#tpRestart').addEventListener('click', () => { tpPause(); $('#prompterScroll').scrollTop = tp.pos = 0; tpUpdateProgress(); $('#tpPlay').textContent = '▶ 開始'; });
+$('#tpClose').addEventListener('click', closePrompter);
+$('#tpBigger').addEventListener('click', () => { tp.font = Math.min(80, tp.font + 4); $('#prompterBody').style.fontSize = tp.font + 'px'; });
+$('#tpSmaller').addEventListener('click', () => { tp.font = Math.max(24, tp.font - 4); $('#prompterBody').style.fontSize = tp.font + 'px'; });
+$('#tpCues').addEventListener('change', () => { const s = $('#prompterScroll'); const p = s.scrollTop / tpRange(); renderPrompter(); s.scrollTop = tp.pos = p * tpRange(); });
+$('#tpMirror').addEventListener('change', e => $('#prompterBody').classList.toggle('mirror', e.target.checked));
+$('#prompterScroll').addEventListener('scroll', () => { if (!tp.playing) { tp.pos = $('#prompterScroll').scrollTop; tpUpdateProgress(); } });
+$('#prompterScroll').addEventListener('click', () => { if (tp.playing) tpPause(); else tpPlay(); });
+document.addEventListener('keydown', e => {
+  if ($('#prompter').classList.contains('hidden')) return;
+  const s = $('#prompterScroll');
+  if (e.key === 'Escape') closePrompter();
+  else if (e.key === ' ') { e.preventDefault(); tp.playing ? tpPause() : tpPlay(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); s.scrollTop += 60; tp.pos = s.scrollTop; tpUpdateProgress(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); s.scrollTop -= 60; tp.pos = s.scrollTop; tpUpdateProgress(); }
+});
+if (window.matchMedia('(max-width: 640px)').matches) tp.font = 32;
+
+/* =========================================================
+   INIT
+   ========================================================= */
+state = load();
+titleEl.textContent = state.title || '';
+$('#rateCanvas').value = rate; $('#rateCanvasVal').textContent = rate;
+renderLibrary();
+renderCanvas();
+renderCovers();
+renderTags();
+</script>
+</body>
+</html>
