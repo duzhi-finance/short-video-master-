@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Editorial Luxe Copywriter｜全賽道萬用爆款口白生成器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  if (window.tailwind) tailwind.config = {
+    theme: {
+      extend: {
+        colors: { champagne: '#F9F6F0', oat: '#FFFFFF', line: '#E6DFD5', ink: '#1C1815', gold: '#A8824A', mute: '#7A7068' },
+        fontFamily: {
+          display: ['"Playfair Display"', '"Noto Serif TC"', 'serif'],
+          serif: ['"Noto Serif TC"', 'serif'],
+          sans: ['"Noto Sans TC"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root { --gold: #A8824A; --ink: #1C1815; --line: #E6DFD5; --paper: #F9F6F0; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Noto Sans TC", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(1100px 560px at 105% -8%, rgba(168,130,74,.13), transparent 60%),
+      radial-gradient(900px 520px at -10% 105%, rgba(168,130,74,.08), transparent 60%);
+    background-attachment: fixed;
+  }
+  .glass { background: rgba(255,255,255,.76); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--line); }
+  .hairline { border-color: var(--line); }
+  .thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: #D9CFC1; border-radius: 99px; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+
+  [contenteditable] { outline: none; border-radius: 6px; white-space: pre-wrap; transition: background .2s, box-shadow .2s; cursor: text; }
+  [contenteditable]:hover { background: rgba(168,130,74,.06); }
+  [contenteditable]:focus { background: #FFFDF8; box-shadow: 0 0 0 1px var(--gold), 0 0 0 4px rgba(168,130,74,.12); }
+  [contenteditable]:empty::before { content: attr(data-placeholder); color: #B8ADA0; }
+
+  .theme-tab { transition: color .2s, background .2s, border-color .2s; }
+  .theme-tab[aria-selected="true"] { background: var(--ink); color: #F9F6F0; border-color: var(--ink); }
+  .hook-card { transition: border-color .25s, box-shadow .25s, transform .25s; }
+  .hook-card:hover { transform: translateY(-2px); }
+  .hook-card[aria-checked="true"] { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 18px 36px -26px rgba(168,130,74,.8); background: #FFFDF8; }
+  .hook-card[aria-checked="true"] .hook-dot { background: var(--gold); border-color: var(--gold); box-shadow: inset 0 0 0 3px #fff; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .5s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes flash { 0% { background: rgba(168,130,74,.18); } 100% { background: transparent; } }
+  .flash { animation: flash 1s ease-out; }
+
+  #toast { transition: opacity .3s, transform .3s; }
+  #prompter { transition: opacity .25s; }
+  .mirror { transform: scaleX(-1); }
+  .reading-line { background: linear-gradient(180deg, transparent, rgba(168,130,74,.14) 45%, rgba(168,130,74,.14) 55%, transparent); }
+  .breath { color: #A8824A; font-size: .55em; vertical-align: middle; margin: 0 .25em; }
+
+  .cover { aspect-ratio: 9 / 16; background:
+      linear-gradient(180deg, rgba(28,24,21,0) 38%, rgba(28,24,21,.55)),
+      linear-gradient(160deg, #F1E9DC 0%, #DCCAAE 55%, #B79668 100%); }
+  input[type=range] { accent-color: var(--gold); }
+  @media (prefers-reduced-motion: reduce) { .rise, .flash, .hook-card { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============ MASTHEAD ============ -->
+<header class="sticky top-0 z-30 glass border-x-0 border-t-0">
+  <div class="max-w-[1320px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-6 gap-y-3">
+    <div class="flex items-baseline gap-3 min-w-0">
+      <span class="font-display italic text-gold text-sm hidden sm:inline">Édition N°02</span>
+      <h1 class="font-display text-2xl sm:text-[28px] leading-none tracking-tight whitespace-nowrap">Editorial <em class="text-gold">Luxe</em> Copywriter</h1>
+      <span class="font-serif text-sm text-mute hidden md:inline whitespace-nowrap">全賽道萬用爆款口白生成器</span>
+    </div>
+    <div class="flex items-center gap-2 ml-auto flex-wrap">
+      <a href="index.html" class="hidden xl:inline text-xs text-mute hover:text-gold underline-offset-4 hover:underline mr-1">← 卡牌企劃工作台</a>
+      <span id="toneBadge" class="hidden lg:inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border hairline text-mute bg-white/70" title="自動檢查台詞中是否有攻擊、挑釁或刻薄的字眼">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>溫柔語氣檢查・通過
+      </span>
+      <button id="btnPrompter" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink text-champagne text-sm hover:bg-black transition"><span aria-hidden="true">🎙️</span>提詞器</button>
+      <button id="btnCopy" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold text-gold text-sm bg-white/80 hover:bg-gold hover:text-white transition"><span aria-hidden="true">📋</span>一鍵複製腳本</button>
+      <button id="btnReset" class="inline-flex items-center gap-2 px-3 py-2 rounded-full border hairline text-sm text-mute bg-white/70 hover:text-ink transition" title="把目前主題還原成原始範本"><span aria-hidden="true">↺</span><span class="hidden sm:inline">還原範本</span></button>
+    </div>
+  </div>
+  <!-- theme tabs -->
+  <nav class="border-t hairline">
+    <div id="themeTabs" role="tablist" aria-label="切換主題賽道" class="max-w-[1320px] mx-auto px-4 sm:px-6 py-2.5 flex gap-2 overflow-x-auto no-scrollbar"></div>
+  </nav>
+</header>
+
+<main class="max-w-[1320px] mx-auto px-4 sm:px-6 pt-8 pb-10">
+
+  <!-- ============ HERO ============ -->
+  <section id="hero" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] items-end pb-7 border-b hairline">
+    <div class="min-w-0">
+      <p class="font-display italic text-gold"><span id="heroEn"></span> <span class="text-mute">— The Five-Act Formula</span></p>
+      <h2 id="scriptTitle" contenteditable="true" spellcheck="false" data-single data-placeholder="輸入這支影片的主題…" class="font-serif text-3xl sm:text-[44px] font-black leading-tight mt-2 -mx-1 px-1"></h2>
+      <p class="text-sm text-mute mt-3 max-w-2xl leading-relaxed">
+        黃金 5 段式萬用結構：<b class="text-ink font-medium">認知破口</b> → <b class="text-ink font-medium">情境共鳴</b> → <b class="text-ink font-medium">核心乾貨 ×2</b> → <b class="text-ink font-medium">結果預期與自然導流</b>。
+        所有台詞都能直接點擊修改，改完就能開提詞器照著唸。
+      </p>
+    </div>
+    <dl class="flex gap-7">
+      <div><dt class="text-[11px] tracking-[.2em] text-mute">DURATION</dt><dd class="font-display text-3xl"><span id="statTime">0</span><span class="text-sm text-mute ml-0.5">秒</span></dd></div>
+      <div><dt class="text-[11px] tracking-[.2em] text-mute">WORDS</dt><dd class="font-display text-3xl"><span id="statWords">0</span><span class="text-sm text-mute ml-0.5">字</span></dd></div>
+      <div>
+        <dt class="text-[11px] tracking-[.2em] text-mute">PACE</dt>
+        <dd class="flex items-center gap-2 pt-2">
+          <input id="rate" type="range" min="3" max="6.5" step="0.5" value="4.5" class="w-20" aria-label="語速（字/秒）" />
+          <span class="font-display text-lg"><span id="rateVal">4.5</span><span class="text-xs text-mute ml-0.5">字/秒</span></span>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] mt-8 items-start">
+
+    <!-- ============ LEFT: HOOKS + TRACK ============ -->
+    <div class="min-w-0 space-y-8">
+
+      <section>
+        <div class="flex items-end justify-between gap-3 mb-4">
+          <div>
+            <p class="font-display italic text-gold text-sm">Act I · The Hook</p>
+            <h3 class="font-serif text-xl font-bold mt-0.5">⚡ 黃金 3 秒・認知破口 Hook</h3>
+          </div>
+          <p class="text-xs text-mute text-right">選一句當開場，<br class="sm:hidden" />會自動帶入段落 01</p>
+        </div>
+        <div id="hooks" role="radiogroup" aria-label="選擇開場 Hook" class="grid gap-3 md:grid-cols-3"></div>
+      </section>
+
+      <section class="glass rounded-2xl">
+        <div class="px-5 sm:px-8 pt-6 pb-4 border-b hairline flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p class="font-display italic text-gold text-sm">Acts I – V · The Voice Track</p>
+            <h3 class="font-serif text-xl font-bold mt-0.5">📝 無動作指示・直擊口白段落軌道</h3>
+          </div>
+          <div id="timeline" class="flex h-1.5 w-full sm:w-64 rounded-full overflow-hidden gap-[2px] bg-line/60"></div>
+        </div>
+        <ol id="track" class="divide-y divide-[#E6DFD5]"></ol>
+      </section>
+    </div>
+
+    <!-- ============ RIGHT: COVERS + TAGS ============ -->
+    <aside class="space-y-6 lg:sticky lg:top-[132px]">
+      <section class="glass rounded-2xl p-5 sm:p-6">
+        <p class="font-display italic text-gold text-sm">Cover Lines</p>
+        <h3 class="font-serif text-lg font-bold mt-0.5">📌 高質感封面大字</h3>
+        <p class="text-xs text-mute mt-1">點擊封面文字即可修改，挑一組當影片封面。</p>
+        <div id="covers" class="grid grid-cols-3 gap-3 mt-4"></div>
+      </section>
+
+      <section class="glass rounded-2xl p-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-display italic text-gold text-sm">Hashtags</p>
+            <h3 class="font-serif text-lg font-bold mt-0.5">熱門標籤</h3>
+          </div>
+          <button id="btnCopyTags" class="text-xs px-3 py-1.5 rounded-full border hairline bg-white/80 hover:border-gold hover:text-gold transition">複製標籤</button>
+        </div>
+        <div id="tags" class="flex flex-wrap gap-2 mt-4"></div>
+        <form id="tagForm" class="mt-3 flex gap-2">
+          <input id="tagInput" type="text" maxlength="20" placeholder="新增標籤" class="flex-1 min-w-0 px-4 py-2 rounded-full border hairline bg-white text-sm focus:outline-none focus:border-gold" />
+          <button class="px-4 py-2 rounded-full bg-ink text-champagne text-sm">新增</button>
+        </form>
+      </section>
+
+      <section class="rounded-2xl border hairline p-5 sm:p-6 bg-white/40">
+        <p class="font-display italic text-gold text-sm">Editor's Note</p>
+        <ul class="mt-2 space-y-2 text-sm text-ink/80 leading-relaxed">
+          <li>・每一行就是一次換氣，唸到行尾自然停半拍。</li>
+          <li>・30～45 秒最容易被完整看完，超過 60 秒可以刪掉一段乾貨。</li>
+          <li>・開場語速稍快，結尾放慢，CTA 最後一句看著鏡頭說。</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <p class="text-center text-xs text-mute mt-10">
+    <span class="font-display italic">Editorial Luxe Copywriter</span> ・ 修改內容會自動儲存在這台裝置的瀏覽器 ・ 範本僅供創作參考，理財內容為一般觀念分享
+  </p>
+</main>
+
+<!-- ============ TELEPROMPTER ============ -->
+<div id="prompter" class="fixed inset-0 z-50 hidden opacity-0 bg-black/90 backdrop-blur-md text-white" role="dialog" aria-modal="true" aria-label="提詞器">
+  <div class="absolute inset-x-0 top-0 z-20 px-4 sm:px-6 py-3 flex flex-wrap items-center gap-2.5 bg-gradient-to-b from-black via-black/85 to-transparent">
+    <span class="font-display italic text-gold text-lg mr-1">Teleprompter</span>
+    <button id="tpPlay" class="px-4 py-1.5 rounded-full bg-gold text-black text-sm font-medium min-w-[88px]">▶ 開始</button>
+    <button id="tpRestart" class="px-3 py-1.5 rounded-full border border-white/25 text-sm hover:border-white/60">⟲ 從頭</button>
+    <label class="inline-flex items-center gap-2 text-sm text-white/80">語速
+      <input id="tpRate" type="range" min="3" max="6.5" step="0.5" value="4.5" class="w-20" />
+      <b id="tpRateVal" class="text-white">4.5</b>
+    </label>
+    <button id="tpSmaller" class="w-8 h-8 rounded-full border border-white/25 hover:border-white/60 text-sm" aria-label="縮小字級">A−</button>
+    <button id="tpBigger" class="w-8 h-8 rounded-full border border-white/25 hover:border-white/60 text-sm" aria-label="放大字級">A+</button>
+    <label class="inline-flex items-center gap-1.5 text-sm text-white/80"><input id="tpMirror" type="checkbox" class="accent-[#A8824A]" />鏡像</label>
+    <button id="tpClose" class="ml-auto w-9 h-9 rounded-full border border-white/25 hover:border-white/60 text-lg leading-none" aria-label="關閉提詞器">×</button>
+  </div>
+  <div class="reading-line pointer-events-none absolute inset-x-0 top-[34%] h-24 -translate-y-1/2 z-10"></div>
+  <div class="pointer-events-none absolute left-2 sm:left-6 top-[34%] -translate-y-1/2 z-10 text-gold text-2xl">▸</div>
+  <div id="prompterScroll" class="absolute inset-0 overflow-y-auto thin-scroll">
+    <div id="prompterBody" class="max-w-xl mx-auto px-7 sm:px-10 pt-[34vh] pb-[72vh]"></div>
+  </div>
+  <div class="absolute inset-x-0 bottom-0 z-20 px-4 sm:px-6 pb-4 pt-8 bg-gradient-to-t from-black via-black/85 to-transparent">
+    <div class="max-w-xl mx-auto">
+      <div class="h-1 bg-white/15 rounded-full overflow-hidden"><div id="tpProgress" class="h-full bg-gold w-0"></div></div>
+      <div class="flex justify-between text-xs text-white/60 mt-2 gap-3">
+        <span>已唸 <b id="tpElapsed" class="text-white">0:00</b></span>
+        <span class="hidden sm:inline">點畫面或空白鍵：播放／暫停 ・ Esc：離開</span>
+        <span>預估 <b id="tpTotal" class="text-white">0:00</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed z-[60] left-1/2 bottom-8 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none px-5 py-3 rounded-full bg-ink text-champagne text-sm shadow-xl text-center max-w-[90vw]"></div>
+
+<script>
+/* =========================================================
+   腳本資料庫：每套 = 3 種 Hook + 段落 02～05 + 3 組封面 + 標籤
+   段落中的換行 = 一次換氣
+   ========================================================= */
+const HOOK_TYPES = [
+  { id: 'value',  name: '高價值乾貨型', note: '直接給答案，讓人覺得「看完就賺到」。' },
+  { id: 'insight', name: '盲點解惑型',  note: '點出一個沒想過的原因，引發好奇。' },
+  { id: 'empathy', name: '溫柔共鳴型',  note: '先說出觀眾的心情，建立信任感。' },
+];
+
+const STAGES = [
+  { no: '01', name: '認知破口', sub: 'Hook 開場',  en: 'The Opening',   pace: '語速稍快・字字清楚' },
+  { no: '02', name: '情境共鳴', sub: '痛點代入',   en: 'The Moment',    pace: '放慢・像在聊天' },
+  { no: '03', name: '核心乾貨', sub: '方法一',     en: 'Method One',    pace: '穩定・關鍵字加重' },
+  { no: '04', name: '核心乾貨', sub: '方法二',     en: 'Method Two',    pace: '穩定・數字放慢' },
+  { no: '05', name: '結果預期', sub: '自然導流 CTA', en: 'The Promise',  pace: '溫柔・最後一句看鏡頭' },
+];
+
+const THEMES = [
+  {
+    id: 'beauty', label: '保養美妝', en: 'Beauty', title: '底妝服貼一整天的兩個小細節',
+    hooks: [
+      '底妝要服貼一整天，關鍵其實不在粉底，\n而在上妝前的這兩分鐘。',
+      '明明用了很好的粉底，為什麼中午就開始浮粉？\n答案，可能藏在妳的用量裡。',
+      '如果妳也曾在下午照鏡子時，偷偷嘆了一口氣，\n這支影片，是為妳拍的。',
+    ],
+    segs: [
+      '早上出門前，妝容明明很完美。\n可是到了下午，鼻翼開始卡粉，兩頰慢慢暗沉。\n補了又補，反而越補越厚。\n其實不是妳不會化妝，只是少了兩個關鍵的小細節。',
+      '第一個細節，叫做「先保濕，再等待」。\n擦完保濕之後，給皮膚一到兩分鐘吸收。\n用指腹輕壓臉頰，不黏手了，再開始上底妝。\n肌膚喝飽了水，粉底才會真正貼上去。',
+      '第二個細節，是「少量，多層」。\n粉底只取一顆黃豆大小，從臉的中央往外推開。\n需要遮瑕的地方，再局部疊一層就好。\n最後用微濕的海綿輕輕按壓，帶走多餘的粉。\n薄薄的，才會透；透透的，才會久。',
+      '把這兩個細節做好，\n到了傍晚，妝感依然乾淨、透亮，\n就像天生的好皮膚。\n把這支影片收藏起來，明天上妝前再看一次。\n想知道定妝的小祕訣，留言「底妝」，下一支拍給妳。',
+    ],
+    covers: ['底妝服貼\n一整天', '少量多層\n才高級', '傍晚依然\n透亮'],
+    tags: ['底妝技巧', '持妝', '妝容教學', '新手化妝', '高級感妝容', '美妝分享'],
+  },
+  {
+    id: 'career', label: '職場溝通', en: 'Career', title: '讓主管一聽就懂的報告方法',
+    hooks: [
+      '跟主管報告時，把結論放在第一句，\n妳的專業感，會立刻不一樣。',
+      '說了很多，對方卻沒有聽懂？\n問題可能不在內容，而在順序。',
+      '有沒有一種時刻，妳明明很努力，\n卻覺得自己的付出，沒有被看見？',
+    ],
+    segs: [
+      '開會的時候，輪到妳發言。\n妳把過程從頭講了一遍，細節都很完整。\n可是講完之後，大家只問了一句：「所以結論是？」\n那一刻，真的有點失落。\n其實只要調整一個習慣，妳的表達就會更有份量。',
+      '第一個方法，叫做「結論先行」。\n開口第一句，直接說出妳的重點。\n例如：「這個專案可以在週五前完成，需要多一位同事支援。」\n先給答案，對方才會更願意聽妳的理由。',
+      '第二個方法，是「三點收束」。\n說明理由的時候，最多給三點。\n第一，時程；第二，人力；第三，風險。\n數字是一種溫柔的提醒，\n讓聽的人知道妳說到哪裡、還剩多少。',
+      '下次報告時試試看，\n妳會發現，大家開始更專注地聽妳說話，\n妳的努力，也會被看得更清楚。\n把這個方法分享給同樣在職場努力的朋友。\n想看更多溝通練習，記得追蹤，我們下一集見。',
+    ],
+    covers: ['結論先行\n更專業', '開會發言\n三點就夠', '好好說話\n是實力'],
+    tags: ['職場溝通', '表達技巧', '職場成長', '上班族', '會議技巧', '自我提升'],
+  },
+  {
+    id: 'finance', label: '理財規劃', en: 'Finance', title: '存錢變輕鬆的發薪日習慣',
+    hooks: [
+      '每個月領薪水的那一天，先做這一個動作，\n存錢會變得輕鬆很多。',
+      '存不到錢，常常不是因為賺得少，\n而是因為，我們把順序放反了。',
+      '如果妳也常在月底看著帳戶，心裡有點不安，\n我想跟妳分享一個方法。',
+    ],
+    segs: [
+      '很多人的習慣是，薪水進來，先生活、先花費，\n等到月底，剩下多少，再存多少。\n結果常常是，剩下的不多，心裡的壓力卻不少。\n其實存錢不需要很強的意志力，\n需要的是一套順序。',
+      '第一步，叫做「先存再花」。\n發薪日當天，先把固定比例轉進另一個帳戶。\n可以從百分之十開始，金額不用大，重點是自動。\n設定好自動轉帳，就像替未來的自己，按下了預約。',
+      '第二步，是「三個帳戶」。\n一個放生活費，一個放緊急預備金，一個放長期目標。\n每一筆錢都有自己的名字，花起來就會更安心。\n緊急預備金，可以先準備三到六個月的生活費。',
+      '這樣執行三個月，\n妳會發現，帳戶裡的數字慢慢變多，\n心裡的踏實感，也一起長大了。\n存錢不是限制生活，而是讓生活多了選擇。\n想要我的三帳戶分配表，留言「存錢」，我整理給妳。',
+    ],
+    covers: ['先存再花\n更安心', '三個帳戶\n錢有名字', '月底也能\n很從容'],
+    tags: ['理財入門', '存錢方法', '小資理財', '個人理財', '理財規劃', '儲蓄習慣'],
+  },
+  {
+    id: 'living', label: '生活美學', en: 'Living', title: '一個角落，讓家立刻有質感',
+    hooks: [
+      '只要改變家裡的一個角落，\n整個空間的質感，就會跟著提升。',
+      '家裡總覺得有點亂，不一定是東西太多，\n而是視線，沒有可以停下來的地方。',
+      '下班回到家，妳是不是也很希望，\n有一個地方，能讓自己好好放鬆？',
+    ],
+    segs: [
+      '每天忙完回到家，\n看到桌上堆著東西，沙發上放著衣服，\n心裡的疲憊，好像又多了一層。\n其實不需要大改造，\n只要從一個小角落開始。',
+      '第一個方法，叫做「留白三分之一」。\n桌面、櫃面，只擺放三分之二的空間，\n剩下的三分之一，什麼都不放。\n留白，會讓眼睛有呼吸的地方。',
+      '第二個方法，是「統一色調」。\n挑選兩到三個主色，例如米白、木色，再加一點綠。\n收納盒、毛巾、杯子，都盡量在這個範圍裡。\n顏色安靜下來，空間就會變得溫柔。',
+      '從今天開始，先整理一個角落就好。\n當妳回到家，看見那片乾淨的留白，\n會有一種，被好好照顧的感覺。\n把這支影片存起來，週末一起動手吧。\n想看更多居家角落，記得追蹤，下一集見。',
+    ],
+    covers: ['留白\n三分之一', '一個角落\n的質感', '讓顏色\n安靜下來'],
+    tags: ['生活美學', '居家佈置', '極簡生活', '收納整理', '質感生活', '居家靈感'],
+  },
+  {
+    id: 'knowledge', label: '知識乾貨', en: 'Knowledge', title: '讀一遍就記住的學習方法',
+    hooks: [
+      '讀一遍就記住的祕訣，其實是一個很簡單的動作：\n把書闔起來。',
+      '畫了滿滿的重點，卻還是記不住？\n因為大腦需要的不是重複看，而是主動想。',
+      '妳是不是也曾經很認真地讀書，\n到了考試，卻怎麼也想不起來？',
+    ],
+    segs: [
+      '我們很習慣用螢光筆畫重點，\n一頁一頁看過去，感覺好像都懂了。\n可是隔天再問自己，腦袋卻一片空白。\n不是妳記性不好，只是用了比較費力的方法。',
+      '第一個方法，叫做「主動回想」。\n讀完一個段落，先把書闔起來，\n試著用自己的話，說出剛剛讀到的三個重點。\n想不起來的地方，就是妳最需要複習的地方。',
+      '第二個方法，是「間隔複習」。\n今天讀完，隔一天、隔三天、隔一週，各回想一次。\n每次只要五分鐘。\n在快要忘記的時候想起來，記憶會變得特別牢固。',
+      '用這兩個方法讀一個月，\n妳會發現，花的時間變少了，記住的卻變多了。\n學習，本來就可以很輕鬆。\n把這支影片分享給正在準備考試的朋友。\n想要我的複習時間表，留言「學習」，我整理給妳。',
+    ],
+    covers: ['闔上書\n才記住', '讀一遍\n就記住', '學習可以\n很輕鬆'],
+    tags: ['學習方法', '讀書技巧', '高效學習', '自我成長', '考試準備', '知識分享'],
+  },
+  {
+    id: 'style', label: '質感穿搭', en: 'Style', title: '基本款穿出高級感的兩個公式',
+    hooks: [
+      '想讓基本款穿出高級感，只要記住一個公式：\n同色系，不同質感。',
+      '衣櫃滿滿，卻總覺得沒衣服穿？\n可能是單品之間，少了一個共同點。',
+      '每天早上站在衣櫃前猶豫很久，\n這種心情，我真的很懂。',
+    ],
+    segs: [
+      '早上趕著出門，\n打開衣櫃，每一件都很好看，\n可是搭在一起，總覺得少了點什麼。\n換了三套，時間就這樣過去了。\n其實穿搭不需要很多衣服，需要的是一套邏輯。',
+      '第一個公式，叫做「同色系，不同質感」。\n例如米色針織，搭配奶茶色的西裝褲。\n顏色相近，材質卻不同，\n整體看起來柔和，又很有層次。',
+      '第二個公式，是「一個亮點就好」。\n整套衣服裡，只留一個焦點，\n可以是一條絲巾、一對耳環，或是一個好看的包。\n亮點越少，越能看見妳本身的氣質。',
+      '用這兩個公式搭配一週，\n妳會發現，出門變快了，被稱讚的次數也變多了。\n高級感，其實是一種從容。\n把這支影片收藏起來，明早出門前參考一下。\n想看我的基本款清單，留言「穿搭」，下一支分享給妳。',
+    ],
+    covers: ['同色系\n不同質感', '一個亮點\n就夠了', '基本款\n穿出氣質'],
+    tags: ['穿搭技巧', '質感穿搭', '基本款穿搭', '通勤穿搭', '日常穿搭', '高級感'],
+  },
+];
+
+/* 溫柔語氣：避免攻擊、挑釁、刻薄的字眼 */
+const HARSH_WORDS = ['蓋牆壁', '難怪妳', '難怪你', '智商稅', '活該', '垃圾', '很醜', '好醜', '很蠢', '笨蛋', '廢物', '爛', '黑心', '騙人', '可悲', '丟臉', '沒救', '別再蠢'];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const STORE_KEY = 'editorial-luxe-copywriter-v1';
+const $ = s => document.querySelector(s);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function freshDraft(theme) {
+  return { title: theme.title, hookIdx: 0, hooks: theme.hooks.slice(), segs: theme.segs.slice(), covers: theme.covers.slice(), tags: theme.tags.slice() };
+}
+
+let store = { active: 'beauty', rate: 4.5, drafts: {} };
+try {
+  const raw = JSON.parse(localStorage.getItem(STORE_KEY));
+  if (raw && typeof raw === 'object' && raw.drafts) store = { ...store, ...raw };
+} catch (e) {}
+if (!THEMES.some(t => t.id === store.active)) store.active = 'beauty';
+
+const theme = () => THEMES.find(t => t.id === store.active);
+function draft() {
+  const t = theme();
+  let d = store.drafts[t.id];
+  if (!d || !Array.isArray(d.hooks) || d.hooks.length !== 3 || !Array.isArray(d.segs) || d.segs.length !== 4) d = store.drafts[t.id] = freshDraft(t);
+  return d;
+}
+let saveTimer;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }, 250);
+}
+
+/* 5 段完整台詞：01 = 選中的 Hook */
+function paragraphs() { const d = draft(); return [d.hooks[d.hookIdx], ...d.segs]; }
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()⋯…—\-~～"'“”‘’／/·・]/g, '').length;
+const secOf = t => Math.max(1.5, countChars(t) / store.rate);
+const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const readText = el => el.innerText.replace(/ /g, ' ').replace(/\n+$/, '');
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 16px)'; }, 2000);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return; } catch (e) {}
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  ta.remove();
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function renderTabs() {
+  $('#themeTabs').innerHTML = THEMES.map(t => `
+    <button role="tab" aria-selected="${t.id === store.active}" data-theme="${t.id}"
+      class="theme-tab shrink-0 px-4 py-1.5 rounded-full border hairline bg-white/70 text-sm text-ink/80 hover:border-gold">
+      <span class="font-display italic text-xs mr-1 opacity-70">${t.en}</span>${t.label}
+    </button>`).join('');
+}
+
+function renderHero() {
+  $('#heroEn').textContent = theme().en + ' Issue';
+  $('#scriptTitle').textContent = draft().title;
+}
+
+function renderHooks() {
+  const d = draft();
+  $('#hooks').innerHTML = HOOK_TYPES.map((h, i) => `
+    <div role="radio" tabindex="0" aria-checked="${i === d.hookIdx}" data-hook="${i}"
+      class="hook-card rise glass bg-white/85 rounded-xl p-4 cursor-pointer flex flex-col" style="animation-delay:${i * 60}ms">
+      <div class="flex items-center gap-2">
+        <span class="hook-dot w-3.5 h-3.5 rounded-full border border-[#CBBBA4] shrink-0"></span>
+        <span class="text-xs font-medium text-gold tracking-wide">⚡ ${h.name}</span>
+        <span class="ml-auto font-display italic text-xs text-mute">N°0${i + 1}</span>
+      </div>
+      <div contenteditable="true" spellcheck="false" data-hook-text="${i}" data-placeholder="輸入開場 Hook…"
+        class="font-serif font-bold text-[17px] leading-relaxed mt-3 -mx-1 px-1 flex-1">${esc(d.hooks[i])}</div>
+      <p class="text-[11px] text-mute mt-3 pt-3 border-t hairline">${h.note}</p>
+    </div>`).join('');
+}
+
+function renderTrack() {
+  const paras = paragraphs();
+  let t = 0;
+  $('#track').innerHTML = STAGES.map((s, i) => {
+    const sec = secOf(paras[i]);
+    const range = fmt(t) + '–' + fmt(t + sec); t += sec;
+    const isHook = i === 0, isEnd = i === 4;
+    return `
+    <li class="rise relative px-5 sm:px-8 py-6 grid sm:grid-cols-[92px_minmax(0,1fr)] gap-3 sm:gap-6" style="animation-delay:${i * 50}ms" data-seg-row="${i}">
+      <div class="flex sm:flex-col items-baseline sm:items-start gap-3 sm:gap-1">
+        <span class="font-display italic text-[44px] leading-none ${isHook ? 'text-ink' : 'text-gold'}">${s.no}</span>
+        <span class="text-[10px] tracking-[.2em] text-mute uppercase">${s.en}</span>
+      </div>
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <span class="text-[11px] px-2.5 py-0.5 rounded-full ${isHook ? 'bg-ink text-champagne' : isEnd ? 'bg-gold text-white' : 'border border-gold text-gold'}">${s.name}・${s.sub}</span>
+          ${isHook ? `<span class="text-[11px] text-mute">已選：${HOOK_TYPES[draft().hookIdx].name}</span>` : ''}
+          <span class="text-[11px] text-mute font-display" data-range="${i}">${range}</span>
+          <span class="text-[11px] text-mute">・約 <b class="text-ink" data-sec="${i}">${sec.toFixed(1)}</b> 秒</span>
+          <span class="text-[11px] text-mute hidden md:inline">・${s.pace}</span>
+          <button class="ml-auto text-[11px] px-2.5 py-1 rounded-full border hairline text-mute hover:text-gold hover:border-gold transition" data-copy-seg="${i}">複製此段</button>
+        </div>
+        <div contenteditable="true" spellcheck="false" data-seg="${i}" data-placeholder="輸入這一段的口白…"
+          class="font-serif ${isHook ? 'text-[22px] sm:text-[26px] font-bold leading-[1.6]' : 'text-[17px] sm:text-[19px] leading-[1.95]'} -mx-1 px-1">${esc(paras[i])}</div>
+      </div>
+    </li>`;
+  }).join('');
+  updateStats();
+}
+
+function renderCovers() {
+  const d = draft();
+  $('#covers').innerHTML = d.covers.map((c, i) => `
+    <figure class="cover relative rounded-lg overflow-hidden border hairline shadow-[0_18px_36px_-26px_rgba(28,24,21,.7)]">
+      <div class="absolute top-2.5 left-2.5 right-2.5 flex justify-between text-[9px] tracking-[.15em] text-ink/70">
+        <span class="font-display italic text-[11px] tracking-normal text-ink">Luxe</span><span>N°0${i + 1}</span>
+      </div>
+      <div class="absolute inset-x-0 bottom-0 p-2.5 sm:p-3">
+        <div class="h-px w-6 bg-white/80 mb-1.5"></div>
+        <div contenteditable="true" spellcheck="false" data-cover="${i}" data-placeholder="封面大字"
+          class="font-serif font-black text-white text-[13px] sm:text-[15px] leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,.35)] focus:!bg-black/30">${esc(c)}</div>
+      </div>
+    </figure>`).join('');
+}
+
+function renderTags() {
+  const d = draft();
+  $('#tags').innerHTML = d.tags.map((t, i) => `
+    <span class="inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full border hairline bg-white text-sm">
+      <span class="text-gold">#</span>${esc(t)}
+      <button class="w-5 h-5 rounded-full text-mute hover:bg-champagne hover:text-ink text-xs" data-tag-del="${i}" aria-label="移除 ${esc(t)}">✕</button>
+    </span>`).join('') || '<span class="text-sm text-mute">還沒有標籤</span>';
+}
+
+function updateStats() {
+  const paras = paragraphs();
+  let t = 0, words = 0;
+  paras.forEach((p, i) => {
+    const sec = secOf(p);
+    const r = document.querySelector(`[data-range="${i}"]`); if (r) r.textContent = fmt(t) + '–' + fmt(t + sec);
+    const s = document.querySelector(`[data-sec="${i}"]`); if (s) s.textContent = sec.toFixed(1);
+    t += sec; words += countChars(p);
+  });
+  $('#statTime').textContent = Math.round(t);
+  $('#statWords').textContent = words;
+  $('#timeline').innerHTML = paras.map((p, i) => `<div class="h-full ${i === 0 ? 'bg-ink' : i === 4 ? 'bg-[#CDB89A]' : 'bg-gold'}" style="flex:${secOf(p)}" title="${STAGES[i].no} ${STAGES[i].name}"></div>`).join('');
+  checkTone();
+}
+
+function checkTone() {
+  const d = draft();
+  const all = [d.title, ...d.hooks, ...d.segs, ...d.covers].join(' ');
+  const hits = HARSH_WORDS.filter(w => all.includes(w));
+  const el = $('#toneBadge');
+  if (hits.length) {
+    el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>建議換個說法：${esc(hits.slice(0, 3).join('、'))}`;
+    el.classList.add('text-red-700', 'border-red-200');
+  } else {
+    el.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>溫柔語氣檢查・通過';
+    el.classList.remove('text-red-700', 'border-red-200');
+  }
+}
+
+function renderAll() { renderTabs(); renderHero(); renderHooks(); renderTrack(); renderCovers(); renderTags(); $('#rate').value = store.rate; $('#rateVal').textContent = store.rate; }
+
+/* =========================================================
+   COPY
+   ========================================================= */
+function buildScript() {
+  const d = draft(), paras = paragraphs();
+  const total = paras.reduce((a, p) => a + secOf(p), 0);
+  const line = '━━━━━━━━━━━━━━━━';
+  const out = [];
+  out.push(`【爆款口白腳本】${theme().label}｜${d.title}`);
+  out.push(`黃金 5 段式結構・預估約 ${Math.round(total)} 秒（語速 ${store.rate} 字/秒）`);
+  out.push('');
+  out.push('▍封面大字');
+  d.covers.forEach((c, i) => out.push(`  ${i + 1}. ${c.replace(/\n/g, ' ')}`));
+  out.push(line);
+  let t = 0;
+  paras.forEach((p, i) => {
+    const s = STAGES[i], sec = secOf(p);
+    const extra = i === 0 ? `・${HOOK_TYPES[d.hookIdx].name}` : '';
+    out.push(`段落 ${s.no}｜${s.name}（${s.sub}${extra}）  ${fmt(t)}–${fmt(t + sec)}`);
+    t += sec;
+    out.push(p);
+    out.push('');
+  });
+  out.push(line);
+  out.push(d.tags.map(x => '#' + x).join(' '));
+  return out.join('\n');
+}
+
+/* =========================================================
+   TELEPROMPTER
+   ========================================================= */
+const tp = { playing: false, raf: 0, last: 0, pos: 0, font: window.matchMedia('(max-width: 640px)').matches ? 32 : 42, total: 0 };
+
+function renderPrompter() {
+  const paras = paragraphs();
+  tp.total = paras.reduce((a, p) => a + secOf(p), 0);
+  let t = 0;
+  $('#prompterBody').innerHTML = paras.map((p, i) => {
+    const s = STAGES[i], sec = secOf(p);
+    const range = fmt(t) + '–' + fmt(t + sec); t += sec;
+    const lines = p.split('\n').filter(x => x.trim()).map(l => esc(l) + '<span class="breath">⏸</span>').join('<br>');
+    return `<section class="mb-[1.6em]">
+      <div class="flex flex-wrap items-center gap-2 mb-3" style="font-size:14px">
+        <span class="px-2.5 py-0.5 rounded-full ${i === 0 ? 'bg-gold text-black' : 'border border-gold/70 text-gold'}">${s.no}・${s.name}</span>
+        <span class="text-white/50 font-display">${range}</span>
+        <span class="text-white/40">｜${s.pace}</span>
+      </div>
+      <p class="font-serif font-bold leading-[1.6] ${i === 0 ? 'text-white' : 'text-white/90'}">${lines}</p>
+    </section>`;
+  }).join('');
+  $('#prompterBody').style.fontSize = tp.font + 'px';
+  $('#tpTotal').textContent = fmt(tp.total);
+}
+const scroller = () => $('#prompterScroll');
+function tpRange() {
+  const body = $('#prompterBody'), cs = getComputedStyle(body);
+  return Math.max(1, body.scrollHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom));
+}
+function tpUpdate() {
+  const p = Math.min(1, scroller().scrollTop / tpRange());
+  $('#tpProgress').style.width = (p * 100).toFixed(1) + '%';
+  $('#tpElapsed').textContent = fmt(p * tp.total);
+}
+function tpStep(ts) {
+  if (!tp.playing) return;
+  const s = scroller();
+  const dt = tp.last ? (ts - tp.last) / 1000 : 0;
+  tp.last = ts;
+  tp.pos += (tpRange() / Math.max(1, tp.total)) * dt;
+  s.scrollTop = tp.pos;
+  tpUpdate();
+  if (tp.pos >= tpRange() || s.scrollTop >= s.scrollHeight - s.clientHeight) { tpPause(); $('#tpPlay').textContent = '✓ 完成'; return; }
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPlay() {
+  const s = scroller();
+  if (s.scrollTop >= tpRange() - 2) s.scrollTop = 0;
+  tp.playing = true; tp.last = 0; tp.pos = s.scrollTop;
+  $('#tpPlay').textContent = '❚❚ 暫停';
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPause() { tp.playing = false; cancelAnimationFrame(tp.raf); $('#tpPlay').textContent = '▶ 繼續'; }
+function openPrompter() {
+  $('#tpRate').value = store.rate; $('#tpRateVal').textContent = store.rate;
+  renderPrompter();
+  const p = $('#prompter');
+  p.classList.remove('hidden');
+  requestAnimationFrame(() => p.classList.remove('opacity-0'));
+  scroller().scrollTop = tp.pos = 0; tpUpdate();
+  $('#tpPlay').textContent = '▶ 開始';
+  document.body.style.overflow = 'hidden';
+}
+function closePrompter() {
+  tpPause();
+  const p = $('#prompter');
+  p.classList.add('opacity-0');
+  setTimeout(() => p.classList.add('hidden'), 250);
+  document.body.style.overflow = '';
+}
+function rerenderKeepingPlace() {
+  const s = scroller(), ratio = s.scrollTop / tpRange();
+  renderPrompter();
+  s.scrollTop = tp.pos = ratio * tpRange(); tpUpdate();
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+$('#themeTabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-theme]'); if (!b || b.dataset.theme === store.active) return;
+  store.active = b.dataset.theme; save(); renderAll();
+  b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function selectHook(i) {
+  const d = draft(); if (d.hookIdx === i) return;
+  d.hookIdx = i; save();
+  document.querySelectorAll('[data-hook]').forEach(c => c.setAttribute('aria-checked', +c.dataset.hook === i));
+  renderTrack();
+  const first = document.querySelector('[data-seg="0"]');
+  if (first) { first.classList.add('flash'); setTimeout(() => first.classList.remove('flash'), 1000); }
+  toast('已帶入段落 01：' + HOOK_TYPES[i].name);
+}
+$('#hooks').addEventListener('click', e => {
+  const c = e.target.closest('[data-hook]'); if (c) selectHook(+c.dataset.hook);
+});
+$('#hooks').addEventListener('keydown', e => {
+  const c = e.target.closest('[data-hook]');
+  if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectHook(+c.dataset.hook); }
+});
+$('#hooks').addEventListener('input', e => {
+  const el = e.target.closest('[data-hook-text]'); if (!el) return;
+  const d = draft(), i = +el.dataset.hookText;
+  d.hooks[i] = readText(el);
+  if (i === d.hookIdx) { const seg0 = document.querySelector('[data-seg="0"]'); if (seg0) seg0.textContent = d.hooks[i]; }
+  updateStats(); save();
+});
+
+$('#track').addEventListener('input', e => {
+  const el = e.target.closest('[data-seg]'); if (!el) return;
+  const d = draft(), i = +el.dataset.seg, v = readText(el);
+  if (i === 0) {
+    d.hooks[d.hookIdx] = v;
+    const h = document.querySelector(`[data-hook-text="${d.hookIdx}"]`); if (h) h.textContent = v;
+  } else d.segs[i - 1] = v;
+  updateStats(); save();
+});
+$('#track').addEventListener('click', async e => {
+  const b = e.target.closest('[data-copy-seg]'); if (!b) return;
+  await copyText(paragraphs()[+b.dataset.copySeg]);
+  toast('已複製段落 ' + STAGES[+b.dataset.copySeg].no);
+});
+
+$('#scriptTitle').addEventListener('input', e => { draft().title = readText(e.target).trim(); checkTone(); save(); });
+$('#covers').addEventListener('input', e => {
+  const el = e.target.closest('[data-cover]'); if (!el) return;
+  draft().covers[+el.dataset.cover] = readText(el); checkTone(); save();
+});
+$('#tags').addEventListener('click', e => {
+  const b = e.target.closest('[data-tag-del]'); if (!b) return;
+  draft().tags.splice(+b.dataset.tagDel, 1); renderTags(); save();
+});
+$('#tagForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#tagInput').value.trim().replace(/^#+/, '').replace(/\s+/g, '');
+  if (!v) return;
+  const d = draft(); if (!d.tags.includes(v)) d.tags.push(v);
+  $('#tagInput').value = ''; renderTags(); save();
+});
+$('#btnCopyTags').addEventListener('click', async () => { await copyText(draft().tags.map(x => '#' + x).join(' ')); toast('已複製標籤'); });
+
+// plain-text paste & single-line title
+document.addEventListener('paste', e => {
+  const el = e.target.closest && e.target.closest('[contenteditable]'); if (!el) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, el.hasAttribute('data-single') ? text.replace(/\s*\n\s*/g, ' ') : text);
+});
+document.addEventListener('keydown', e => {
+  const el = e.target.closest && e.target.closest('[data-single]');
+  if (el && e.key === 'Enter') { e.preventDefault(); el.blur(); }
+});
+
+function setRate(v) {
+  store.rate = +v;
+  $('#rate').value = store.rate; $('#rateVal').textContent = store.rate;
+  $('#tpRate').value = store.rate; $('#tpRateVal').textContent = store.rate;
+  updateStats(); save();
+}
+$('#rate').addEventListener('input', e => setRate(e.target.value));
+
+$('#btnCopy').addEventListener('click', async () => { await copyText(buildScript()); toast('✓ 完整腳本已複製，可以貼到備忘錄了'); });
+$('#btnPrompter').addEventListener('click', openPrompter);
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm(`要把「${theme().label}」還原成原始範本嗎？這個主題的修改會被清除。`)) return;
+  store.drafts[theme().id] = freshDraft(theme()); save(); renderAll();
+  toast('已還原「' + theme().label + '」範本');
+});
+
+$('#tpPlay').addEventListener('click', () => tp.playing ? tpPause() : tpPlay());
+$('#tpRestart').addEventListener('click', () => { tpPause(); scroller().scrollTop = tp.pos = 0; tpUpdate(); $('#tpPlay').textContent = '▶ 開始'; });
+$('#tpClose').addEventListener('click', closePrompter);
+$('#tpRate').addEventListener('input', e => { setRate(e.target.value); rerenderKeepingPlace(); });
+$('#tpBigger').addEventListener('click', () => { tp.font = Math.min(80, tp.font + 4); rerenderKeepingPlace(); });
+$('#tpSmaller').addEventListener('click', () => { tp.font = Math.max(22, tp.font - 4); rerenderKeepingPlace(); });
+$('#tpMirror').addEventListener('change', e => $('#prompterBody').classList.toggle('mirror', e.target.checked));
+scroller().addEventListener('scroll', () => { if (!tp.playing) { tp.pos = scroller().scrollTop; tpUpdate(); } });
+scroller().addEventListener('click', () => tp.playing ? tpPause() : tpPlay());
+document.addEventListener('keydown', e => {
+  if ($('#prompter').classList.contains('hidden')) return;
+  const s = scroller();
+  if (e.key === 'Escape') closePrompter();
+  else if (e.key === ' ') { e.preventDefault(); tp.playing ? tpPause() : tpPlay(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); s.scrollTop += 60; tp.pos = s.scrollTop; tpUpdate(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); s.scrollTop -= 60; tp.pos = s.scrollTop; tpUpdate(); }
+});
+
+renderAll();
+</script>
+</body>
+</html>
