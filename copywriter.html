@@ -714,8 +714,20 @@ $('#rate').addEventListener('input', e => setRate(e.target.value));
 
 $('#btnCopy').addEventListener('click', async () => { await copyText(buildScript()); toast('✓ 完整腳本已複製，可以貼到備忘錄了'); });
 $('#btnPrompter').addEventListener('click', openPrompter);
+// 按兩次確認，避免誤觸（不使用瀏覽器 confirm 彈窗）
+let resetArmed = 0;
 $('#btnReset').addEventListener('click', () => {
-  if (!confirm(`要把「${theme().label}」還原成原始範本嗎？這個主題的修改會被清除。`)) return;
+  const btn = $('#btnReset'), label = btn.querySelector('span:last-child');
+  if (Date.now() - resetArmed > 3000) {
+    resetArmed = Date.now();
+    label.textContent = '再按一次確認'; label.classList.remove('hidden');
+    btn.classList.add('text-red-700', 'border-red-200');
+    toast(`再按一次，就會把「${theme().label}」還原成原始範本`);
+    setTimeout(() => { if (Date.now() - resetArmed >= 3000) { label.textContent = '還原範本'; label.classList.add('hidden'); btn.classList.remove('text-red-700', 'border-red-200'); } }, 3050);
+    return;
+  }
+  resetArmed = 0;
+  label.textContent = '還原範本'; label.classList.add('hidden'); btn.classList.remove('text-red-700', 'border-red-200');
   store.drafts[theme().id] = freshDraft(theme()); save(); renderAll();
   toast('已還原「' + theme().label + '」範本');
 });
