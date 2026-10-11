@@ -47,6 +47,7 @@
 
   .theme-tab { transition: color .2s, background .2s, border-color .2s; }
   .theme-tab[aria-selected="true"] { background: var(--ink); color: #F9F6F0; border-color: var(--ink); }
+  .mode-tab[aria-selected="true"] { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); background: #FFFDF8; }
   .hook-card { transition: border-color .25s, box-shadow .25s, transform .25s; }
   .hook-card:hover { transform: translateY(-2px); }
   .hook-card[aria-checked="true"] { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 18px 36px -26px rgba(168,130,74,.8); background: #FFFDF8; }
@@ -85,6 +86,7 @@
       <span id="toneBadge" class="hidden lg:inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border hairline text-mute bg-white/70" title="自動檢查台詞中是否有攻擊、挑釁或刻薄的字眼">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>溫柔語氣檢查・通過
       </span>
+      <button id="btnStudio" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold text-white text-sm hover:brightness-95 transition"><span aria-hidden="true">✍️</span>寫我的腳本</button>
       <button id="btnPrompter" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink text-champagne text-sm hover:bg-black transition"><span aria-hidden="true">🎙️</span>提詞器</button>
       <button id="btnCopy" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold text-gold text-sm bg-white/80 hover:bg-gold hover:text-white transition"><span aria-hidden="true">📋</span>一鍵複製腳本</button>
       <button id="btnReset" class="inline-flex items-center gap-2 px-3 py-2 rounded-full border hairline text-sm text-mute bg-white/70 hover:text-ink transition" title="把目前主題還原成原始範本"><span aria-hidden="true">↺</span><span class="hidden sm:inline">還原範本</span></button>
@@ -218,6 +220,121 @@
         <span>預估 <b id="tpTotal" class="text-white">0:00</b></span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ============ STUDIO：寫我的腳本 ============ -->
+<div id="studio" class="fixed inset-0 z-40 hidden bg-ink/40 backdrop-blur-sm p-0 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="studioTitle">
+  <div class="bg-white border hairline shadow-2xl sm:rounded-2xl max-w-3xl mx-auto min-h-full sm:min-h-0">
+    <div class="sticky top-0 z-10 bg-white/95 backdrop-blur px-5 sm:px-8 pt-5 pb-4 border-b hairline sm:rounded-t-2xl">
+      <div class="flex items-start gap-3">
+        <div class="min-w-0">
+          <p class="font-display italic text-gold text-sm">Script Atelier</p>
+          <h2 id="studioTitle" class="font-serif text-2xl font-bold mt-0.5">寫我自己的腳本</h2>
+        </div>
+        <button id="studioClose" class="ml-auto w-9 h-9 rounded-full border hairline text-lg leading-none hover:border-gold" aria-label="關閉">×</button>
+      </div>
+      <div role="tablist" class="grid grid-cols-2 gap-2 mt-4">
+        <button role="tab" data-mode="guided" aria-selected="true" class="mode-tab text-left rounded-xl border hairline px-4 py-3 bg-white">
+          <span class="block font-serif font-bold">🌱 從 0 開始</span>
+          <span class="block text-xs text-mute mt-0.5">回答 7 個問題，馬上組出完整一支</span>
+        </button>
+        <button role="tab" data-mode="idea" aria-selected="false" class="mode-tab text-left rounded-xl border hairline px-4 py-3 bg-white">
+          <span class="block font-serif font-bold">💡 我有想法</span>
+          <span class="block text-xs text-mute mt-0.5">貼上想法或草稿，AI 總編導幫你寫完</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 共用設定 -->
+    <div class="px-5 sm:px-8 pt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <label class="block">
+        <span class="text-xs text-mute">賽道</span>
+        <select id="fTrack" class="mt-1 w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold"></select>
+      </label>
+      <label class="block">
+        <span class="text-xs text-mute">稱呼觀眾</span>
+        <select id="fPron" class="mt-1 w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold">
+          <option value="妳">妳（女性觀眾）</option>
+          <option value="你">你（不分性別）</option>
+        </select>
+      </label>
+      <label class="block col-span-2 sm:col-span-1">
+        <span class="text-xs text-mute">留言關鍵字（CTA 用）</span>
+        <input id="fKeyword" type="text" maxlength="8" placeholder="例如：底妝" class="mt-1 w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold" />
+      </label>
+    </div>
+
+    <!-- 模式 A：從 0 開始 -->
+    <form id="guidedForm" class="px-5 sm:px-8 py-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-champagne border hairline px-4 py-3">
+        <p class="text-sm text-ink/80">不知道怎麼填？先看範例，再改成你的內容。</p>
+        <button type="button" id="fillExample" class="text-xs px-3 py-1.5 rounded-full border border-gold text-gold bg-white hover:bg-gold hover:text-white transition">填入這個賽道的範例</button>
+      </div>
+      <label class="block">
+        <span class="text-sm font-medium"><b class="font-display italic text-gold mr-1">1</b>這支影片要教什麼？</span>
+        <input id="fTopic" required maxlength="30" class="mt-1.5 w-full px-4 py-2.5 rounded-lg border hairline bg-white focus:outline-none focus:border-gold" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-medium"><b class="font-display italic text-gold mr-1">2</b>你想說給誰聽？<span class="text-xs text-mute font-normal">（可不填）</span></span>
+        <input id="fWho" maxlength="20" class="mt-1.5 w-full px-4 py-2.5 rounded-lg border hairline bg-white focus:outline-none focus:border-gold" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-medium"><b class="font-display italic text-gold mr-1">3</b>他們最常遇到的困擾是什麼？<span class="text-xs text-mute font-normal">（一句話）</span></span>
+        <input id="fPain" required maxlength="40" class="mt-1.5 w-full px-4 py-2.5 rounded-lg border hairline bg-white focus:outline-none focus:border-gold" />
+      </label>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <fieldset class="rounded-xl border hairline p-4 space-y-2">
+          <legend class="text-sm font-medium px-1"><b class="font-display italic text-gold mr-1">4</b>方法一</legend>
+          <input id="fM1" required maxlength="12" placeholder="方法名稱" class="w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold" />
+          <textarea id="fM1How" required rows="3" maxlength="120" placeholder="怎麼做？用一兩句話說明" class="w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold"></textarea>
+        </fieldset>
+        <fieldset class="rounded-xl border hairline p-4 space-y-2">
+          <legend class="text-sm font-medium px-1"><b class="font-display italic text-gold mr-1">5</b>方法二</legend>
+          <input id="fM2" required maxlength="12" placeholder="方法名稱" class="w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold" />
+          <textarea id="fM2How" required rows="3" maxlength="120" placeholder="怎麼做？用一兩句話說明" class="w-full px-3 py-2 rounded-lg border hairline bg-white text-sm focus:outline-none focus:border-gold"></textarea>
+        </fieldset>
+      </div>
+      <label class="block">
+        <span class="text-sm font-medium"><b class="font-display italic text-gold mr-1">6</b>做到之後，會有什麼改變？</span>
+        <input id="fResult" required maxlength="40" class="mt-1.5 w-full px-4 py-2.5 rounded-lg border hairline bg-white focus:outline-none focus:border-gold" />
+      </label>
+      <p class="text-xs text-mute"><b class="font-display italic text-gold mr-1">7</b>留言關鍵字填在上方；沒填會自動用賽道名稱。</p>
+      <div class="pt-2 flex flex-wrap gap-2 justify-end">
+        <button type="submit" class="px-6 py-2.5 rounded-full bg-ink text-champagne text-sm hover:bg-black transition">✦ 產生完整腳本</button>
+      </div>
+    </form>
+
+    <!-- 模式 B：我有想法 -->
+    <form id="ideaForm" class="hidden px-5 sm:px-8 py-5 space-y-4">
+      <label class="block">
+        <span class="text-sm font-medium">把你的想法貼進來</span>
+        <span class="block text-xs text-mute mt-0.5">一句話、條列重點、或寫到一半的草稿都可以。寫越具體，腳本越像你。</span>
+        <textarea id="fIdea" required rows="7" maxlength="3000" class="mt-2 w-full px-4 py-3 rounded-lg border hairline bg-white leading-relaxed focus:outline-none focus:border-gold"
+          placeholder="例如：我想教上班族早上 5 分鐘完成底妝。重點是保濕後要等一下再上粉底、粉底用量要少、最後用海綿按壓。想讓大家留言「底妝」拿我的產品清單。"></textarea>
+      </label>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm">影片長度</span>
+        <div id="fLen" class="inline-flex rounded-full border hairline bg-white p-0.5 text-sm">
+          <button type="button" data-len="30" class="px-3 py-1 rounded-full">30 秒</button>
+          <button type="button" data-len="45" class="px-3 py-1 rounded-full bg-ink text-champagne">45 秒</button>
+          <button type="button" data-len="60" class="px-3 py-1 rounded-full">60 秒</button>
+        </div>
+      </div>
+      <div id="aiStatus" class="hidden rounded-xl border hairline bg-champagne px-4 py-3 text-sm"></div>
+      <div id="aiOff" class="hidden rounded-xl border border-gold/50 bg-[#FFFDF8] px-4 py-3 text-sm leading-relaxed">
+        <p class="font-medium">這裡目前無法直接呼叫 AI</p>
+        <p class="text-ink/75 mt-1">AI 撰寫只在 claude.ai 的連結中可用（第一次使用會詢問你是否允許）。你也可以：</p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <button type="button" id="copyPrompt" class="text-xs px-3 py-1.5 rounded-full border border-gold text-gold bg-white hover:bg-gold hover:text-white transition">📋 複製指令，貼給 Claude 對話</button>
+          <button type="button" id="toGuided" class="text-xs px-3 py-1.5 rounded-full border hairline bg-white hover:border-gold">改用「從 0 開始」</button>
+        </div>
+      </div>
+      <div class="pt-2 flex flex-wrap gap-2 justify-end">
+        <button type="button" id="aiStop" class="hidden px-4 py-2.5 rounded-full border hairline text-sm">停止</button>
+        <button type="submit" id="aiGo" class="px-6 py-2.5 rounded-full bg-ink text-champagne text-sm hover:bg-black transition disabled:opacity-50">✦ 請 AI 總編導寫成完整一支</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -356,14 +473,20 @@ function freshDraft(theme) {
   return { title: theme.title, hookIdx: 0, hooks: theme.hooks.slice(), segs: theme.segs.slice(), covers: theme.covers.slice(), tags: theme.tags.slice() };
 }
 
-let store = { active: 'beauty', rate: 4.5, drafts: {} };
+let store = { active: 'beauty', rate: 4.5, drafts: {}, customs: [] };
 try {
   const raw = JSON.parse(localStorage.getItem(STORE_KEY));
   if (raw && typeof raw === 'object' && raw.drafts) store = { ...store, ...raw };
 } catch (e) {}
-if (!THEMES.some(t => t.id === store.active)) store.active = 'beauty';
+if (!Array.isArray(store.customs)) store.customs = [];
 
-const theme = () => THEMES.find(t => t.id === store.active);
+/* 「我的腳本」：使用者自己產生的腳本，base = 產生當下的版本（還原範本用） */
+function customTheme(id) {
+  const c = store.customs.find(x => x.id === id);
+  return c ? { id: c.id, label: c.label, en: 'Your Own', custom: true, ...c.base } : null;
+}
+const theme = () => THEMES.find(t => t.id === store.active) || customTheme(store.active);
+if (!theme()) store.active = 'beauty';
 function draft() {
   const t = theme();
   let d = store.drafts[t.id];
@@ -411,7 +534,14 @@ function renderTabs() {
     <button role="tab" aria-selected="${t.id === store.active}" data-theme="${t.id}"
       class="theme-tab shrink-0 px-4 py-1.5 rounded-full border hairline bg-white/70 text-sm text-ink/80 hover:border-gold">
       <span class="font-display italic text-xs mr-1 opacity-70">${t.en}</span>${t.label}
-    </button>`).join('');
+    </button>`).join('') + store.customs.map(c => `
+    <span class="shrink-0 inline-flex items-center">
+      <button role="tab" aria-selected="${c.id === store.active}" data-theme="${c.id}"
+        class="theme-tab pl-4 pr-9 py-1.5 rounded-full border border-gold/60 bg-white/70 text-sm text-ink/80 hover:border-gold">
+        <span class="font-display italic text-xs mr-1 text-gold">✦</span>${esc(c.label)}
+      </button>
+      <button data-del-custom="${c.id}" class="-ml-8 w-7 h-7 rounded-full text-xs text-mute hover:text-red-700 hover:bg-red-50 transition" aria-label="刪除 ${esc(c.label)}" title="刪除這支腳本">✕</button>
+    </span>`).join('');
 }
 
 function renderHero() {
@@ -628,11 +758,33 @@ function rerenderKeepingPlace() {
 /* =========================================================
    EVENTS
    ========================================================= */
-$('#themeTabs').addEventListener('click', e => {
-  const b = e.target.closest('[data-theme]'); if (!b || b.dataset.theme === store.active) return;
-  store.active = b.dataset.theme; save(); renderAll();
-  b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+function switchTheme(id) {
+  store.active = id; save(); renderAll();
+  const tab = document.querySelector(`[data-theme="${id}"]`);
+  if (tab) tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+let delArmed = { id: null, at: 0 };
+$('#themeTabs').addEventListener('click', e => {
+  const del = e.target.closest('[data-del-custom]');
+  if (del) {
+    const id = del.dataset.delCustom, c = store.customs.find(x => x.id === id);
+    if (delArmed.id !== id || Date.now() - delArmed.at > 3000) {
+      delArmed = { id, at: Date.now() };
+      del.textContent = '刪?'; del.classList.add('text-red-700');
+      toast(`再按一次 ✕，就會刪除「${c ? c.label : '這支腳本'}」`);
+      setTimeout(() => { if (del.isConnected) { del.textContent = '✕'; del.classList.remove('text-red-700'); } }, 3000);
+      return;
+    }
+    delArmed = { id: null, at: 0 };
+    store.customs = store.customs.filter(x => x.id !== id);
+    delete store.drafts[id];
+    if (store.active === id) store.active = 'beauty';
+    save(); renderAll(); toast('已刪除這支腳本');
+    return;
+  }
+  const b = e.target.closest('[data-theme]'); if (!b || b.dataset.theme === store.active) return;
+  switchTheme(b.dataset.theme);
 });
 
 function selectHook(i) {
@@ -748,6 +900,237 @@ document.addEventListener('keydown', e => {
   else if (e.key === ' ') { e.preventDefault(); tp.playing ? tpPause() : tpPlay(); }
   else if (e.key === 'ArrowDown') { e.preventDefault(); s.scrollTop += 60; tp.pos = s.scrollTop; tpUpdate(); }
   else if (e.key === 'ArrowUp') { e.preventDefault(); s.scrollTop -= 60; tp.pos = s.scrollTop; tpUpdate(); }
+});
+
+/* =========================================================
+   STUDIO：寫我的腳本（從 0 開始 ／ 我有想法）
+   ========================================================= */
+const EXAMPLES = {
+  beauty:    { topic: '底妝服貼一整天的小技巧', who: '每天要上妝出門的上班族', pain: '底妝到了下午就開始浮粉', m1: '先保濕再等待', m1how: '擦完保濕後等一到兩分鐘，摸起來不黏手了，再開始上粉底。', m2: '少量多層', m2how: '粉底只取一顆黃豆大小，從臉中央往外推開，需要的地方再局部疊加。', result: '到了傍晚，妝感依然乾淨透亮', keyword: '底妝' },
+  career:    { topic: '讓主管一聽就懂的報告方法', who: '剛進職場的新鮮人', pain: '報告講了很久，對方卻還是抓不到重點', m1: '結論先行', m1how: '開口第一句先說結論，再補充原因。', m2: '三點收束', m2how: '說明理由時最多給三點，用第一、第二、第三串起來。', result: '開會發言變得更有份量，努力也更容易被看見', keyword: '報告' },
+  finance:   { topic: '發薪日的存錢小習慣', who: '剛開始理財的小資族', pain: '每到月底帳戶就所剩無幾', m1: '先存再花', m1how: '發薪日當天，先把固定比例自動轉到另一個帳戶。', m2: '三個帳戶', m2how: '把錢分成生活費、緊急預備金和長期目標三個帳戶。', result: '帳戶裡的數字慢慢變多，心裡也更踏實', keyword: '存錢' },
+  living:    { topic: '讓家立刻有質感的小角落', who: '下班只想好好放鬆的人', pain: '回到家看到桌面堆滿東西，就覺得更累', m1: '留白三分之一', m1how: '桌面和櫃面只擺三分之二，剩下的三分之一保持空白。', m2: '統一色調', m2how: '挑兩到三個主色，收納盒和小物都盡量在這個範圍裡。', result: '回到家，就有一種被好好照顧的感覺', keyword: '居家' },
+  knowledge: { topic: '讀一遍就記住的學習方法', who: '正在準備考試的學生', pain: '書讀了很多遍，考試時卻想不起來', m1: '主動回想', m1how: '讀完一段先把書闔起來，用自己的話說出三個重點。', m2: '間隔複習', m2how: '隔一天、隔三天、隔一週，各花五分鐘回想一次。', result: '花的時間變少了，記住的反而更多', keyword: '學習' },
+  style:     { topic: '基本款穿出高級感的方法', who: '每天早上趕著出門的通勤族', pain: '衣櫃滿滿，卻總覺得沒衣服穿', m1: '同色系不同質感', m1how: '選相近的顏色，搭配不同材質，例如米色針織配奶茶色西裝褲。', m2: '一個亮點就好', m2how: '整套只留一個焦點，可以是絲巾、耳環或一個好看的包。', result: '出門變快了，整體看起來也更從容', keyword: '穿搭' },
+  other:     { topic: '在家也能做的放鬆伸展', who: '久坐一整天的上班族', pain: '下班後肩頸總是又緊又痠', m1: '定時起身', m1how: '每坐一小時，就起來走動兩分鐘，順便轉轉肩膀。', m2: '睡前五分鐘', m2how: '睡前慢慢做三個伸展動作，每個動作停留三十秒。', result: '身體輕鬆了，睡得也更安穩', keyword: '放鬆' },
+};
+const TRACK_OPTS = [...THEMES.map(t => ({ id: t.id, label: t.label })), { id: 'other', label: '其他賽道' }];
+const GENERIC_TAGS = ['乾貨分享', '新手必看', '生活小技巧', '自我成長', '實用知識'];
+let ideaLen = 45;
+
+const clean = v => String(v || '').trim().replace(/[。．.！!？?，,、；;\s]+$/, '');
+const sentenceLines = v => {
+  const t = String(v || '').trim(); if (!t) return '';
+  return t.replace(/([。！？!?])\s*/g, '$1\n').trim().replace(/[^。！？!?\n]$/, m => m + '。');
+};
+function coverOf(text) {
+  const parts = clean(text).split(/[，,、]/).map(x => x.replace(/[「」"“”\s：:]/g, '')).filter(Boolean);
+  if (parts.length >= 2 && parts[0].length <= 8 && parts[1].length <= 8) return parts[0] + '\n' + parts[1];
+  const u = parts.join('').replace(/的?(小技巧|小習慣|小方法|方法|技巧|習慣)$/, '');
+  if (u.length <= 5) return u;
+  const n = Math.min(u.length, 10), half = Math.ceil(n / 2);
+  return u.slice(0, half) + '\n' + u.slice(half, n);
+}
+
+/* 模式 A：模板組裝（不需要 AI） */
+function buildGuided(f) {
+  const p = f.pron, tp = TRACK_OPTS.find(x => x.id === f.track);
+  const topic = clean(f.topic), pain = clean(f.pain), m1 = clean(f.m1), m2 = clean(f.m2), result = clean(f.result);
+  const who = clean(f.who);
+  const kw = clean(f.keyword) || (tp && tp.id !== 'other' ? tp.label : topic.slice(0, 4));
+  const baseTags = (THEMES.find(t => t.id === f.track) || { tags: GENERIC_TAGS }).tags;
+  return {
+    title: topic,
+    hooks: [
+      `關於${topic}，\n其實只要記住兩個關鍵：「${m1}」，和「${m2}」。`,
+      `為什麼${pain}？\n答案，可能比${p}想的還要簡單。`,
+      `${pain}，\n這種感覺，${p}是不是也很熟悉？\n今天這支影片，是為${p}拍的。`,
+    ],
+    segs: [
+      `很多${who || '人'}都有過這樣的經驗：\n${pain}。\n試了很多方法，好像總是差了一點。\n其實不是${p}不夠努力，\n只是少了兩個關鍵的小方法。`,
+      `第一個方法，叫做「${m1}」。\n${sentenceLines(f.m1how)}\n先從這一步開始，${p}就會感覺到差別。`,
+      `第二個方法，是「${m2}」。\n${sentenceLines(f.m2how)}\n兩個方法一起做，效果會更明顯。`,
+      `把這兩個方法持續做一段時間，\n${p}會發現，${result}。\n把這支影片收藏起來，需要的時候再看一次。\n想知道更多小方法，留言「${kw}」，下一支拍給${p}。`,
+    ],
+    covers: [coverOf(topic), m1.length <= 5 && m2.length <= 5 ? `${m1}\n${m2}` : coverOf(m1), coverOf(result)],
+    tags: [...new Set([kw.replace(/\s+/g, ''), ...baseTags.slice(0, 5)])],
+  };
+}
+
+/* 模式 B：AI 指令 */
+function buildPrompt({ idea, track, pron, keyword, len }) {
+  const tl = (TRACK_OPTS.find(x => x.id === track) || {}).label || '不限';
+  const chars = Math.round(len * 4.5);
+  return `你是一位溫暖專業的短影音總編導。請把使用者的想法，寫成一支可以直接對著手機朗讀的短影音口白腳本。
+
+【使用者的想法】
+${idea}
+
+【設定】
+- 賽道：${tl}
+- 稱呼觀眾用「${pron}」
+- 目標長度：約 ${len} 秒（以每秒 4.5 字計，五段口白合計約 ${chars} 字）
+- 留言關鍵字：${keyword || '請依主題選一個 2～4 字的詞'}
+
+【黃金 5 段式結構】
+段落 01 認知破口（Hook）：提供 3 種版本——高價值乾貨型（直接給答案）、盲點解惑型（點出沒想過的原因）、溫柔共鳴型（先說出觀眾的心情）。每句 3 秒內念完，約 15～30 字。
+段落 02 情境共鳴：描寫觀眾真實的困擾情境，最後一句帶出「其實只要…」。
+段落 03 核心乾貨・方法一：給方法名稱與具體做法。
+段落 04 核心乾貨・方法二：給方法名稱與具體做法。
+段落 05 結果預期與自然導流：描述做到之後的改變，最後自然帶出收藏／留言關鍵字的 CTA。
+
+【寫作規則】
+1. 繁體中文、台灣口語，溫暖專業、高級口語、有呼吸感；句子短，每一句換一行（用 \\n 換行），每段 3～6 行。
+2. 只寫要念出來的口白，絕對不要寫畫面、鏡頭、動作、字卡、表情等指示。
+3. 絕對禁止攻擊性、挑釁、說教或刻薄的詞彙（例如「難怪妳」「蓋牆壁」「智商稅」「活該」），不攻擊、不貶低任何品牌或產品。
+4. 保留使用者提供的事實與重點，不要捏造品牌、數據、研究或療效；理財、健康類不做保證式承諾。
+5. 封面大字 3 組：每組兩行，以 \\n 分隔，每行 2～5 個字，典雅有質感。
+6. Hashtag 6 個，不要加 # 符號。
+
+【只回覆 JSON，格式如下】
+{"title":"影片主題（20 字內）","hooks":["高價值乾貨型","盲點解惑型","溫柔共鳴型"],"segs":["段落02","段落03","段落04","段落05"],"covers":["第一行\\n第二行","…","…"],"tags":["標籤1","標籤2","標籤3","標籤4","標籤5","標籤6"]}`;
+}
+
+function validScript(o) {
+  const strArr = (a, n) => Array.isArray(a) && a.length >= n && a.slice(0, n).every(x => typeof x === 'string' && x.trim());
+  if (!o || typeof o !== 'object' || !strArr(o.hooks, 3) || !strArr(o.segs, 4)) return null;
+  const tidy = x => String(x).replace(/\\n/g, '\n').replace(/\r/g, '').trim();
+  return {
+    title: tidy(o.title || '我的腳本').slice(0, 40),
+    hooks: o.hooks.slice(0, 3).map(tidy),
+    segs: o.segs.slice(0, 4).map(tidy),
+    covers: (strArr(o.covers, 3) ? o.covers.slice(0, 3) : ['我的\n腳本', '好好\n說話', '值得\n收藏']).map(tidy),
+    tags: (Array.isArray(o.tags) ? o.tags : []).map(t => tidy(t).replace(/^#+/, '').replace(/\s+/g, '')).filter(Boolean).slice(0, 8),
+  };
+}
+
+function addCustom(base) {
+  const id = 'mine-' + Date.now().toString(36);
+  const n = store.customs.length + 1;
+  const label = (base.title || '我的腳本').slice(0, 10);
+  store.customs.push({ id, label: label || ('我的腳本 ' + n), base });
+  store.drafts[id] = freshDraft({ ...base });
+  closeStudio();
+  switchTheme(id);
+  toast('✓ 完整腳本完成！每一句都能點擊修改');
+}
+
+/* ---------- modal ---------- */
+function openStudio(mode) {
+  $('#fTrack').innerHTML = TRACK_OPTS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+  const cur = THEMES.find(t => t.id === store.active);
+  $('#fTrack').value = cur ? cur.id : 'beauty';
+  if (mode) setMode(mode);
+  const m = $('#studio'); m.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => (studioMode === 'idea' ? $('#fIdea') : $('#fTopic')).focus(), 50);
+}
+function closeStudio() {
+  $('#studio').classList.add('hidden');
+  document.body.style.overflow = '';
+  if (aiCtl) aiCtl.abort();
+}
+let studioMode = 'guided';
+function setMode(mode) {
+  studioMode = mode;
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === mode));
+  $('#guidedForm').classList.toggle('hidden', mode !== 'guided');
+  $('#ideaForm').classList.toggle('hidden', mode !== 'idea');
+}
+function setPlaceholders() {
+  const ex = EXAMPLES[$('#fTrack').value] || EXAMPLES.other;
+  $('#fTopic').placeholder = '例如：' + ex.topic;
+  $('#fWho').placeholder = '例如：' + ex.who;
+  $('#fPain').placeholder = '例如：' + ex.pain;
+  $('#fM1').placeholder = '例如：' + ex.m1; $('#fM1How').placeholder = '例如：' + ex.m1how;
+  $('#fM2').placeholder = '例如：' + ex.m2; $('#fM2How').placeholder = '例如：' + ex.m2how;
+  $('#fResult').placeholder = '例如：' + ex.result;
+  $('#fKeyword').placeholder = '例如：' + ex.keyword;
+}
+
+$('#btnStudio').addEventListener('click', () => { openStudio(); setPlaceholders(); });
+$('#studioClose').addEventListener('click', closeStudio);
+$('#studio').addEventListener('click', e => { if (e.target.id === 'studio') closeStudio(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#studio').classList.contains('hidden')) closeStudio(); });
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+$('#fTrack').addEventListener('change', setPlaceholders);
+$('#fillExample').addEventListener('click', () => {
+  const ex = EXAMPLES[$('#fTrack').value] || EXAMPLES.other;
+  $('#fTopic').value = ex.topic; $('#fWho').value = ex.who; $('#fPain').value = ex.pain;
+  $('#fM1').value = ex.m1; $('#fM1How').value = ex.m1how; $('#fM2').value = ex.m2; $('#fM2How').value = ex.m2how;
+  $('#fResult').value = ex.result; $('#fKeyword').value = ex.keyword;
+  toast('已填入範例，改成你的內容再產生吧');
+});
+$('#guidedForm').addEventListener('submit', e => {
+  e.preventDefault();
+  addCustom(buildGuided({
+    track: $('#fTrack').value, pron: $('#fPron').value, keyword: $('#fKeyword').value,
+    topic: $('#fTopic').value, who: $('#fWho').value, pain: $('#fPain').value,
+    m1: $('#fM1').value, m1how: $('#fM1How').value, m2: $('#fM2').value, m2how: $('#fM2How').value,
+    result: $('#fResult').value,
+  }));
+});
+$('#fLen').addEventListener('click', e => {
+  const b = e.target.closest('[data-len]'); if (!b) return;
+  ideaLen = +b.dataset.len;
+  $('#fLen').querySelectorAll('[data-len]').forEach(x => { const on = x === b; x.classList.toggle('bg-ink', on); x.classList.toggle('text-champagne', on); });
+});
+
+/* ---------- AI（claude.ai 連結內可用；其他地方自動改用備案） ---------- */
+let sampleFn = null, aiCtl = null;
+const samplePromise = (window.claude && typeof window.claude.use === 'function')
+  ? window.claude.use('sample').catch(() => null) : Promise.resolve(null);
+samplePromise.then(fn => { sampleFn = fn; if (!fn) showAiOff(); });
+function showAiOff() { $('#aiOff').classList.remove('hidden'); $('#aiGo').disabled = true; }
+function ideaInput() {
+  return { idea: $('#fIdea').value.trim().slice(0, 3000), track: $('#fTrack').value, pron: $('#fPron').value, keyword: clean($('#fKeyword').value), len: ideaLen };
+}
+const AI_ERR = {
+  rate_limited: '使用次數有點多，請稍等一下再試。',
+  session_expired: '登入狀態過期了，請重新登入 claude.ai 後再試。',
+  invalid_json: 'AI 這次的格式沒有對上，請再按一次試試。',
+  empty_completion: 'AI 沒有寫出內容，可以把想法寫得更具體一點再試。',
+  refused: '這個內容 AI 無法協助，請換個說法再試。',
+  upstream_error: '連線中斷了，請再按一次試試。',
+};
+$('#ideaForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!sampleFn) return showAiOff();
+  const inp = ideaInput(); if (!inp.idea) return;
+  const st = $('#aiStatus');
+  aiCtl = new AbortController();
+  $('#aiGo').disabled = true; $('#aiStop').classList.remove('hidden');
+  st.classList.remove('hidden');
+  st.innerHTML = '<span class="font-display italic text-gold">Drafting…</span> 總編導正在構思你的腳本，約需 20～60 秒（第一次使用會先詢問是否允許）。';
+  try {
+    const raw = await sampleFn.json(buildPrompt(inp), { signal: aiCtl.signal, cache: false, onText: ({ text }) => {
+      st.innerHTML = `<span class="font-display italic text-gold">Writing…</span> 撰寫中，已完成約 ${Math.min(99, Math.round(countChars(text) / (inp.len * 5.5) * 100))}%`;
+    } });
+    const script = validScript(raw);
+    if (!script) throw { code: 'invalid_json' };
+    st.classList.add('hidden');
+    addCustom(script);
+  } catch (err) {
+    const code = err && err.code;
+    if (code === 'cancelled') { st.textContent = '已停止。'; }
+    else if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) { st.classList.add('hidden'); sampleFn = null; showAiOff(); }
+    else st.textContent = AI_ERR[code] || AI_ERR.upstream_error;
+  } finally {
+    aiCtl = null;
+    $('#aiGo').disabled = !sampleFn; $('#aiStop').classList.add('hidden');
+  }
+});
+$('#aiStop').addEventListener('click', () => aiCtl && aiCtl.abort());
+$('#copyPrompt').addEventListener('click', async () => {
+  const inp = ideaInput();
+  if (!inp.idea) { toast('先把想法貼進上面的框框'); $('#fIdea').focus(); return; }
+  await copyText(buildPrompt(inp).replace(/【只回覆 JSON[\s\S]*$/, '【輸出格式】\n請依序列出：主題、3 種 Hook、段落 02～05 口白、3 組封面大字、6 個 Hashtag。'));
+  toast('✓ 指令已複製，貼到 Claude 對話就能拿到完整腳本');
+});
+$('#toGuided').addEventListener('click', () => {
+  const idea = $('#fIdea').value.trim();
+  if (idea && !$('#fTopic').value) $('#fTopic').value = idea.split(/[。\n！？]/)[0].slice(0, 30);
+  setMode('guided'); setPlaceholders();
 });
 
 renderAll();
