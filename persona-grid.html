@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>爆款定位九宮格</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  /* Layout: blush sidebar (desktop) + centered column of soft white cards; mobile = top bar + single column.
+     Single deliberate light look (matches the duzhi app). */
+  :root {
+    --bg: #FBF8F6; --side: #F8EDEA; --card: #FFFFFF; --ink: #2B2523; --mute: #8E8481; --faint: #B9AEAB;
+    --rose: #C2847D; --rose-soft: #F6E4E1; --line: #F0E6E3; --sky: #E4EAF3;
+    --hero: linear-gradient(125deg, #F4E2E0 0%, #EFE8EA 48%, #E3EAF3 100%);
+    --shadow: 0 1px 2px rgba(80, 50, 45, .04), 0 10px 30px rgba(80, 50, 45, .06);
+    --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+    --serif: "Noto Serif TC", "Source Han Serif TC", Georgia, serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: var(--sans); -webkit-font-smoothing: antialiased; letter-spacing: .02em; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  h1, h2, h3, p { margin: 0; }
+  h1, h2, h3 { text-wrap: balance; }
+  svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  :focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+
+  /* ---------- shell ---------- */
+  .shell { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+  .side { display: none; }
+  .shell > div, main > * { min-width: 0; }
+  .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(248, 237, 234, .9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar b { font-size: 17px; font-weight: 900; }
+  .topbar nav { margin-left: auto; display: flex; gap: 4px; }
+  .topbar nav a { font-size: 13px; color: var(--mute); text-decoration: none; padding: 6px 10px; border-radius: 99px; }
+  .topbar nav a:hover { background: #fff; color: var(--ink); }
+  main { width: 100%; max-width: 1000px; margin: 0 auto; padding: 24px 16px 64px; display: grid; gap: 20px; }
+  @media (min-width: 1024px) {
+    .shell { grid-template-columns: 280px 1fr; background: linear-gradient(to right, var(--side) 279px, var(--line) 279px, var(--line) 280px, var(--bg) 280px); }
+    .topbar { display: none; }
+    .side { display: flex; flex-direction: column; gap: 28px; position: sticky; top: 0; height: 100vh; padding: 48px 22px; background: var(--side); border-right: 1px solid var(--line); }
+    main { padding: 52px 48px 80px; gap: 24px; }
+  }
+  .brand h1 { font-size: 28px; font-weight: 900; letter-spacing: .04em; }
+  .brand p { margin-top: 8px; color: var(--faint); font-size: 14px; line-height: 1.6; }
+  .nav { display: grid; gap: 6px; }
+  .nav a { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 16px; text-decoration: none; color: var(--ink); transition: background .2s, box-shadow .2s; }
+  .nav a svg { color: var(--rose); width: 26px; height: 26px; }
+  .nav a b { display: block; font-size: 17px; }
+  .nav a small { display: block; font-size: 12px; color: var(--mute); letter-spacing: .04em; }
+  .nav a:hover, .nav a.on { background: #fff; box-shadow: var(--shadow); }
+  .side .note { margin-top: auto; font-size: 12px; color: var(--faint); line-height: 1.7; }
+
+  /* ---------- header ---------- */
+  .greet { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .greet h2 { font-size: 30px; font-weight: 900; letter-spacing: .03em; }
+  .date { margin-top: 8px; font-family: var(--serif); font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--rose); }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--hero); color: var(--rose); box-shadow: var(--shadow); flex: none; }
+
+  /* ---------- cards ---------- */
+  .card { background: var(--card); border-radius: 28px; box-shadow: var(--shadow); padding: 24px 20px; }
+  @media (min-width: 640px) { .card { padding: 30px 32px; } }
+  .card-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .card-h h3 { font-size: 19px; font-weight: 900; }
+  .card-h small { color: var(--mute); font-size: 13px; }
+  .card-h svg { color: var(--rose); }
+  .card-h .right { margin-left: auto; }
+
+  .hero { background: var(--hero); border-radius: 28px; padding: 28px 20px 22px; position: relative; overflow: hidden; }
+  @media (min-width: 640px) { .hero { padding: 34px 32px 30px; } }
+  .hero .lbl b { display: block; font-size: 16px; }
+  .hero .lbl small { display: block; font-size: 12px; color: var(--mute); margin-top: 2px; letter-spacing: .04em; }
+  .persona { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 30px; font-weight: 900; letter-spacing: .04em; line-height: 1.3; }
+  @media (min-width: 640px) { .persona { font-size: 40px; } }
+  .persona .x { font-family: var(--serif); font-weight: 500; color: var(--rose); font-size: .7em; }
+  .stats { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .stat { background: rgba(255, 255, 255, .78); border-radius: 18px; padding: 14px 14px 16px; min-width: 0; }
+  .stat small { display: block; font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat b { display: block; margin-top: 8px; font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .en { display: none; }
+  @media (min-width: 640px) { .stat .en { display: inline; } }
+  .stat b span { font-size: 13px; font-weight: 500; color: var(--mute); margin-left: 2px; }
+
+  /* ---------- chips ---------- */
+  .chip { border: 1px solid var(--line); background: #FDFBFA; color: var(--ink); border-radius: 99px; padding: 7px 12px; font-size: 13px; line-height: 1.2; transition: background .2s, border-color .2s, color .2s, box-shadow .2s; white-space: nowrap; }
+  .chip:hover { border-color: #E5CFCB; }
+  .chip[aria-checked="true"], .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; box-shadow: 0 6px 14px rgba(43, 37, 35, .18); }
+  .tracks { display: flex; gap: 8px; margin-top: 16px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .tracks::-webkit-scrollbar { display: none; }
+
+  /* ---------- nine grid ---------- */
+  .grid9 { margin-top: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  @media (min-width: 640px) { .grid9 { gap: 12px; } }
+  .cell { border-radius: 20px; background: #FDFAF9; border: 1px solid var(--line); padding: 12px 8px 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  @media (min-width: 640px) { .cell { padding: 16px 14px 14px; border-radius: 22px; } }
+  .cell .no { font-family: var(--serif); font-size: 12px; color: var(--rose); letter-spacing: .12em; }
+  .cell h4 { margin: 0; font-size: 14px; font-weight: 900; letter-spacing: .04em; }
+  @media (min-width: 640px) { .cell h4 { font-size: 15px; } }
+  .cell .opts { display: grid; gap: 6px; }
+  .cell .chip { width: 100%; padding: 8px 4px; font-size: 12.5px; text-align: center; }
+  @media (min-width: 640px) { .cell .chip { font-size: 13.5px; padding: 9px 8px; } }
+  .cell.center { background: var(--hero); border-color: transparent; justify-content: center; align-items: center; text-align: center; gap: 6px; }
+  .cell.center { padding-left: 4px; padding-right: 4px; }
+  .cell.center .tagline { font-size: 14.5px; font-weight: 900; line-height: 1.35; letter-spacing: 0; word-break: keep-all; }
+  @media (min-width: 640px) { .cell.center .tagline { font-size: 20px; } }
+  .cell.center .tagline i { display: block; font-style: normal; font-family: var(--serif); color: var(--rose); font-size: 13px; font-weight: 500; margin: 2px 0; }
+  .cell.center small { font-size: 11px; color: var(--mute); }
+
+  .gen { margin-top: 18px; width: 100%; border: 0; border-radius: 18px; padding: 16px; background: var(--ink); color: #fff; font-size: 16px; font-weight: 700; letter-spacing: .16em; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 24px rgba(43, 37, 35, .18); transition: transform .15s, box-shadow .2s; }
+  .gen:hover { box-shadow: 0 14px 30px rgba(43, 37, 35, .24); }
+  .gen:active { transform: scale(.99); }
+
+  /* ---------- script ---------- */
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; padding: 9px 14px; font-size: 13.5px; border: 1px solid var(--line); background: #fff; transition: border-color .2s, background .2s; }
+  .btn:hover { border-color: #E5CFCB; background: #FFFBFA; }
+  .btn svg { width: 16px; height: 16px; color: var(--rose); }
+  .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn.dark svg { color: #fff; }
+  .pill { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--rose-soft); color: var(--rose); letter-spacing: .06em; }
+  .script { margin-top: 22px; display: grid; gap: 18px; }
+  .para { display: grid; gap: 6px; }
+  .para .k { font-family: var(--serif); font-size: 12px; letter-spacing: .2em; color: var(--rose); }
+  .para p { font-size: 18px; line-height: 1.95; font-weight: 500; white-space: pre-line; }
+  .para.hook p { font-size: 22px; font-weight: 900; line-height: 1.6; }
+  @media (min-width: 640px) { .para p { font-size: 19px; } .para.hook p { font-size: 25px; } }
+  .para .em { background: linear-gradient(transparent 62%, var(--rose-soft) 62%); }
+  @keyframes rise { from { opacity: .001; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
+
+  .titles { display: grid; gap: 10px; margin-top: 16px; }
+  .titles li { list-style: none; display: flex; gap: 12px; align-items: baseline; padding: 14px 16px; border-radius: 18px; background: #FDFAF9; border: 1px solid var(--line); font-size: 16px; font-weight: 700; line-height: 1.5; }
+  .titles li span { font-family: var(--serif); color: var(--rose); font-size: 12px; font-weight: 500; flex: none; }
+  .titles { padding: 0; margin-bottom: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .tags span { font-size: 13px; color: var(--mute); background: #F7F2F1; border-radius: 99px; padding: 6px 12px; }
+
+  .privacy { display: flex; align-items: center; gap: 14px; padding: 16px 20px; color: var(--ink); }
+  .privacy svg { color: var(--rose); width: 26px; height: 26px; }
+  .privacy b { display: block; font-size: 15px; }
+  .privacy small { display: block; font-size: 13px; color: var(--mute); margin-top: 2px; }
+
+  /* ---------- prompter ---------- */
+  #prompter { position: fixed; inset: 0; z-index: 50; background: rgba(28, 22, 21, .94); color: #FBF6F4; display: none; }
+  #prompter.open { display: block; }
+  .tp-bar { position: absolute; inset: 0 0 auto 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 24px; background: linear-gradient(#1C1615, rgba(28, 22, 21, 0)); }
+  .tp-bar button { border: 1px solid rgba(255, 255, 255, .25); background: transparent; color: #FBF6F4; border-radius: 99px; padding: 6px 14px; font-size: 14px; }
+  .tp-bar button.main { background: #F6E4E1; color: #2B2523; border-color: #F6E4E1; font-weight: 700; min-width: 76px; }
+  .tp-bar label { font-size: 13px; color: rgba(255, 255, 255, .7); display: inline-flex; align-items: center; gap: 6px; }
+  .tp-bar .close { margin-left: auto; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; }
+  #tpScroll { position: absolute; inset: 0; overflow-y: auto; }
+  #tpBody { max-width: 640px; margin: 0 auto; padding: 36vh 28px 70vh; font-size: 34px; font-weight: 700; line-height: 1.65; letter-spacing: .04em; }
+  #tpBody p { margin: 0 0 1.2em; }
+  #tpBody .k { display: block; font-family: var(--serif); font-size: 13px; font-weight: 500; letter-spacing: .2em; color: #E3B1AA; margin-bottom: 6px; }
+  .tp-line { position: absolute; left: 0; right: 0; top: 36%; height: 84px; transform: translateY(-50%); background: linear-gradient(transparent, rgba(246, 228, 225, .1) 45%, rgba(246, 228, 225, .1) 55%, transparent); pointer-events: none; z-index: 1; }
+  .tp-foot { position: absolute; inset: auto 0 0 0; z-index: 2; padding: 28px 16px calc(env(safe-area-inset-bottom, 0px) + 16px); background: linear-gradient(rgba(28, 22, 21, 0), #1C1615); font-size: 12px; color: rgba(255, 255, 255, .6); display: flex; justify-content: space-between; max-width: 640px; margin: 0 auto; }
+  input[type=range] { accent-color: var(--rose); }
+
+  #toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); transform: translate(-50%, 12px); opacity: 0; pointer-events: none; z-index: 60; background: var(--ink); color: #fff; font-size: 14px; padding: 12px 18px; border-radius: 99px; transition: opacity .25s, transform .25s; max-width: 90vw; text-align: center; }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="side">
+    <div class="brand">
+      <h1>爆款定位九宮格</h1>
+      <p>人設定位・一鍵口播 ・ Persona Script Studio</p>
+    </div>
+    <nav class="nav" id="sideNav"></nav>
+    <p class="note">全部用點選完成，不需要打字。<br />你的選擇只存在這台裝置。</p>
+  </aside>
+
+  <div>
+    <header class="topbar">
+      <b>爆款定位九宮格</b>
+      <nav><a href="#gridCard">定位</a><a href="#scriptCard">腳本</a><a href="#titleCard">標題</a></nav>
+    </header>
+
+    <main>
+      <section class="greet">
+        <div>
+          <h2 id="greet">嗨，創作者</h2>
+          <p class="date" id="today"></p>
+        </div>
+        <div class="avatar" id="avatar" aria-hidden="true"></div>
+      </section>
+
+      <!-- HERO：目前人設 -->
+      <section class="hero" aria-live="polite">
+        <div class="lbl"><b>目前人設</b><small>Current Persona</small></div>
+        <div class="persona" id="heroPersona"></div>
+        <div class="stats">
+          <div class="stat"><small>目標時長<span class="en"> Length</span></small><b id="stLen">30<span>秒</span></b></div>
+          <div class="stat"><small>口播字數<span class="en"> Words</span></small><b id="stWords">0<span>字</span></b></div>
+          <div class="stat"><small>開場風格<span class="en"> Hook</span></small><b id="stHook">—</b></div>
+        </div>
+      </section>
+
+      <!-- 九宮格 -->
+      <section class="card" id="gridCard">
+        <div class="card-h"><span id="icGrid"></span><h3>九宮格定位矩陣</h3><small>・ 每格點一個，全部不用打字</small></div>
+        <div class="tracks" role="radiogroup" aria-label="內容賽道" id="tracks"></div>
+        <div class="grid9" id="grid9"></div>
+        <button class="gen" id="btnGen"><span id="icSpark"></span>一鍵生成爆款口播腳本</button>
+      </section>
+
+      <!-- 腳本 -->
+      <section class="card" id="scriptCard">
+        <div class="card-h"><span id="icMic"></span><h3>口播腳本</h3><small>・ Voice-over Script</small><span class="pill right" id="scriptMeta"></span></div>
+        <div class="tools">
+          <button class="btn dark" id="btnPrompter"></button>
+          <button class="btn" id="btnCopy"></button>
+          <button class="btn" id="btnHook"></button>
+          <button class="btn" id="btnRegen"></button>
+        </div>
+        <div class="script" id="script"></div>
+      </section>
+
+      <!-- 標題與標籤 -->
+      <section class="card" id="titleCard">
+        <div class="card-h"><span id="icTitle"></span><h3>小紅書標題・Hashtag</h3><small>・ Titles &amp; Tags</small><button class="btn right" id="btnCopyTitle"></button></div>
+        <ul class="titles" id="titles"></ul>
+        <div class="tags" id="tags"></div>
+      </section>
+
+      <section class="privacy">
+        <span id="icLock"></span>
+        <div><b>資料保護說明</b><small>你的選擇只存在這台裝置的瀏覽器，不會上傳，也不會被誰看到</small></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- 提詞器 -->
+<div id="prompter" role="dialog" aria-modal="true" aria-label="提詞器">
+  <div class="tp-bar">
+    <button class="main" id="tpPlay">開始</button>
+    <button id="tpRestart">從頭</button>
+    <label>語速 <input type="range" id="tpRate" min="3" max="6.5" step="0.5" value="4.5" /> <b id="tpRateVal">4.5</b></label>
+    <button id="tpMinus" aria-label="縮小字級">A−</button>
+    <button id="tpPlus" aria-label="放大字級">A+</button>
+    <button class="close" id="tpClose" aria-label="關閉提詞器"></button>
+  </div>
+  <div class="tp-line"></div>
+  <div id="tpScroll"><div id="tpBody"></div></div>
+  <div class="tp-foot"><span>已唸 <b id="tpElapsed">0:00</b></span><span>預估 <b id="tpTotal">0:00</b></span></div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script>
+/* =========================================================
+   ICONS（線條 SVG，不使用 Emoji）
+   ========================================================= */
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  title: '<path d="M4 6h16M4 12h10M4 18h13"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+  shuffle: '<path d="M16 4h4v4M4 20 20 4M20 16v4h-4M15 15l5 5M4 4l5 5"/>',
+  redo: '<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+};
+const ico = (n, size) => `<svg class="i" viewBox="0 0 24 24" ${size ? `style="width:${size}px;height:${size}px"` : ''} aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* =========================================================
+   資料庫：賽道變數
+   {field} 領域　{circle} 圈子　{act} 常做的事　{trap} 常見錯誤
+   {cost} 代價　{years} 資歷　{p1}{p2}{p3} 乾貨三點　{kw} 留言關鍵字
+   ========================================================= */
+const TRACKS = [
+  { id: 'beauty', label: '美妝保養', field: '保養', circle: '保養圈', act: '買保養品', trap: '跟風買網紅爆款', cost: '三萬多塊', years: '五年', kw: '保養',
+    p: ['先搞懂自己的膚質，再決定買什麼', '一次只換一樣產品，才知道誰真的有用', '防曬和保濕做好，就贏過一大半的人'] },
+  { id: 'style', label: '穿搭', field: '穿搭', circle: '穿搭圈', act: '買衣服', trap: '照著模特兒買同款', cost: '一整個衣櫃的錢', years: '七年', kw: '穿搭',
+    p: ['先找出最適合自己的三個顏色', '買之前先想它能搭出幾套', '基本款買好一點，流行款買便宜一點'] },
+  { id: 'money', label: '理財存錢', field: '理財', circle: '理財圈', act: '存錢投資', trap: '聽別人報明牌', cost: '好幾萬的學費', years: '十年', kw: '存錢',
+    p: ['先存好緊急預備金，再談投資', '看不懂的東西，一塊錢都別碰', '每個月固定自動轉帳，不靠意志力'] },
+  { id: 'career', label: '職場成長', field: '職場', circle: '職場', act: '拚表現', trap: '埋頭苦幹等人發現', cost: '整整三年', years: '八年', kw: '職場',
+    p: ['做完的事，一定要讓主管看見', '開口先講結論，再講細節', '每半年更新一次履歷，知道自己的市場價'] },
+  { id: 'creator', label: '自媒體', field: '自媒體', circle: '自媒體圈', act: '拍影片', trap: '每天硬拍不做定位', cost: '大半年', years: '三年', kw: '起號',
+    p: ['先定位再拍片，一個帳號只講一件事', '開頭三秒決定一切，先寫鉤子再寫內容', '每支影片結尾，都要給觀眾一個動作'] },
+  { id: 'life', label: '居家生活', field: '整理收納', circle: '收納圈', act: '整理房間', trap: '先買一堆收納盒', cost: '好幾千塊', years: '六年', kw: '整理',
+    p: ['先丟再整理，不要先買收納', '東西用完，就放回原本的位置', '每天睡前花五分鐘歸位就好'] },
+];
+
+/* 九宮格（05 為正中央的人設顯示區） */
+const CELLS = [
+  { id: 'tone',   no: '01', title: '性格特質', opts: ['毒舌清醒', '溫柔共情', '幽默吐槽'] },
+  { id: 'role',   no: '02', title: '核心身分', opts: ['避坑過來人', '圈內內行人', '實操狂人'] },
+  { id: 'edge',   no: '03', title: '優勢來源', opts: ['踩坑血淚', '資訊落差', '實戰結果'] },
+  { id: 'pain',   no: '04', title: '受眾痛點', opts: ['迷茫踩坑', '努力無果', '認知卡關'] },
+  { id: 'center', no: '05', title: '關於你' },
+  { id: 'theme',  no: '06', title: '影片主題', opts: ['顛覆認知', '避坑指南', '實用乾貨'] },
+  { id: 'rhythm', no: '07', title: '表達節奏', opts: ['扎心開場', '代價說服', '數字衝擊'] },
+  { id: 'len',    no: '08', title: '目標時長', opts: ['15 秒衝擊', '30 秒爆款', '45 秒轉化'] },
+  { id: 'cta',    no: '09', title: '行動呼籲', opts: ['收藏重看', '留言領取', '避坑轉發'] },
+];
+const TONE_SHORT = { 毒舌清醒: '毒舌', 溫柔共情: '溫柔', 幽默吐槽: '幽默' };
+const ROLE_SHORT = { 避坑過來人: '過來人', 圈內內行人: '內行人', 實操狂人: '實操派' };
+
+/* 爆款句型資料庫：主題 × 節奏，各 2 句（聽勸勸退／清醒覺醒／資訊差／抄作業） */
+const HOOKS = {
+  避坑指南: {
+    扎心開場: ['聽我一句勸，{field}這件事，千萬別盲目跟風！', '求求你們別再{trap}了，看完這篇少走半年彎路！'],
+    代價說服: ['這是我踩過最大的一個坑，花了{cost}才換來的教訓，寫出來就是不想讓姐妹們再被割韭菜！', '我花了{cost}、踩過無數個坑才明白：{field}千萬別這樣做。'],
+    數字衝擊: ['聽勸！如果你也在{act}，趕緊停下來，這 3 個坑我一個一個踩過。', '{field}最常見的 3 個坑，第 2 個 90% 的人都中過。'],
+  },
+  顛覆認知: {
+    扎心開場: ['這根本不是你的問題，99% 的人都被這個假象給騙了！', '不要再低頭死幹了，真正厲害的人都在偷偷用這種方法。'],
+    代價說服: ['我花了{years}、踩過無數坑才明白：{field}的底層邏輯，跟你想的完全不一樣。', '我不允許還有人不知道這件事，{field}的真相簡直打開了新世界的大門！'],
+    數字衝擊: ['內行人不願公開的秘密：其實{field}只要搞懂 3 件事。', '看完這篇，你的{field}認知會被徹底刷新，我只用 3 句話講完。'],
+  },
+  實用乾貨: {
+    扎心開場: ['別再去交學費了，這套{field}方法論直接拿去用！', '直接給你們整理好了，照著做就對了，建議先收藏起來！'],
+    代價說服: ['花了一整個週末整理出來的{field}清單，建議直接抄作業！', '我花了{cost}才整理出來的{field}心法，今天全部公開。'],
+    數字衝擊: ['講句大實話，{field}只要搞懂這 3 點，你想不進步都難。', '3 個步驟，把{field}這件事一次講清楚，照著做就對了。'],
+  },
+};
+const HOOK_LABEL = { 扎心開場: '扎心型', 代價說服: '代價型', 數字衝擊: '數字型' };
+
+/* 身分 × 優勢 */
+const ROLE_LINE = {
+  避坑過來人: '我自己就是過來人。',
+  圈內內行人: '在{circle}待了{years}，',
+  實操狂人: '我親自下場實測了不下 50 次，',
+};
+const EDGE_LINE = {
+  踩坑血淚: '我花了{cost}，踩過{trap}的坑，才明白一件事：',
+  資訊落差: '內行人都知道、但很少有人會說的是：',
+  實戰結果: '結果證明，真正有用的只有這幾招：',
+};
+
+/* 痛點 × 性格語氣 */
+const TONE_OPEN = { 毒舌清醒: '講句難聽的，', 溫柔共情: '我知道你已經很努力了，', 幽默吐槽: '說出來你可能不信，' };
+const PAIN_LINE = {
+  迷茫踩坑: '你是不是也這樣：看到別人說好，就跟著{act}，結果錢花了、時間也花了，坑一個都沒少踩。',
+  努力無果: '明明每天都在{act}，比誰都認真，結果卻一點起色都沒有。',
+  認知卡關: '不是你不夠努力，是你一直用錯的方法在{act}，越努力越卡。',
+};
+const COST_LINE = '我當初就是這樣，白白花了{cost}。';
+
+/* 乾貨主體：主題 × 長短 */
+const BODY = {
+  避坑指南: {
+    short: '記住一句話：千萬別{trap}，{p1}。',
+    long: ['記住這 3 個千萬別：', '第一，千萬別{trap}；', '第二，千萬別只看別人的結果，不看自己的條件；', '第三，千萬別一次全換，一次只改一件事。', '反過來做就對了：{p1}。'],
+  },
+  顛覆認知: {
+    short: '真相是：{field}拚的不是努力，是順序。{p1}。',
+    long: ['真相是：{field}拚的不是努力，是順序。', '{p1}；', '{p2}；', '{p3}。'],
+  },
+  實用乾貨: {
+    short: '直接抄作業：{p1}。',
+    long: ['直接抄作業：', '第一，{p1}；', '第二，{p2}；', '第三，{p3}。'],
+  },
+};
+const TONE_CLOSE = {
+  毒舌清醒: '醒醒吧，{field}從來沒有捷徑，但彎路是可以不走的。',
+  溫柔共情: '允許自己慢一點，才是你拉開差距的開始。',
+  幽默吐槽: '好了，學費我已經幫你繳完了，記得還我一個讚。',
+};
+const CTA_LINE = {
+  收藏重看: '這篇建議先收藏，下次想{act}之前，打開來再看一遍。',
+  留言領取: '我把完整的{field}清單整理好了，留言「{kw}」，直接發給你。',
+  避坑轉發: '轉給那個還在{trap}的朋友，能救一個是一個。',
+};
+const TITLES = {
+  避坑指南: ['{field}避坑｜聽勸！這 3 件事千萬別做', '求求別再{trap}了，我花了{cost}才明白', '{field}新手必看｜少走半年彎路'],
+  顛覆認知: ['內行人不願公開的{field}真相', '{field}的底層邏輯，99% 的人都想錯了', '看完這篇，{field}認知徹底刷新'],
+  實用乾貨: ['{field}抄作業清單｜建議先收藏', '別再交學費了，{field}方法論直接拿去用', '只要搞懂這 3 點，{field}想不進步都難'],
+};
+const TAGS = { 避坑指南: ['避坑指南', '聽勸', '新手必看'], 顛覆認知: ['認知刷新', '內行人', '底層邏輯'], 實用乾貨: ['乾貨分享', '抄作業', '建議收藏'] };
+const EMPH = ['千萬別', '內行人', '踩過', '聽勸', '真相', '秘密', '抄作業', '底層邏輯', '才明白', '割韭菜', '偷偷'];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const KEY = 'persona-grid-v1';
+const DEFAULT = { track: 'beauty', tone: '毒舌清醒', role: '圈內內行人', edge: '踩坑血淚', pain: '迷茫踩坑', theme: '避坑指南', rhythm: '扎心開場', len: '30 秒爆款', cta: '留言領取', hookIdx: 0, rate: 4.5 };
+let S = { ...DEFAULT };
+try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const track = () => TRACKS.find(t => t.id === S.track) || TRACKS[0];
+const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : (t[k] ?? '')); };
+const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()…—\-~～"'“”%]/g, '').length;
+const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+let script = [];
+
+/* =========================================================
+   GENERATE（依時長組裝段落）
+   ========================================================= */
+function build() {
+  const hooks = HOOKS[S.theme][S.rhythm];
+  const hook = fill(hooks[S.hookIdx % hooks.length]);
+  const body = BODY[S.theme];
+  const pain = TONE_OPEN[S.tone] + fill(PAIN_LINE[S.pain]).replace(/^你/, '你') + (S.rhythm === '代價說服' ? '\n' + fill(COST_LINE) : '');
+  const who = fill(ROLE_LINE[S.role]) + fill(EDGE_LINE[S.edge]);
+  const cta = fill(CTA_LINE[S.cta]);
+  const out = [{ k: '開場・HOOK', t: hook, hook: true }];
+  if (S.len.startsWith('15')) {
+    out.push({ k: '重點・VALUE', t: fill(body.short) });
+  } else if (S.len.startsWith('30')) {
+    out.push({ k: '痛點・PAIN', t: pain });
+    out.push({ k: '乾貨・VALUE', t: body.long.slice(0, S.theme === '避坑指南' ? 4 : 3).map(fill).join('\n').replace(/；$/, '。') });
+  } else {
+    out.push({ k: '身分・WHO', t: who });
+    out.push({ k: '痛點・PAIN', t: pain });
+    out.push({ k: '乾貨・VALUE', t: body.long.map(fill).join('\n') });
+    out.push({ k: '收尾・CLOSE', t: fill(TONE_CLOSE[S.tone]) });
+  }
+  out.push({ k: '行動・CTA', t: cta });
+  return out;
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function personaParts() { return [TONE_SHORT[S.tone] + ROLE_SHORT[S.role], S.theme]; }
+
+function renderGrid() {
+  $('#tracks').innerHTML = TRACKS.map(t => `<button class="chip" role="radio" aria-checked="${t.id === S.track}" data-track="${t.id}">${t.label}</button>`).join('');
+  const [p, th] = personaParts();
+  $('#grid9').innerHTML = CELLS.map(c => c.id === 'center' ? `
+    <div class="cell center">
+      <span class="no">${c.no}</span>
+      <div class="tagline">${esc(p)}<i>×</i>${esc(th)}</div>
+      <small>${track().label}・${S.len.replace(' ', '')}</small>
+    </div>` : `
+    <div class="cell" role="radiogroup" aria-label="${c.title}">
+      <span class="no">${c.no}</span>
+      <h4>${c.title}</h4>
+      <div class="opts">${c.opts.map(o => `<button class="chip" role="radio" aria-checked="${S[c.id] === o}" data-cell="${c.id}" data-val="${o}">${o}</button>`).join('')}</div>
+    </div>`).join('');
+  $('#heroPersona').innerHTML = `<span>${esc(p)}</span><span class="x">×</span><span>${esc(th)}</span>`;
+  $('#stLen').innerHTML = `${parseInt(S.len)}<span>秒</span>`;
+  $('#stHook').textContent = HOOK_LABEL[S.rhythm];
+}
+
+function emph(text) {
+  let h = esc(text);
+  EMPH.forEach(w => { h = h.split(w).join(`<span class="em">${w}</span>`); });
+  return h;
+}
+
+function renderScript(animate) {
+  script = build();
+  const all = script.map(x => x.t).join('');
+  const words = countChars(all), secs = words / S.rate;
+  $('#script').innerHTML = script.map((x, i) => `
+    <div class="para ${x.hook ? 'hook' : ''} ${animate ? 'rise' : ''}" style="animation-delay:${i * 60}ms">
+      <span class="k">${x.k}</span>
+      <p>${emph(x.t)}</p>
+    </div>`).join('');
+  $('#scriptMeta').textContent = `${words} 字・約 ${Math.round(secs)} 秒`;
+  $('#stWords').innerHTML = `${words}<span>字</span>`;
+  const T = TITLES[S.theme];
+  $('#titles').innerHTML = T.map((t, i) => `<li><span>0${i + 1}</span>${esc(fill(t))}</li>`).join('');
+  $('#tags').innerHTML = [track().field, track().label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(t => `<span>#${esc(t)}</span>`).join('');
+}
+
+function scriptText() {
+  const t = track();
+  return [`【爆款口播腳本】${personaParts().join(' × ')}`, `${t.label}・${S.len}・${countChars(script.map(x => x.t).join(''))} 字`, '',
+    ...script.map(x => x.t), '', '── 小紅書標題 ──', ...TITLES[S.theme].map((s, i) => `${i + 1}. ${fill(s)}`), '',
+    [t.field, t.label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(x => '#' + x).join(' ')].join('\n');
+}
+
+/* =========================================================
+   TOAST / COPY
+   ========================================================= */
+let tt;
+function toast(m) { const el = $('#toast'); el.textContent = m; el.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2000); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); return ok;
+}
+
+/* =========================================================
+   TELEPROMPTER
+   ========================================================= */
+const tp = { on: false, raf: 0, last: 0, pos: 0, total: 0, font: matchMedia('(max-width: 640px)').matches ? 30 : 38 };
+const sc = () => $('#tpScroll');
+function tpRange() { const b = $('#tpBody'), cs = getComputedStyle(b); return Math.max(1, b.scrollHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)); }
+function tpRender() {
+  tp.total = countChars(script.map(x => x.t).join('')) / S.rate;
+  $('#tpBody').style.fontSize = tp.font + 'px';
+  $('#tpBody').innerHTML = script.map(x => `<p><span class="k">${x.k}</span>${esc(x.t).replace(/\n/g, '<br>')}</p>`).join('');
+  $('#tpTotal').textContent = fmt(tp.total);
+}
+function tpUpd() { const p = Math.min(1, sc().scrollTop / tpRange()); $('#tpElapsed').textContent = fmt(p * tp.total); }
+function tpStep(ts) {
+  if (!tp.on) return;
+  const dt = tp.last ? (ts - tp.last) / 1000 : 0; tp.last = ts;
+  tp.pos += tpRange() / Math.max(1, tp.total) * dt; sc().scrollTop = tp.pos; tpUpd();
+  if (tp.pos >= tpRange()) { tpPause(); $('#tpPlay').textContent = '完成'; return; }
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPlay() { if (sc().scrollTop >= tpRange() - 2) sc().scrollTop = 0; tp.on = true; tp.last = 0; tp.pos = sc().scrollTop; $('#tpPlay').textContent = '暫停'; tp.raf = requestAnimationFrame(tpStep); }
+function tpPause() { tp.on = false; cancelAnimationFrame(tp.raf); $('#tpPlay').textContent = '繼續'; }
+function tpKeep() { const r = sc().scrollTop / tpRange(); tpRender(); sc().scrollTop = tp.pos = r * tpRange(); tpUpd(); }
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+$('#tracks').addEventListener('click', e => { const b = e.target.closest('[data-track]'); if (!b) return; S.track = b.dataset.track; save(); renderGrid(); renderScript(false); });
+$('#grid9').addEventListener('click', e => {
+  const b = e.target.closest('[data-cell]'); if (!b) return;
+  S[b.dataset.cell] = b.dataset.val;
+  if (b.dataset.cell === 'theme' || b.dataset.cell === 'rhythm') S.hookIdx = 0;
+  save(); renderGrid();
+});
+$('#btnGen').addEventListener('click', () => { renderScript(true); $('#scriptCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('口播腳本已生成'); });
+$('#btnHook').addEventListener('click', () => { S.hookIdx = (S.hookIdx + 1) % HOOKS[S.theme][S.rhythm].length; save(); renderScript(true); toast('已換一個開頭'); });
+$('#btnRegen').addEventListener('click', () => {
+  const keys = ['扎心開場', '代價說服', '數字衝擊'];
+  S.rhythm = keys[(keys.indexOf(S.rhythm) + 1) % keys.length]; S.hookIdx = 0; save(); renderGrid(); renderScript(true);
+  toast('已換成「' + S.rhythm + '」節奏');
+});
+$('#btnCopy').addEventListener('click', async () => toast((await copy(scriptText())) ? '腳本已複製，可以直接貼上' : '複製失敗，請手動選取文字'));
+$('#btnCopyTitle').addEventListener('click', async () => toast((await copy(TITLES[S.theme].map(fill).join('\n'))) ? '標題已複製' : '複製失敗，請手動選取文字'));
+$('#btnPrompter').addEventListener('click', () => {
+  $('#tpRate').value = S.rate; $('#tpRateVal').textContent = S.rate; tpRender();
+  $('#prompter').classList.add('open'); sc().scrollTop = tp.pos = 0; tpUpd(); $('#tpPlay').textContent = '開始'; document.body.style.overflow = 'hidden';
+});
+function tpClose() { tpPause(); $('#prompter').classList.remove('open'); document.body.style.overflow = ''; }
+$('#tpClose').addEventListener('click', tpClose);
+$('#tpPlay').addEventListener('click', () => tp.on ? tpPause() : tpPlay());
+$('#tpRestart').addEventListener('click', () => { tpPause(); sc().scrollTop = tp.pos = 0; tpUpd(); $('#tpPlay').textContent = '開始'; });
+$('#tpRate').addEventListener('input', e => { S.rate = +e.target.value; $('#tpRateVal').textContent = S.rate; save(); tpKeep(); renderScript(false); });
+$('#tpPlus').addEventListener('click', () => { tp.font = Math.min(64, tp.font + 4); tpKeep(); });
+$('#tpMinus').addEventListener('click', () => { tp.font = Math.max(20, tp.font - 4); tpKeep(); });
+sc().addEventListener('scroll', () => { if (!tp.on) { tp.pos = sc().scrollTop; tpUpd(); } });
+sc().addEventListener('click', () => tp.on ? tpPause() : tpPlay());
+document.addEventListener('keydown', e => {
+  if (!$('#prompter').classList.contains('open')) return;
+  if (e.key === 'Escape') tpClose();
+  else if (e.key === ' ') { e.preventDefault(); tp.on ? tpPause() : tpPlay(); }
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init() {
+  const d = new Date();
+  $('#today').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const h = d.getHours();
+  $('#greet').textContent = (h < 11 ? '早安' : h < 18 ? '午安' : '晚安') + '，創作者';
+  $('#avatar').innerHTML = ico('user', 24);
+  $('#sideNav').innerHTML = [['grid', '定位矩陣', 'Persona Grid', '#gridCard'], ['mic', '口播腳本', 'Script', '#scriptCard'], ['title', '標題標籤', 'Titles & Tags', '#titleCard']]
+    .map(([i, a, b, href], k) => `<a href="${href}" class="${k === 0 ? 'on' : ''}">${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
+  $('#icGrid').innerHTML = ico('grid'); $('#icMic').innerHTML = ico('mic'); $('#icTitle').innerHTML = ico('title'); $('#icLock').innerHTML = ico('lock');
+  $('#icSpark').innerHTML = ico('spark');
+  $('#btnPrompter').innerHTML = ico('mic') + '提詞器';
+  $('#btnCopy').innerHTML = ico('copy') + '複製腳本';
+  $('#btnHook').innerHTML = ico('shuffle') + '換一個開頭';
+  $('#btnRegen').innerHTML = ico('redo') + '換節奏重寫';
+  $('#btnCopyTitle').innerHTML = ico('copy') + '複製標題';
+  $('#tpClose').innerHTML = ico('close');
+  document.querySelectorAll('#sideNav a').forEach(a => a.addEventListener('click', () => {
+    document.querySelectorAll('#sideNav a').forEach(x => x.classList.toggle('on', x === a));
+  }));
+  renderGrid(); renderScript(false);
+})();
+</script>
+</body>
+</html>
