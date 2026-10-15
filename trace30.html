@@ -437,7 +437,7 @@ function traceParts() {
   out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出【我的拍攝資訊】和【我的補充】各自用在文案的哪一句；漏掉的請補回文案再交給我');
   const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
   const il = interviewLines();
-  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【我的補充（每一點都必須寫進文案，不可省略或淡化）】\n${material()}` : '');
+  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【我的補充（請先想清楚每一點想表達什麼，再用我的口吻自然融入文案；每一點都要出現，不可省略或淡化，也不要原封不動照貼）】\n${material()}` : '');
   const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
   if (hasVo) cons.push(`口播文案約 ${chars} 字（${parseInt(S.len)} 秒左右的唸稿量），內容要完整、有細節，不要只寫幾句帶過。`);
   if (F.includes('圖文貼文')) cons.push('圖文貼文約 400～600 字，段落之間要有呼吸感。');
