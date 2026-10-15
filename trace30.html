@@ -114,21 +114,23 @@
   <header class="mast">
     <p class="eyebrow">One Post · TRACE Prompt</p>
     <h1>TRACE 爆款指令大師</h1>
-    <p>先寫下今天要拍的主題和你的素材，再點選角色、領域與目標，立刻組出一份給 ChatGPT／Claude 用的 TRACE 高階指令，貼上就能寫出這一篇。</p>
+    <p>選好領域、回答幾個關於今天拍攝的問題，就會組出一份給 ChatGPT／Claude 用的 TRACE 高階指令。正確知識讓 AI 自己查，你只要負責回答。</p>
   </header>
 
   <!-- 區塊一：今天要拍什麼 -->
   <section class="card" aria-labelledby="todayH">
-    <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>先填主題，才會產生指令</small></div>
+    <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>回答越多，指令越準</small></div>
     <div class="fields">
+      <div class="field" id="domainField"></div>
       <div class="field">
         <label for="topicIn">今天拍攝的主題<small>TOPIC・必填</small></label>
         <input class="custom big" id="topicIn" maxlength="30" placeholder="例如：35 歲上班族的一天" />
         <div class="chips" id="topicChips" aria-label="主題靈感"></div>
       </div>
+      <div id="qBlock" class="fields" style="margin-top:0"></div>
       <div class="field">
-        <label for="materialIn">這支要講的內容／你的素材<small>MATERIAL・選填</small></label>
-        <textarea class="custom" id="materialIn" rows="4" maxlength="800" placeholder="例如：早上 7 點出門、通勤 1 小時，中午只吃超商，下班後還是擠出 30 分鐘運動。想分享忙碌上班族怎麼維持體態。"></textarea>
+        <label for="materialIn">還有什麼想補充的？<small>NOTES・選填</small></label>
+        <textarea class="custom" id="materialIn" rows="3" maxlength="800" placeholder="例如：想強調早上只有 10 分鐘出門、這次特別想講的一件事"></textarea>
       </div>
       <div class="field">
         <p>輸出格式<small>FORMAT・可複選</small></p>
@@ -139,7 +141,7 @@
 
   <!-- 區塊二：參數設定 -->
   <section class="card" aria-labelledby="setH">
-    <div class="card-h"><span class="no">02</span><h2 id="setH">參數設定</h2><small>點選或自訂，改了立刻重新生成</small></div>
+    <div class="card-h"><span class="no">02</span><h2 id="setH">你的身分與發布設定</h2><small>點選或自訂，改了立刻重新生成</small></div>
     <div class="fields" id="fields"></div>
     <p class="summary" id="summary"></p>
   </section>
@@ -185,7 +187,7 @@ const ico = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hid
    ========================================================= */
 const OPTS = {
   role: ['行銷顧問', '自媒體講師', '健身教練', '心理諮商師', '品牌策略師'],
-  domain: ['自媒體經營', '品牌打造', '理財投資', '美妝保養', '職場成長'],
+  domain: ['美妝保養', '健身運動', '自媒體經營', '品牌打造', '理財投資', '職場成長'],
   platform: ['IG Reels', 'Threads', 'YouTube Shorts', 'TikTok', '小紅書'],
   goal: ['快速漲粉', '建立專業信任', '提高產品轉換/銷售', '增加留言互動'],
   scenario: ['乾貨教學文', '避坑勸退文', '故事觀點文', '產品開箱評測', '限時優惠/導購'],
@@ -193,7 +195,6 @@ const OPTS = {
 };
 const FIELD_META = [
   { id: 'role', label: '你的角色', en: 'ROLE', custom: '或自訂角色，例如：營養師' },
-  { id: 'domain', label: '內容領域', en: 'DOMAIN', custom: '或自訂領域，例如：寵物攝影' },
   { id: 'platform', label: '主要平台', en: 'PLATFORM' },
   { id: 'goal', label: '內容目標', en: 'GOAL' },
   { id: 'scenario', label: '腳本風格場景', en: 'SCENARIO' },
@@ -237,6 +238,14 @@ const DOMAINS = {
     { n: '敏感肌修護', myth: '敏感就要擦更多修護產品', truth: '敏感肌最需要的是減法', trap: '一敏感就狂換產品', s: ['先停掉刺激性產品', '只留溫和清潔和保濕', '穩定兩週再慢慢加回'], result: '屏障會慢慢回來', story: '越修越敏感，最後只好全部停掉' },
     { n: '平價替代', myth: '貴的保養品一定比較好', truth: '價格反映的常常是包裝和行銷', trap: '只看品牌和價格', s: ['看成分表的前五名', '找相同主成分的平價選擇', '先買小容量試用'], result: '一年能省下不少錢', story: '一瓶精華就花掉五千塊' },
   ] },
+  健身運動: { product: '我的訓練菜單', pain: '想運動卻總是三分鐘熱度，或練了很久看不到成果', subs: [
+    { n: '減脂飲食', myth: '少吃就會瘦', truth: '吃夠蛋白質、控制總熱量，比餓肚子有效', trap: '一天只吃一餐', s: ['每餐先吃蛋白質', '用手掌估算份量', '晚餐提早吃'], result: '瘦得比較穩，也不容易復胖', story: '一天只吃一餐，三個月後全胖回來' },
+    { n: '新手入門', myth: '要練到很累才有效', truth: '新手最重要的是動作正確和持續', trap: '一開始就練太重', s: ['先學好深蹲和伏地挺身', '一週練三次就好', '每次記錄重量和次數'], result: '三個月就能看到體態改變', story: '第一週就練到受傷，休息了一個月' },
+    { n: '居家訓練', myth: '沒去健身房就練不起來', truth: '自身體重訓練就足夠讓新手進步', trap: '等有空去健身房才開始', s: ['騰出一張瑜伽墊的空間', '每天固定 15 分鐘', '用手機錄影檢查動作'], result: '在家也能練出線條', story: '辦了健身房會員，一年只去五次' },
+    { n: '體態改善', myth: '駝背只要提醒自己挺胸', truth: '體態問題要靠肌力平衡來改善', trap: '只做伸展不練背', s: ['每天練習肩胛後收', '加強背部和核心', '久坐每小時起身一次'], result: '整個人看起來更有精神', story: '挺胸挺了半年，一放鬆就駝回去' },
+    { n: '增肌訓練', myth: '女生練重量會變很壯', truth: '適度重量訓練只會讓線條更緊實', trap: '只用很輕的重量做很多下', s: ['選能做 8 到 12 下的重量', '每週逐步加重', '蛋白質吃足'], result: '線條會更緊實好看', story: '練了一年輕重量，線條幾乎沒變' },
+    { n: '運動習慣', myth: '要有動力才能開始', truth: '習慣靠固定時間，不是靠動力', trap: '想到才練', s: ['固定一個運動時段', '目標拆小到 10 分鐘', '完成就打勾記錄'], result: '運動會變成像刷牙一樣自然', story: '買了一堆器材，最後都拿來掛衣服' },
+  ] },
   職場成長: { product: '我的工作報告模板', pain: '很努力卻不被看見，不知道怎麼往上走', subs: [
     { n: '向上報告', myth: '報告越詳細越專業', truth: '主管要的是結論，不是過程', trap: '從頭講到尾', s: ['第一句先講結論', '理由最多三點', '最後說你需要什麼支援'], result: '主管會更信任你', story: '報告十分鐘，主管只回一句「所以呢」' },
     { n: '談薪水', myth: '表現好，主管自然會加薪', truth: '薪水是談出來的', trap: '等主管主動開口', s: ['先查清楚市場行情', '整理你這一年的具體成果', '選在績效好的時間點開口'], result: '加薪幅度會比你想的多', story: '悶頭做了三年，薪水幾乎沒動' },
@@ -276,6 +285,78 @@ const GOAL_TITLES = {
 const COMMON_TITLES = ['{n}做不好？問題可能出在這裡', '90% 的人都搞錯了{n}', '{n}，我只說這一次', '{trap}，是{n}最大的阻礙', '內行人才知道的{n}真相', '「{myth}」？大錯特錯',
   '{n}的正確打開方式', '{n}新手最常踩的坑', '我後悔沒有早點知道的{n}', '不藏私！{n}完整心法', '一個習慣，徹底改變你的{n}', '{n}其實沒你想的那麼難',
   '為什麼你的{n}一直沒有進步？', '{n}，從今天開始這樣做', '「{myth}」？這是最大的誤會', '別再盲目跟風了，{n}要這樣看', '{n}的底層邏輯，一次講清楚', '看完這篇，你的{n}認知會被刷新'];
+/* =========================================================
+   今天拍攝的訪談題：依領域客製（t: chips 單選／multi 複選／text 填寫）
+   ========================================================= */
+const DOMAIN_Q = {
+  美妝保養: [
+    { id: 'kind', q: '這支是哪一種內容？', t: 'chips', o: ['單品使用心得', '保養流程分享', '化妝教學', '成分知識', '平價替代', '空瓶回顧'] },
+    { id: 'skin', q: '你的膚質', t: 'chips', o: ['乾肌', '油肌', '混合肌', '敏感肌', '不確定'] },
+    { id: 'concern', q: '這支想解決什麼問題？', t: 'multi', o: ['保濕', '控油', '痘痘粉刺', '暗沉', '細紋', '底妝服貼', '毛孔'] },
+    { id: 'used', q: '你實際用了多久？', t: 'chips', o: ['第一次用', '一週左右', '一個月以上', '回購很多次', '不適用'] },
+  ],
+  健身運動: [
+    { id: 'aim', q: '這支的訓練目標', t: 'chips', o: ['減脂', '增肌', '改善體態', '提升體能', '放鬆伸展'] },
+    { id: 'level', q: '觀眾的程度', t: 'chips', o: ['完全新手', '有一點基礎', '進階'] },
+    { id: 'place', q: '在哪裡做？', t: 'chips', o: ['居家', '健身房', '戶外', '辦公室'] },
+    { id: 'limit', q: '有什麼時間或身體限制？', t: 'text', ph: '例如：每天只有 15 分鐘、膝蓋不太好' },
+  ],
+  自媒體經營: [
+    { id: 'stage', q: '你的帳號目前在哪個階段？', t: 'chips', o: ['剛起步 0–1000', '成長中 1000–1 萬', '1 萬以上', '已經在變現'] },
+    { id: 'issue', q: '這支想幫觀眾解決什麼？', t: 'chips', o: ['沒流量', '不知道拍什麼', '定位不清楚', '不敢露臉', '不知道怎麼變現'] },
+    { id: 'proof', q: '你有什麼真實數據或案例？', t: 'text', ph: '例如：一支影片從 300 播放做到 5 萬' },
+  ],
+  品牌打造: [
+    { id: 'type', q: '你的品牌是？', t: 'chips', o: ['個人品牌', '網路小店', '實體店面', '新創品牌', '服務型工作室'] },
+    { id: 'msg', q: '這支想傳達什麼？', t: 'chips', o: ['品牌故事', '產品理念', '幕後製作', '顧客回饋', '為什麼值這個價'] },
+    { id: 'diff', q: '你們最不一樣的地方是？', t: 'text', ph: '例如：每一件都手工縫製、只用在地食材' },
+  ],
+  理財投資: [
+    { id: 'kind', q: '這支在講什麼？', t: 'chips', o: ['存錢方法', '記帳習慣', '投資入門', '保險規劃', '消費習慣', '財務心態'] },
+    { id: 'stage', q: '觀眾的財務階段', t: 'chips', o: ['學生', '小資新鮮人', '有家庭負擔', '準備退休'] },
+    { id: 'num', q: '你有什麼真實數字或經驗？', t: 'text', ph: '例如：月薪 3.5 萬，一年存下 20 萬' },
+  ],
+  職場成長: [
+    { id: 'job', q: '你的職位或產業', t: 'text', ph: '例如：科技業 PM、外商業務' },
+    { id: 'kind', q: '這支在講什麼情境？', t: 'chips', o: ['面試', '談薪水', '跟主管溝通', '跨部門合作', '升遷', '轉職', '時間管理'] },
+    { id: 'story', q: '有沒有真實發生的事？', t: 'text', ph: '例如：第一次談薪被打槍，後來怎麼扳回來' },
+  ],
+  _custom: [
+    { id: 'who', q: '你在這個領域的身分或經驗', t: 'text', ph: '例如：養了 3 隻貓、拍寵物照 5 年' },
+    { id: 'kind', q: '這支是哪一種內容？', t: 'chips', o: ['經驗分享', '教學步驟', '好物推薦', '觀點討論', '日常記錄'] },
+    { id: 'pain', q: '觀眾最常卡在哪裡？', t: 'text', ph: '例如：寵物一直亂動拍不清楚' },
+  ],
+};
+const COMMON_Q = [
+  { id: 'feel', q: '想呈現的感覺', t: 'chips', o: ['真實生活感', '專業教學感', '輕鬆幽默', '質感氛圍', '犀利直白'] },
+  { id: 'product', q: '這支有沒有出現產品？', t: 'chips', o: ['沒有產品', '自己買的', '廠商提供', '品牌合作（有酬）'] },
+];
+const PRODUCT_Q = [
+  { id: 'pname', q: '產品名稱／品項', t: 'text', ph: '例如：某品牌修護精華、氣墊粉餅' },
+  { id: 'pfeel', q: '你的真實感受（優點、缺點都可以）', t: 'text', ph: '例如：保濕很夠，但夏天有點黏' },
+];
+const FEEL_GUIDE = {
+  真實生活感: '像跟朋友聊天分享，語氣自然，完全不要有推銷或業配感',
+  專業教學感: '條理清楚、有依據，像專業的人在教學',
+  輕鬆幽默: '輕鬆好笑、可以自嘲，但重點要清楚',
+  質感氛圍: '節奏放慢、用字精緻，營造質感與氛圍',
+  犀利直白: '直接講重點、敢說真話，但不攻擊任何品牌或個人',
+};
+const SPONSOR_RULE = {
+  自己買的: '產品是我自己花錢買的，可以自然提到，但不要寫成推銷文。',
+  廠商提供: '產品是廠商提供的，請完全用我真實使用的心得來寫：不要用「廠商寄給我」「這是業配」這類說法開場，不要過度推銷，也不要只講優點；合作只需在貼文說明或結尾自然標註，符合平台規範即可。',
+  '品牌合作（有酬）': '這是有酬合作，請保持真實分享的語氣，優缺點都提，避免硬廣；口播不用強調合作，依平台規範在貼文標示即可（例如 IG 的品牌合作標籤）。',
+};
+const RESEARCH = {
+  美妝保養: '請自行查證產品與成分的正確知識（主要成分、作用、適合膚質、使用注意事項），不使用醫療或療效用語，不誇大效果',
+  健身運動: '請自行查證動作原理、正確姿勢與安全注意事項，提醒有傷病的人先諮詢專業人士',
+  自媒體經營: '請自行查證該平台目前的功能與演算法常識，不要寫過時的做法',
+  品牌打造: '請自行查證產業與市場的正確資訊，不貶低任何競品',
+  理財投資: '請自行查證相關金融知識與最新規定，不報明牌、不保證報酬，並加入一句風險提醒',
+  職場成長: '請自行查證相關勞動法規與職場常見做法，避免給出違法或過時的建議',
+  _custom: '請自行查證這個主題的正確知識，不確定的地方不要寫死',
+};
+
 const PLATFORM_CTA_HINT = { 'IG Reels': '引導收藏、分享與限時動態轉發', Threads: '引導留言討論與轉發', 'YouTube Shorts': '引導訂閱與看下一支', TikTok: '引導關注與留言', 小紅書: '引導收藏筆記與留言' };
 const GOAL_NEED = { 快速漲粉: '看完就想追蹤的實用內容', 建立專業信任: '可信、專業、有依據的建議', '提高產品轉換/銷售': '能直接解決問題的方案與購買理由', 增加留言互動: '說中心聲、讓他想留言分享的觀點' };
 const LEN_CHARS = { '15秒超短衝擊': 80, '30秒黃金爆款': 150, '45秒深度轉化': 230 };
@@ -290,8 +371,8 @@ const CHECKS = [
 /* =========================================================
    STATE
    ========================================================= */
-const KEY = 'trace-one-v2';
-let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topicText: '', material: '', formats: ['短影音口播稿'], checks: [] };
+const KEY = 'trace-one-v3';
+let S = { role: '行銷顧問', domain: '美妝保養', ans: {}, platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topicText: '', material: '', formats: ['短影音口播稿'], checks: [] };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
@@ -315,6 +396,18 @@ const topic = () => (S.topicText || '').trim();
 const chosenSub = () => domainData().subs.find(x => x.n === topic()) || null;
 const isCustomTopic = () => !chosenSub();
 const material = () => (S.material || '').trim();
+const dKey = () => DOMAIN_Q[domain()] ? domain() : '_custom';
+const ans = id => (S.ans || {})[id.includes('.') ? id : dKey() + '.' + id];
+const setAns = (id, v) => { S.ans = S.ans || {}; S.ans[id] = v; };
+const hasProduct = () => { const p = ans('_c.product'); return p && p !== '沒有產品'; };
+function interviewLines() {
+  const lines = [];
+  const add = (q, v) => { if (Array.isArray(v) ? v.length : (v || '').trim()) lines.push(`- ${q.replace(/？$/, '')}：${Array.isArray(v) ? v.join('、') : v.trim()}`); };
+  DOMAIN_Q[dKey()].forEach(q => add(q.q, ans(q.id)));
+  COMMON_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
+  if (hasProduct()) PRODUCT_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
+  return lines;
+}
 const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 /* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
 /* 自訂主題用：任何一句話都讀得通的開場句型 */
@@ -343,13 +436,17 @@ function traceParts() {
   if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
   out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag');
   const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
-  const mat = material() ? `\n\n我的素材（請以這些真實內容為主）：\n${material()}` : '';
+  const il = interviewLines();
+  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【補充】\n${material()}` : '');
   const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
   if (hasVo) cons.push(`口播文案控制在 ${chars} 字左右，最多不超過 250 字。`);
   if (F.includes('圖文貼文')) cons.push('圖文貼文控制在 300 字內。');
-  cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '不要捏造我沒提供的經歷、數據或產品功效。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
+  const feel = ans('_c.feel'), sp = SPONSOR_RULE[ans('_c.product')];
+  if (feel) cons.push(`呈現感覺：${FEEL_GUIDE[feel]}。`);
+  if (sp) cons.push(sp);
+  cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}` },
+    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n動筆前，${RESEARCH[dKey()]}。知識的部分由你負責查證，我的回答只提供個人經驗與真實感受。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
     { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對「${topic()}」這個主題特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
     { L: 'C', h: 'Constraint', zh: '限制', t: cons.map((x, i) => `${i + 1}. ${x}`).join('\n') },
@@ -366,8 +463,24 @@ function chipsFor(id) {
   const custom = (S[id + 'Custom'] || '').trim();
   return OPTS[id].map(o => `<button class="chip" role="radio" aria-checked="${!custom && S[id] === o}" data-f="${id}" data-v="${esc(o)}">${esc(o)}</button>`).join('');
 }
+const topicChipsHtml = () => domainData().subs.map(x => `<button class="chip" aria-pressed="${topic() === x.n}" data-topic="${esc(x.n)}">${esc(x.n)}</button>`).join('');
+function qHtml(q, key) {
+  const v = ans(key);
+  if (q.t === 'text') return `<div class="field"><label for="q-${key}">${q.q}</label><input class="custom" id="q-${key}" data-q="${key}" maxlength="60" placeholder="${q.ph}" value="${esc(v || '')}" /></div>`;
+  const multi = q.t === 'multi', arr = Array.isArray(v) ? v : [];
+  return `<div class="field"><p>${q.q}${multi ? '<small>可複選</small>' : ''}</p><div class="chips">${q.o.map(o => `<button class="chip" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${multi ? arr.includes(o) : v === o}" data-q="${key}" data-qv="${esc(o)}" data-multi="${multi ? 1 : ''}">${esc(o)}</button>`).join('')}</div></div>`;
+}
+function renderQuestions() {
+  const k = dKey();
+  $('#qBlock').innerHTML = [
+    ...DOMAIN_Q[k].map(q => qHtml(q, k + '.' + q.id)),
+    ...COMMON_Q.map(q => qHtml(q, '_c.' + q.id)),
+    ...(hasProduct() ? PRODUCT_Q.map(q => qHtml(q, '_c.' + q.id)) : []),
+  ].join('');
+}
 function renderToday() {
-  $('#topicChips').innerHTML = domainData().subs.map(x => `<button class="chip" aria-pressed="${topic() === x.n}" data-topic="${esc(x.n)}">${esc(x.n)}</button>`).join('');
+  $('#domainField').innerHTML = `<p>內容領域<small>DOMAIN</small></p><div class="chips" id="chips-domain" role="radiogroup" aria-label="內容領域">${chipsFor('domain')}</div><input class="custom" id="in-domain" maxlength="12" placeholder="或自訂領域，例如：寵物攝影" value="${esc(S.domainCustom || '')}" />`;
+  $('#topicChips').innerHTML = topicChipsHtml();
   $('#formatChips').innerHTML = FORMATS.map(f => `<button class="chip" role="checkbox" aria-checked="${S.formats.includes(f)}" data-fmt="${f}">${f}</button>`).join('');
 }
 function renderFields() {
@@ -423,26 +536,34 @@ const copied = (ok, m) => toast(ok ? m : '複製失敗，請手動選取文字')
 /* =========================================================
    EVENTS
    ========================================================= */
-$('#fields').addEventListener('click', e => {
+document.addEventListener('click', e => {
   const b = e.target.closest('[data-f]'); if (!b) return;
   const f = b.dataset.f; S[f] = b.dataset.v;
   if (f === 'role' || f === 'domain') { S[f + 'Custom'] = ''; const inp = $('#in-' + f); if (inp) inp.value = ''; }
   b.parentElement.querySelectorAll('[data-f]').forEach(x => x.setAttribute('aria-checked', x === b));
-  if (f === 'domain') renderToday();
+  if (f === 'domain') { renderToday(); renderQuestions(); }
   regen();
 });
-$('#fields').addEventListener('input', e => {
-  const inp = e.target.closest('.custom'); if (!inp) return;
+document.addEventListener('input', e => {
+  const inp = e.target.closest('#in-role, #in-domain'); if (!inp) return;
   const f = inp.id.replace('in-', ''); S[f + 'Custom'] = inp.value;
   $('#chips-' + f).innerHTML = chipsFor(f);
-  if (f === 'domain') renderToday();
+  if (f === 'domain') { $('#topicChips').innerHTML = topicChipsHtml(); renderQuestions(); }
   regen();
 });
-$('#topicIn').addEventListener('input', e => { S.topicText = e.target.value; renderToday(); regen(); });
+$('#topicIn').addEventListener('input', e => { S.topicText = e.target.value; $('#topicChips').innerHTML = topicChipsHtml(); regen(); });
 $('#topicChips').addEventListener('click', e => {
   const b = e.target.closest('[data-topic]'); if (!b) return;
-  S.topicText = b.dataset.topic; $('#topicIn').value = S.topicText; renderToday(); regen();
+  S.topicText = b.dataset.topic; $('#topicIn').value = S.topicText; $('#topicChips').innerHTML = topicChipsHtml(); regen();
 });
+$('#qBlock').addEventListener('click', e => {
+  const b = e.target.closest('[data-qv]'); if (!b) return;
+  const key = b.dataset.q, v = b.dataset.qv;
+  if (b.dataset.multi) { const arr = Array.isArray(ans(key)) ? ans(key) : []; setAns(key, arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v]); }
+  else setAns(key, ans(key) === v ? '' : v);
+  renderQuestions(); regen();
+});
+$('#qBlock').addEventListener('input', e => { const i = e.target.closest('input[data-q]'); if (!i) return; setAns(i.dataset.q, i.value); regen(); });
 $('#materialIn').addEventListener('input', e => { S.material = e.target.value; regen(); });
 $('#formatChips').addEventListener('click', e => {
   const b = e.target.closest('[data-fmt]'); if (!b) return;
@@ -464,7 +585,8 @@ $('#copyTrace').innerHTML = ico('copy') + '一鍵複製 TRACE 指令';
 $('#topicIn').value = S.topicText || '';
 $('#materialIn').value = S.material || '';
 if (!Array.isArray(S.formats) || !S.formats.length) S.formats = ['短影音口播稿'];
-renderToday(); renderFields(); renderChecks(); regen();
+if (!S.ans || typeof S.ans !== 'object') S.ans = {};
+renderToday(); renderQuestions(); renderFields(); renderChecks(); regen();
 </script>
 </body>
 </html>
