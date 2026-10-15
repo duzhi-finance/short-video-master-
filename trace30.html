@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>30 個爆款主題庫</title>
+<title>TRACE 爆款指令大師</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700;900&display=swap" rel="stylesheet" />
@@ -58,11 +58,6 @@
   .summary { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mute); line-height: 1.8; }
   .summary b { color: var(--ink); font-weight: 700; }
 
-  /* tabs */
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #EAE5DE; border-radius: 16px; padding: 5px; }
-  .tab { border: 0; background: transparent; border-radius: 12px; padding: 11px 8px; font-size: 14px; font-weight: 700; letter-spacing: .04em; color: var(--mute); }
-  .tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(60, 50, 40, .08); }
-  .tab small { display: block; font-weight: 400; font-size: 11px; color: var(--faint); letter-spacing: .1em; }
   [hidden] { display: none !important; }
 
   .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
@@ -71,16 +66,6 @@
   .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
   .btn.dark:hover { background: #000; }
   .bar .meta { margin-left: auto; font-size: 12.5px; color: var(--mute); }
-
-  /* topics */
-  .topics { margin-top: 16px; display: grid; gap: 10px; }
-  @media (min-width: 720px) { .topics { grid-template-columns: 1fr 1fr; } }
-  .topic { display: grid; grid-template-columns: 40px minmax(0, 1fr) 32px; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 14px 12px 14px 16px; transition: box-shadow .2s, border-color .2s; }
-  .topic:hover { box-shadow: var(--shadow); border-color: transparent; }
-  .topic .num { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1; }
-  .topic h3 { font-family: var(--serif); font-size: 16.5px; font-weight: 700; line-height: 1.55; letter-spacing: .02em; }
-  .topic .cp { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--faint); display: grid; place-items: center; }
-  .topic .cp:hover { background: var(--soft); color: var(--ink); }
 
   /* trace document */
   .doc { margin-top: 16px; border-radius: 20px; background: linear-gradient(180deg, #FFFDFB, #FAF7F3); border: 1px solid var(--line); padding: 22px 18px; }
@@ -122,9 +107,9 @@
 <div class="wrap">
 
   <header class="mast">
-    <p class="eyebrow">30 Viral Topics · TRACE Prompt</p>
-    <h1>30 個爆款主題・TRACE 指令大師</h1>
-    <p>點選你的角色、領域與目標，立刻產出 30 個專屬你的爆款文案主題，也能一鍵帶走一份給 ChatGPT／Claude 用的高階指令。</p>
+    <p class="eyebrow">One Post · TRACE Prompt</p>
+    <h1>TRACE 爆款指令大師</h1>
+    <p>點選你的角色、領域與目標，選好這一篇的主題，立刻組出一份給 ChatGPT／Claude 用的 TRACE 高階指令，貼上就能寫出完整的爆款腳本。</p>
   </header>
 
   <!-- 區塊一：參數設定 -->
@@ -134,31 +119,17 @@
     <p class="summary" id="summary"></p>
   </section>
 
-  <!-- 區塊二：雙頁籤 -->
+  <!-- 區塊二：TRACE 指令 -->
   <section class="card" aria-labelledby="outH">
-    <div class="card-h"><span class="no">02</span><h2 id="outH">生成結果</h2></div>
-    <div class="tabs" role="tablist" style="margin-top:16px">
-      <button class="tab" role="tab" id="tabDays" aria-controls="paneDays" data-tab="days"><span id="tabTopicLabel">30 種爆款主題</span><small>TOPICS</small></button>
-      <button class="tab" role="tab" id="tabTrace" aria-controls="paneTrace" data-tab="trace">TRACE 指令<small>PROMPT</small></button>
-    </div>
-
-    <div id="paneDays" role="tabpanel" aria-labelledby="tabDays">
-      <div class="bar">
-        <button class="btn dark" id="copyAll"></button>
+    <div class="card-h"><span class="no">02</span><h2 id="outH">這一篇的 TRACE 指令</h2></div>
+    <div class="doc">
+      <div class="doc-head">
+        <p class="eyebrow">TRACE PROMPT</p>
+        <h3 id="docTitle">爆款內容萬用指令</h3>
+        <div class="tags" id="traceTags"></div>
       </div>
-      <div class="topics" id="days"></div>
-    </div>
-
-    <div id="paneTrace" role="tabpanel" aria-labelledby="tabTrace" hidden>
-      <div class="doc">
-        <div class="doc-head">
-          <p class="eyebrow">TRACE PROMPT</p>
-          <h3>爆款內容萬用指令</h3>
-          <div class="tags" id="traceTags"></div>
-        </div>
-        <div class="trace" id="trace"></div>
-        <div class="doc-foot"><button class="btn dark" id="copyTrace"></button><p class="meta" style="margin-top:10px;font-size:12.5px;color:var(--mute)">複製後貼到 ChatGPT 或 Claude 直接使用</p></div>
-      </div>
+      <div class="trace" id="trace"></div>
+      <div class="doc-foot"><button class="btn dark" id="copyTrace"></button><p style="margin-top:10px;font-size:12.5px;color:var(--mute)">複製後貼到 ChatGPT 或 Claude，就會寫出這一篇</p></div>
     </div>
   </section>
 
@@ -198,6 +169,7 @@ const OPTS = {
 const FIELD_META = [
   { id: 'role', label: '你的角色', en: 'ROLE', custom: '或自訂角色，例如：營養師' },
   { id: 'domain', label: '內容領域', en: 'DOMAIN', custom: '或自訂領域，例如：寵物攝影' },
+  { id: 'topic', label: '這一篇的主題', en: 'TOPIC', custom: '或自訂主題，例如：油肌底妝' },
   { id: 'platform', label: '主要平台', en: 'PLATFORM' },
   { id: 'goal', label: '內容目標', en: 'GOAL' },
   { id: 'scenario', label: '腳本風格場景', en: 'SCENARIO' },
@@ -280,7 +252,6 @@ const GOAL_TITLES = {
 const COMMON_TITLES = ['{n}做不好？問題可能出在這裡', '90% 的人都搞錯了{n}', '{n}，我只說這一次', '{trap}，是{n}最大的阻礙', '內行人才知道的{n}真相', '「{myth}」？大錯特錯',
   '{n}的正確打開方式', '{n}新手最常踩的坑', '我後悔沒有早點知道的{n}', '不藏私！{n}完整心法', '一個習慣，徹底改變你的{n}', '{n}其實沒你想的那麼難',
   '為什麼你的{n}一直沒有進步？', '{n}，從今天開始這樣做', '「{myth}」？這是最大的誤會', '別再盲目跟風了，{n}要這樣看', '{n}的底層邏輯，一次講清楚', '看完這篇，你的{n}認知會被刷新'];
-const XHS_SUFFIX = ['建議收藏', '新手必看', '乾貨分享'];
 const PLATFORM_CTA_HINT = { 'IG Reels': '引導收藏、分享與限時動態轉發', Threads: '引導留言討論與轉發', 'YouTube Shorts': '引導訂閱與看下一支', TikTok: '引導關注與留言', 小紅書: '引導收藏筆記與留言' };
 const GOAL_NEED = { 快速漲粉: '看完就想追蹤的實用內容', 建立專業信任: '可信、專業、有依據的建議', '提高產品轉換/銷售': '能直接解決問題的方案與購買理由', 增加留言互動: '說中心聲、讓他想留言分享的觀點' };
 const LEN_CHARS = { '15秒超短衝擊': 80, '30秒黃金爆款': 150, '45秒深度轉化': 230 };
@@ -295,8 +266,8 @@ const CHECKS = [
 /* =========================================================
    STATE
    ========================================================= */
-const KEY = 'trace30-v2';
-let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', tab: 'days', checks: [] };
+const KEY = 'trace-one-v1';
+let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topic: '', topicCustom: '', checks: [] };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
@@ -313,80 +284,70 @@ function domainData() {
 }
 
 /* =========================================================
-   GENERATE：30 個爆款文案主題
-   每 5 個一輪：場景、通用、目標、通用、通用 → 共 6 輪
+   這一篇的主題
    ========================================================= */
-function titleTemplates() {
-  const sc = SCENARIO_TITLES[S.scenario], gl = GOAL_TITLES[S.goal], out = [];
-  for (let r = 0; r < 6; r++) out.push(sc[r], COMMON_TITLES[r * 3], gl[r], COMMON_TITLES[r * 3 + 1], COMMON_TITLES[r * 3 + 2]);
-  return out;
+const optsFor = id => id === 'topic' ? domainData().subs.map(x => x.n) : OPTS[id];
+const chosenSub = () => { const subs = domainData().subs; return subs.find(x => x.n === S.topic) || subs[0]; };
+const topic = () => (S.topicCustom || '').trim() || chosenSub().n;
+const isCustomTopic = () => !!(S.topicCustom || '').trim();
+/* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
+function sampleHooks() {
+  const sub = chosenSub(), dd = domainData(), custom = isCustomTopic();
+  const v = { n: topic(), myth: sub.myth, trap: sub.trap, domain: domain(), product: dd.product, role: role() };
+  const ok = t => !custom || !/\{(myth|trap)\}/.test(t);
+  const pickFrom = list => list.find(ok) || list[0];
+  return [pickFrom(SCENARIO_TITLES[S.scenario]), pickFrom(GOAL_TITLES[S.goal]), pickFrom(COMMON_TITLES.slice(4))]
+    .map(t => t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? ''));
 }
-function topicFor(k) {
-  const dd = domainData(), sub = dd.subs[k % dd.subs.length];
-  const v = { n: sub.n, myth: sub.myth, trap: sub.trap, domain: domain(), product: dd.product, role: role() };
-  let title = titleTemplates()[k].replace(/\{(\w+)\}/g, (_, key) => v[key] ?? '');
-  if (S.platform === '小紅書' && !title.includes('｜')) title += '｜' + XHS_SUFFIX[k % 3];
-  return { no: k + 1, title };
-}
-const allTopics = () => Array.from({ length: 30 }, (_, k) => topicFor(k));
-const pad = n => String(n).padStart(2, '0');
-const topicText = t => `${pad(t.no)}. ${t.title}`;
-const settingLine = () => `角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
+const settingLine = () => `主題：${topic()}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
 
 /* =========================================================
    TRACE 指令
    ========================================================= */
 function traceParts() {
-  const ex = topicFor(0), dd = domainData(), chars = LEN_CHARS[S.len];
+  const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks();
+  const lenTxt = parseInt(S.len) + ' 秒';
+  const angle = isCustomTopic() ? '' : `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。`;
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `請幫我產出一份《30天爆款內容排程表》，共 30 天，每天一支可以直接改寫成 ${S.platform} 貼文與短影音腳本的內容。\n每一天都要包含：天數與題材類型、黃金 3 秒開場鉤子、${S.len.replace(/秒/, ' 秒')}的完整口播文案、行動呼籲 CTA。\n題材以「${S.scenario}」為主，穿插顛覆認知、聽勸避坑、過來人故事、數字清單、內行揭秘等類型，相鄰兩天不要重複。` },
+    { L: 'T', h: 'Task', zh: '任務', t: `請幫我寫一篇可以直接拍攝的 ${S.platform} 短影音口播腳本，主題是「${topic()}」，長度約 ${lenTxt}。\n請依序輸出：\n1. 3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試\n2. 完整口播文案，用「${S.scenario}」的寫法\n3. 結尾行動呼籲 CTA\n4. 3 個爆款標題\n5. 5 個 Hashtag${angle}` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
-    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
-    { L: 'C', h: 'Constraint', zh: '限制', t: `1. 嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。\n2. 每支腳本控制在 ${chars} 字左右，最多不超過 250 字。\n3. 快節奏、不說教，每句盡量不超過 20 字。\n4. 每支腳本最後用一句金句收尾。\n5. 全文不使用 Emoji。\n6. CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。` },
-    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考主題：\n${ex.title}\n\n請以這類主題延伸成完整腳本，並用清單依序列出 Day 1 到 Day 30，方便我直接複製使用。` },
+    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，現在正卡在「${topic()}」這件事上。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
+    { L: 'C', h: 'Constraint', zh: '限制', t: `1. 嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。\n2. 口播文案控制在 ${chars} 字左右，最多不超過 250 字。\n3. 快節奏、不說教，每句盡量不超過 20 字。\n4. 口播最後用一句金句收尾。\n5. 全文不使用 Emoji。\n6. CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。` },
+    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考開場：\n${hooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n\n請參考這些開場的語氣與節奏，寫出這一篇。` },
   ];
 }
 const RULE = '━━━━━━━━━━━━━━━━━━';
-const traceText = () => [RULE, 'TRACE 爆款內容萬用指令', settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
+const traceText = () => [RULE, `TRACE 爆款指令｜${topic()}`, settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
 
 /* =========================================================
    RENDER
    ========================================================= */
+function chipsFor(id) {
+  const custom = (S[id + 'Custom'] || '').trim();
+  const cur = id === 'topic' ? chosenSub().n : S[id];
+  return optsFor(id).map(o => `<button class="chip" role="radio" aria-checked="${!custom && cur === o}" data-f="${id}" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+}
 function renderFields() {
   $('#fields').innerHTML = FIELD_META.map(m => {
-    const custom = m.custom ? (S[m.id + 'Custom'] || '').trim() : '';
     return `
     <div class="field">
       <p>${m.label}<small>${m.en}</small></p>
-      <div class="chips" role="radiogroup" aria-label="${m.label}">${OPTS[m.id].map(o => `<button class="chip" role="radio" aria-checked="${!custom && S[m.id] === o}" data-f="${m.id}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="chips" id="chips-${m.id}" role="radiogroup" aria-label="${m.label}">${chipsFor(m.id)}</div>
       ${m.custom ? `<input class="custom" id="in-${m.id}" maxlength="12" placeholder="${m.custom}" value="${esc(S[m.id + 'Custom'] || '')}" />` : ''}
     </div>`;
   }).join('');
 }
 function renderSummary() {
-  $('#summary').innerHTML = `目前設定：<b>${esc(role())}</b>・<b>${esc(domain())}</b>・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
-  $('#tabTopicLabel').textContent = `30 個${domain()}爆款主題`;
-}
-function renderDays() {
-  $('#days').innerHTML = allTopics().map(t => `
-    <article class="topic">
-      <span class="num">${pad(t.no)}</span>
-      <h3>${esc(t.title)}</h3>
-      <button class="cp" data-copy-day="${t.no}" aria-label="複製第 ${t.no} 個主題" title="複製">${ico('copy')}</button>
-    </article>`).join('');
+  $('#summary').innerHTML = `這一篇：<b>${esc(topic())}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
 }
 function renderTrace() {
+  $('#docTitle').textContent = `「${topic()}」爆款指令`;
   $('#traceTags').innerHTML = [role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
   $('#trace').innerHTML = traceParts().map(p => {
-    const [main, ex] = p.L === 'E' ? p.t.split('參考主題：\n') : [p.t, ''];
+    const [main, ex] = p.L === 'E' ? p.t.split('參考開場：\n') : [p.t, ''];
     const [quote, tail] = ex ? ex.split('\n\n') : ['', ''];
-    return `<div class="tr"><span class="L">${p.L}</span><div><h4>${p.h}<small>${p.zh}</small></h4><p>${esc(main.trim())}</p>${ex ? `<div class="ex">${esc('參考主題：\n' + quote)}</div><p>${esc(tail || '')}</p>` : ''}</div></div>`;
+    return `<div class="tr"><span class="L">${p.L}</span><div><h4>${p.h}<small>${p.zh}</small></h4><p>${esc(main.trim())}</p>${ex ? `<div class="ex">${esc('參考開場：\n' + quote)}</div><p>${esc(tail || '')}</p>` : ''}</div></div>`;
   }).join('');
-}
-function renderTabs() {
-  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === S.tab));
-  $('#paneDays').hidden = S.tab !== 'days';
-  $('#paneTrace').hidden = S.tab !== 'trace';
 }
 function renderChecks() {
   $('#checks').innerHTML = CHECKS.map((c, i) => `
@@ -395,7 +356,7 @@ function renderChecks() {
       <span><b>${i + 1}. ${c.t}</b><small>${c.d}</small></span>
     </button>`).join('');
 }
-function regen() { renderSummary(); renderDays(); renderTrace(); save(); }
+function regen() { renderSummary(); renderTrace(); save(); }
 
 /* =========================================================
    COPY / TOAST
@@ -415,24 +376,17 @@ const copied = (ok, m) => toast(ok ? m : '複製失敗，請手動選取文字')
 $('#fields').addEventListener('click', e => {
   const b = e.target.closest('[data-f]'); if (!b) return;
   const f = b.dataset.f; S[f] = b.dataset.v;
-  if (f === 'role' || f === 'domain') { S[f + 'Custom'] = ''; const inp = $('#in-' + f); if (inp) inp.value = ''; }
+  if (f === 'role' || f === 'domain' || f === 'topic') { S[f + 'Custom'] = ''; const inp = $('#in-' + f); if (inp) inp.value = ''; }
   b.parentElement.querySelectorAll('[data-f]').forEach(x => x.setAttribute('aria-checked', x === b));
+  if (f === 'domain') { S.topic = ''; $('#chips-topic').innerHTML = chipsFor('topic'); }
   regen();
 });
 $('#fields').addEventListener('input', e => {
   const inp = e.target.closest('.custom'); if (!inp) return;
   const f = inp.id.replace('in-', ''); S[f + 'Custom'] = inp.value;
-  inp.parentElement.querySelectorAll('[data-f]').forEach(x => x.setAttribute('aria-checked', !inp.value.trim() && S[f] === x.dataset.v));
+  $('#chips-' + f).innerHTML = chipsFor(f);
+  if (f === 'domain') { S.topic = ''; $('#chips-topic').innerHTML = chipsFor('topic'); }
   regen();
-});
-document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { S.tab = b.dataset.tab; save(); renderTabs(); }));
-$('#days').addEventListener('click', async e => {
-  const b = e.target.closest('[data-copy-day]'); if (!b) return;
-  copied(await copy(topicFor(+b.dataset.copyDay - 1).title), `第 ${pad(+b.dataset.copyDay)} 個主題已複製`);
-});
-$('#copyAll').addEventListener('click', async () => {
-  const text = [RULE, `30 個${domain()}爆款主題`, settingLine(), RULE, '', ...allTopics().map(topicText), '', RULE].join('\n');
-  copied(await copy(text), '30 個爆款主題已複製');
 });
 $('#copyTrace').addEventListener('click', async () => copied(await copy(traceText()), 'TRACE 指令已複製'));
 $('#checks').addEventListener('click', e => {
@@ -444,9 +398,8 @@ $('#checks').addEventListener('click', e => {
 /* =========================================================
    INIT
    ========================================================= */
-$('#copyAll').innerHTML = ico('copy') + '一鍵複製 30 個主題';
 $('#copyTrace').innerHTML = ico('copy') + '一鍵複製 TRACE 指令';
-renderFields(); renderTabs(); renderChecks(); regen();
+renderFields(); renderChecks(); regen();
 </script>
 </body>
 </html>
