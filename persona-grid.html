@@ -113,6 +113,82 @@
   .gen:hover { box-shadow: 0 14px 30px rgba(43, 37, 35, .24); }
   .gen:active { transform: scale(.99); }
 
+  /* ---------- modes ---------- */
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 22px; padding: 14px 16px; box-shadow: var(--shadow); transition: background .2s, color .2s; min-width: 0; }
+  .mode b { display: block; font-size: 15px; font-weight: 900; letter-spacing: .04em; }
+  .mode small { display: block; margin-top: 4px; font-size: 12px; color: var(--mute); line-height: 1.5; }
+  .mode[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .mode[aria-selected="true"] small { color: rgba(255, 255, 255, .72); }
+  @media (min-width: 640px) { .mode { padding: 18px 22px; } .mode b { font-size: 17px; } .mode small { font-size: 13px; } }
+  .is-hidden { display: none !important; }
+
+  /* ---------- quiz ---------- */
+  .q-intro { margin-top: 10px; color: var(--mute); font-size: 14px; line-height: 1.8; }
+  .q-label { margin-top: 20px; font-size: 13px; color: var(--mute); letter-spacing: .06em; }
+  .depths { margin-top: 12px; display: grid; gap: 10px; }
+  @media (min-width: 640px) { .depths { grid-template-columns: 1fr 1fr; } }
+  .depth { text-align: left; border: 1px solid var(--line); background: #FDFAF9; border-radius: 22px; padding: 18px 20px; display: grid; gap: 6px; transition: border-color .2s, box-shadow .2s; }
+  .depth:hover { border-color: #E5CFCB; box-shadow: var(--shadow); }
+  .depth .no { font-family: var(--serif); font-size: 12px; letter-spacing: .2em; color: var(--rose); }
+  .depth b { font-size: 20px; font-weight: 900; }
+  .depth small { font-size: 13px; color: var(--mute); line-height: 1.6; }
+  .qprog { margin-top: 16px; height: 4px; border-radius: 99px; background: var(--rose-soft); overflow: hidden; }
+  .qprog i { display: block; height: 100%; background: var(--rose); border-radius: 99px; transition: width .3s; }
+  .qmeta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 13px; color: var(--mute); }
+  .qmeta button { border: 0; background: none; color: var(--mute); padding: 4px 0; font-size: 13px; }
+  .qmeta button:hover { color: var(--ink); }
+  .qtext { margin-top: 18px; font-size: 21px; font-weight: 900; line-height: 1.55; letter-spacing: .03em; }
+  @media (min-width: 640px) { .qtext { font-size: 24px; } }
+  .qopts { margin-top: 18px; display: grid; gap: 10px; }
+  .opt { display: flex; align-items: center; gap: 14px; text-align: left; border: 1px solid var(--line); background: #FDFAF9; border-radius: 18px; padding: 14px 16px; font-size: 15.5px; line-height: 1.6; transition: border-color .2s, background .2s, box-shadow .2s; }
+  .opt:hover { border-color: #E5CFCB; background: #fff; box-shadow: var(--shadow); }
+  .opt .lt { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--rose-soft); color: var(--rose); font-family: var(--serif); font-weight: 600; font-size: 14px; }
+  .opt[aria-pressed="true"] { border-color: var(--ink); background: #fff; }
+  .opt[aria-pressed="true"] .lt { background: var(--ink); color: #fff; }
+
+  /* ---------- report ---------- */
+  .report { display: grid; gap: 26px; margin-top: 14px; }
+  .r-hero { background: var(--hero); border-radius: 24px; padding: 22px 20px; }
+  .r-hero small { font-size: 12px; color: var(--mute); letter-spacing: .08em; }
+  .r-hero h4 { margin: 8px 0 0; font-size: 28px; font-weight: 900; line-height: 1.35; letter-spacing: .03em; }
+  .r-hero h4 .x { font-family: var(--serif); font-weight: 500; color: var(--rose); margin: 0 .25em; font-size: .75em; }
+  @media (min-width: 640px) { .r-hero { padding: 28px 28px; } .r-hero h4 { font-size: 34px; } }
+  .r-hero .arch { margin-top: 6px; font-family: var(--serif); color: var(--rose); font-size: 14px; letter-spacing: .1em; }
+  .r-hero p.d { margin-top: 12px; font-size: 15px; line-height: 1.85; }
+  .traits { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .traits span { background: rgba(255, 255, 255, .8); border-radius: 99px; padding: 5px 12px; font-size: 13px; }
+  .r-sec h5 { margin: 0 0 12px; font-size: 16px; font-weight: 900; letter-spacing: .04em; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .r-sec h5 small { font-weight: 400; font-size: 12px; color: var(--mute); }
+  .bars { display: grid; gap: 10px; }
+  .bar { display: grid; grid-template-columns: 84px minmax(0, 1fr) 40px; align-items: center; gap: 10px; font-size: 13px; }
+  .bar .tr { height: 8px; border-radius: 99px; background: #F5EEEC; overflow: hidden; }
+  .bar .tr i { display: block; height: 100%; border-radius: 99px; background: #E4C3BE; }
+  .bar.top .tr i { background: var(--rose); }
+  .bar em { font-style: normal; text-align: right; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .r-topics { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .r-topics li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 10px; padding: 16px; border-radius: 18px; background: #FDFAF9; border: 1px solid var(--line); }
+  .r-topics .n { grid-row: span 2; font-family: var(--serif); color: var(--rose); font-size: 20px; line-height: 1.2; }
+  .r-topics b { font-size: 16px; line-height: 1.55; }
+  .r-topics small { font-size: 13px; color: var(--mute); line-height: 1.7; }
+  .routes { display: grid; gap: 12px; }
+  @media (min-width: 900px) { .routes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .route { border-radius: 22px; padding: 18px; border: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+  .route.main { background: var(--hero); border-color: transparent; }
+  .route .pct { font-size: 38px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .route .pct span { font-size: 16px; margin-left: 2px; }
+  .route .nm { font-size: 16px; font-weight: 900; }
+  .route .nm small { font-weight: 400; color: var(--mute); font-size: 12px; margin-left: 6px; }
+  .route p { font-size: 13.5px; line-height: 1.75; color: #5E5553; }
+  .route .ex { font-size: 13px; color: var(--ink); background: rgba(255, 255, 255, .7); border-radius: 12px; padding: 8px 10px; line-height: 1.6; }
+  .route .go { margin-top: auto; border: 0; border-radius: 14px; padding: 11px 12px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: .06em; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .route .go svg { width: 16px; height: 16px; }
+  .r-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .topic-in { margin-top: 14px; display: grid; gap: 6px; }
+  .topic-in span { font-size: 13px; color: var(--mute); }
+  .topic-in input { width: 100%; border: 1px solid var(--line); background: #FDFAF9; border-radius: 14px; padding: 12px 14px; font: inherit; font-size: 15px; color: var(--ink); }
+  .topic-in input:focus { outline: none; border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
+
   /* ---------- script ---------- */
   .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; padding: 9px 14px; font-size: 13.5px; border: 1px solid var(--line); background: #fff; transition: border-color .2s, background .2s; }
@@ -179,7 +255,7 @@
   <div>
     <header class="topbar">
       <b>爆款定位九宮格</b>
-      <nav><a href="#gridCard">定位</a><a href="#scriptCard">腳本</a><a href="#titleCard">標題</a></nav>
+      <nav><a href="#quizCard" data-go="quiz">測定位</a><a href="#gridCard" data-go="pro">九宮格</a><a href="#scriptCard">腳本</a></nav>
     </header>
 
     <main>
@@ -202,10 +278,23 @@
         </div>
       </section>
 
+      <!-- 模式切換 -->
+      <section class="modes" role="tablist" aria-label="選擇模式">
+        <button class="mode" role="tab" data-mode="quiz"><b>新手無腦測定位</b><small>3 或 6 題選擇題，自動定義人設與方向</small></button>
+        <button class="mode" role="tab" data-mode="pro"><b>老手精準</b><small>已經知道自己是誰，直接點人設＋今天的主題</small></button>
+      </section>
+
+      <!-- 新手：定位測驗 -->
+      <section class="card" id="quizCard">
+        <div class="card-h"><span id="icQuiz"></span><h3>個人 IP 賽道定位診斷</h3><small>・ Persona Diagnosis</small></div>
+        <div id="quizBody"></div>
+      </section>
+
       <!-- 九宮格 -->
       <section class="card" id="gridCard">
         <div class="card-h"><span id="icGrid"></span><h3>九宮格定位矩陣</h3><small>・ 每格點一個，全部不用打字</small></div>
         <div class="tracks" role="radiogroup" aria-label="內容賽道" id="tracks"></div>
+        <label class="topic-in"><span>今天想拍的主題（可直接輸入，不填就用上方賽道）</span><input id="topicIn" maxlength="12" placeholder="例如：油肌底妝、記帳、面試" /></label>
         <div class="grid9" id="grid9"></div>
         <button class="gen" id="btnGen"><span id="icSpark"></span>一鍵生成爆款口播腳本</button>
       </section>
@@ -279,17 +368,29 @@ const ico = (n, size) => `<svg class="i" viewBox="0 0 24 24" ${size ? `style="wi
    ========================================================= */
 const TRACKS = [
   { id: 'beauty', label: '美妝保養', field: '保養', circle: '保養圈', act: '買保養品', trap: '跟風買網紅爆款', cost: '三萬多塊', years: '五年', kw: '保養',
-    p: ['先搞懂自己的膚質，再決定買什麼', '一次只換一樣產品，才知道誰真的有用', '防曬和保濕做好，就贏過一大半的人'] },
+    p: ['先搞懂自己的膚質，再決定買什麼', '一次只換一樣產品，才知道誰真的有用', '防曬和保濕做好，就贏過一大半的人'],
+    w: ['膚質不對，再貴的東西都是白花錢', '一次換很多樣，出問題根本不知道是誰', '這兩步沒做好，後面擦什麼都事倍功半'],
+    story: '以前我一個月換三瓶精華，臉反而越來越敏感；後來只留兩樣，三個月就穩下來了。' },
   { id: 'style', label: '穿搭', field: '穿搭', circle: '穿搭圈', act: '買衣服', trap: '照著模特兒買同款', cost: '一整個衣櫃的錢', years: '七年', kw: '穿搭',
-    p: ['先找出最適合自己的三個顏色', '買之前先想它能搭出幾套', '基本款買好一點，流行款買便宜一點'] },
+    p: ['先找出最適合自己的三個顏色', '買之前先想它能搭出幾套', '基本款買好一點，流行款買便宜一點'],
+    w: ['顏色對了，便宜的衣服也會很顯貴', '搭不出三套的衣服，買了只會躺在衣櫃', '錢花在每天穿的東西上，才是真的划算'],
+    story: '以前我衣櫃塞得滿滿的，每天早上還是覺得沒衣服穿；後來只留能互搭的，出門反而快了一倍。' },
   { id: 'money', label: '理財存錢', field: '理財', circle: '理財圈', act: '存錢投資', trap: '聽別人報明牌', cost: '好幾萬的學費', years: '十年', kw: '存錢',
-    p: ['先存好緊急預備金，再談投資', '看不懂的東西，一塊錢都別碰', '每個月固定自動轉帳，不靠意志力'] },
+    p: ['先存好緊急預備金，再談投資', '看不懂的東西，一塊錢都別碰', '每個月固定自動轉帳，不靠意志力'],
+    w: ['沒有預備金，一遇到急事就只能認賠出場', '看不懂，就代表你不知道風險在哪裡', '自動化之後，存錢就不用每個月跟自己拔河'],
+    story: '我剛出社會時，跟著別人買了一堆看不懂的東西，結果賠了好幾萬；後來改成先存再投資，心才終於安下來。' },
   { id: 'career', label: '職場成長', field: '職場', circle: '職場', act: '拚表現', trap: '埋頭苦幹等人發現', cost: '整整三年', years: '八年', kw: '職場',
-    p: ['做完的事，一定要讓主管看見', '開口先講結論，再講細節', '每半年更新一次履歷，知道自己的市場價'] },
+    p: ['做完的事，一定要讓主管看見', '開口先講結論，再講細節', '每半年更新一次履歷，知道自己的市場價'],
+    w: ['主管很忙，你不說，他真的不會知道', '結論先講，對方才願意聽你的理由', '知道自己的價值，談薪水和轉職才有底氣'],
+    story: '我剛工作那幾年，每天最晚走，考績卻普普通通；後來學會主動回報，半年內就被看見了。' },
   { id: 'creator', label: '自媒體', field: '自媒體', circle: '自媒體圈', act: '拍影片', trap: '每天硬拍不做定位', cost: '大半年', years: '三年', kw: '起號',
-    p: ['先定位再拍片，一個帳號只講一件事', '開頭三秒決定一切，先寫鉤子再寫內容', '每支影片結尾，都要給觀眾一個動作'] },
+    p: ['先定位再拍片，一個帳號只講一件事', '開頭三秒決定一切，先寫鉤子再寫內容', '每支影片結尾，都要給觀眾一個動作'],
+    w: ['平台要先知道你是誰，才會把你推給對的人', '觀眾滑走只要一秒，開頭留不住，內容再好也沒用', '有動作，才會有留言、收藏和追蹤'],
+    story: '我剛開始拍片時什麼都拍，半年才一百個粉絲；後來只講一個主題，三個月就破萬了。' },
   { id: 'life', label: '居家生活', field: '整理收納', circle: '收納圈', act: '整理房間', trap: '先買一堆收納盒', cost: '好幾千塊', years: '六年', kw: '整理',
-    p: ['先丟再整理，不要先買收納', '東西用完，就放回原本的位置', '每天睡前花五分鐘歸位就好'] },
+    p: ['先丟再整理，不要先買收納', '東西用完，就放回原本的位置', '每天睡前花五分鐘歸位就好'],
+    w: ['東西太多，再好的收納也裝不下', '固定位置，找東西就不用再花時間', '每天五分鐘，比每個月大掃除一次輕鬆太多'],
+    story: '以前我買了一堆收納盒，房間反而越收越亂；後來先丟掉一半的東西，整個家一下子就清爽了。' },
 ];
 
 /* 九宮格（05 為正中央的人設顯示區） */
@@ -348,20 +449,14 @@ const PAIN_LINE = {
 };
 const COST_LINE = '我當初就是這樣，白白花了{cost}。';
 
-/* 乾貨主體：主題 × 長短 */
+/* 乾貨主體：主題決定開頭與每一點的說法 */
 const BODY = {
-  避坑指南: {
-    short: '記住一句話：千萬別{trap}，{p1}。',
-    long: ['記住這 3 個千萬別：', '第一，千萬別{trap}；', '第二，千萬別只看別人的結果，不看自己的條件；', '第三，千萬別一次全換，一次只改一件事。', '反過來做就對了：{p1}。'],
-  },
-  顛覆認知: {
-    short: '真相是：{field}拚的不是努力，是順序。{p1}。',
-    long: ['真相是：{field}拚的不是努力，是順序。', '{p1}；', '{p2}；', '{p3}。'],
-  },
-  實用乾貨: {
-    short: '直接抄作業：{p1}。',
-    long: ['直接抄作業：', '第一，{p1}；', '第二，{p2}；', '第三，{p3}。'],
-  },
+  避坑指南: { intro: '我踩過的坑，濃縮成 3 個千萬別：', pts: ['第一，千萬別{trap}。{p1}', '第二，千萬別貪多。{p2}', '第三，千萬別半途而廢。{p3}'],
+    short: '記住：千萬別{trap}。{p1}，{p3}。' },
+  顛覆認知: { intro: '真相是：{field}拚的不是努力，是順序。', pts: ['第一，{p1}', '第二，{p2}', '第三，{p3}'],
+    short: '真相是：{field}拚的不是努力，是順序。{p1}，{p2}。' },
+  實用乾貨: { intro: '直接抄作業，總共三步：', pts: ['第一，{p1}', '第二，{p2}', '第三，{p3}'],
+    short: '直接抄作業：{p1}；{p2}；{p3}。' },
 };
 const TONE_CLOSE = {
   毒舌清醒: '醒醒吧，{field}從來沒有捷徑，但彎路是可以不走的。',
@@ -385,14 +480,16 @@ const EMPH = ['千萬別', '內行人', '踩過', '聽勸', '真相', '秘密', 
    STATE
    ========================================================= */
 const KEY = 'persona-grid-v1';
-const DEFAULT = { track: 'beauty', tone: '毒舌清醒', role: '圈內內行人', edge: '踩坑血淚', pain: '迷茫踩坑', theme: '避坑指南', rhythm: '扎心開場', len: '30 秒爆款', cta: '留言領取', hookIdx: 0, rate: 4.5 };
+const DEFAULT = { mode: 'quiz', topic: '', quiz: { depth: null, idx: 0, answers: {}, done: false, result: null }, track: 'beauty', tone: '毒舌清醒', role: '圈內內行人', edge: '踩坑血淚', pain: '迷茫踩坑', theme: '避坑指南', rhythm: '扎心開場', len: '30 秒爆款', cta: '留言領取', hookIdx: 0, rate: 4.5 };
 let S = { ...DEFAULT };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const track = () => TRACKS.find(t => t.id === S.track) || TRACKS[0];
-const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : (t[k] ?? '')); };
+const topicOn = () => S.mode === 'pro' && (S.topic || '').trim();
+const fieldName = () => topicOn() || track().field;
+const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : k === 'field' ? fieldName() : k === 'kw' && topicOn() ? topicOn().slice(0, 4) : (t[k] ?? '')); };
 const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()…—\-~～"'“”%]/g, '').length;
 const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 let script = [];
@@ -401,25 +498,19 @@ let script = [];
    GENERATE（依時長組裝段落）
    ========================================================= */
 function build() {
+  const t = track(), lv = S.len.startsWith('15') ? 1 : S.len.startsWith('30') ? 2 : 3;
   const hooks = HOOKS[S.theme][S.rhythm];
-  const hook = fill(hooks[S.hookIdx % hooks.length]);
   const body = BODY[S.theme];
-  const pain = TONE_OPEN[S.tone] + fill(PAIN_LINE[S.pain]).replace(/^你/, '你') + (S.rhythm === '代價說服' ? '\n' + fill(COST_LINE) : '');
-  const who = fill(ROLE_LINE[S.role]) + fill(EDGE_LINE[S.edge]);
-  const cta = fill(CTA_LINE[S.cta]);
-  const out = [{ k: '開場・HOOK', t: hook, hook: true }];
-  if (S.len.startsWith('15')) {
-    out.push({ k: '重點・VALUE', t: fill(body.short) });
-  } else if (S.len.startsWith('30')) {
-    out.push({ k: '痛點・PAIN', t: pain });
-    out.push({ k: '乾貨・VALUE', t: body.long.slice(0, S.theme === '避坑指南' ? 4 : 3).map(fill).join('\n').replace(/；$/, '。') });
-  } else {
-    out.push({ k: '身分・WHO', t: who });
-    out.push({ k: '痛點・PAIN', t: pain });
-    out.push({ k: '乾貨・VALUE', t: body.long.map(fill).join('\n') });
-    out.push({ k: '收尾・CLOSE', t: fill(TONE_CLOSE[S.tone]) });
-  }
-  out.push({ k: '行動・CTA', t: cta });
+  const out = [{ k: '開場・HOOK', t: fill(hooks[S.hookIdx % hooks.length]), hook: true }];
+  if (lv >= 2) out.push({ k: '身分・WHO', t: fill(ROLE_LINE[S.role]) + fill(EDGE_LINE[S.edge]) });
+  const pain = [TONE_OPEN[S.tone] + fill(PAIN_LINE[S.pain])];
+  if (lv === 3) pain.push(t.story);
+  if (lv >= 2 && S.rhythm === '代價說服') pain.push(fill(COST_LINE));
+  out.push({ k: '痛點・PAIN', t: pain.join('\n') });
+  if (lv === 1) out.push({ k: '乾貨・VALUE', t: fill(body.short) });
+  else out.push({ k: '乾貨・VALUE', t: [fill(body.intro), ...body.pts.map((x, i) => fill(x) + (lv === 3 ? '。\n' + t.w[i] : '') + (i < 2 ? '；' : '。'))].join('\n') });
+  if (lv >= 2) out.push({ k: '收尾・CLOSE', t: fill(TONE_CLOSE[S.tone]) });
+  out.push({ k: '行動・CTA', t: fill(CTA_LINE[S.cta]) });
   return out;
 }
 
@@ -435,7 +526,7 @@ function renderGrid() {
     <div class="cell center">
       <span class="no">${c.no}</span>
       <div class="tagline">${esc(p)}<i>×</i>${esc(th)}</div>
-      <small>${track().label}・${S.len.replace(' ', '')}</small>
+      <small>${esc(topicOn() || track().label)}・${S.len.replace(' ', '')}</small>
     </div>` : `
     <div class="cell" role="radiogroup" aria-label="${c.title}">
       <span class="no">${c.no}</span>
@@ -466,14 +557,14 @@ function renderScript(animate) {
   $('#stWords').innerHTML = `${words}<span>字</span>`;
   const T = TITLES[S.theme];
   $('#titles').innerHTML = T.map((t, i) => `<li><span>0${i + 1}</span>${esc(fill(t))}</li>`).join('');
-  $('#tags').innerHTML = [track().field, track().label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(t => `<span>#${esc(t)}</span>`).join('');
+  $('#tags').innerHTML = [fieldName(), track().label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(t => `<span>#${esc(t)}</span>`).join('');
 }
 
 function scriptText() {
   const t = track();
   return [`【爆款口播腳本】${personaParts().join(' × ')}`, `${t.label}・${S.len}・${countChars(script.map(x => x.t).join(''))} 字`, '',
     ...script.map(x => x.t), '', '── 小紅書標題 ──', ...TITLES[S.theme].map((s, i) => `${i + 1}. ${fill(s)}`), '',
-    [t.field, t.label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(x => '#' + x).join(' ')].join('\n');
+    [fieldName(), t.label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(x => '#' + x).join(' ')].join('\n');
 }
 
 /* =========================================================
@@ -550,6 +641,228 @@ document.addEventListener('keydown', e => {
 });
 
 /* =========================================================
+   新手無腦測定位：題庫 × 計分 × 診斷報告
+   ========================================================= */
+const ARCH = {
+  truth: { name: '清醒毒舌派', tag: '敢講真話的內行人', theme: '顛覆認知',
+    desc: '你說話直接、看得透，最適合當觀眾的「清醒劑」：拆穿假象、講大實話，用一針見血換來討論和轉發。',
+    traits: ['直白敢講', '一針見血', '反常識觀點'],
+    grid: { tone: '毒舌清醒', role: '圈內內行人', edge: '資訊落差', rhythm: '扎心開場', cta: '避坑轉發' },
+    topics: [
+      { t: '{field}圈很少人說破的 3 個真相', how: '對鏡頭直講，一支只拆一個假象，開頭先丟結論。' },
+      { t: '那些被說得很神的{field}方法，其實沒那麼有用', how: '列出常見說法，逐條打臉，最後給你的正解。' },
+      { t: '{field}新手最容易聽信的 3 句話', how: '把話術做成大字卡，一句一句拆，節奏要快。' } ],
+    moat: '固定用「講句難聽的」這類大實話口頭禪開場，讓觀眾一聽就認出你。' },
+  saver: { name: '避坑過來人', tag: '幫你省錢、少走彎路的過來人', theme: '避坑指南',
+    desc: '你踩過坑、花過冤枉錢，也願意分享。觀眾最信任「真的經歷過的人」，你的血淚史就是最強的說服力。',
+    traits: ['經驗豐富', '真實踩坑', '實用省錢'],
+    grid: { tone: '幽默吐槽', role: '避坑過來人', edge: '踩坑血淚', rhythm: '代價說服', cta: '收藏重看' },
+    topics: [
+      { t: '我在{field}上花了{cost}，換來的 3 個教訓', how: '翻出當初買錯的東西或紀錄，用實物和數字說故事。' },
+      { t: '{field}新手千萬別做的 5 件事', how: '清單式快節奏，每一點配一個「錯誤 vs 正確」對照。' },
+      { t: '如果{field}能重來，我會這樣做', how: '用「寫給三年前的自己」的口吻，溫暖又有收藏價值。' } ],
+    moat: '自嘲式幽默加上真實的踩坑金額，讓觀眾覺得「這個人跟我一樣」，又忍不住想收藏。' },
+  logic: { name: '乾貨拆解派', tag: '把複雜事情講成一二三的專家', theme: '實用乾貨',
+    desc: '你條理分明，擅長把複雜的東西拆成步驟。觀眾會因為「看完就會」而收藏、追蹤，最容易建立專業感。',
+    traits: ['條理分明', '邏輯清楚', '步驟化教學'],
+    grid: { tone: '溫柔共情', role: '實操狂人', edge: '實戰結果', rhythm: '數字衝擊', cta: '留言領取' },
+    topics: [
+      { t: '3 個步驟搞懂{field}，新手直接抄作業', how: '畫面放大步驟編號，一步一個重點，結尾給清單。' },
+      { t: '{field}的底層邏輯，一張圖講清楚', how: '用白板或字卡畫出架構，把複雜概念拆成三層。' },
+      { t: '我實測 30 天的{field}方法，結果整理給你', how: '用 Day 1 和 Day 30 的對比與數字說話，建立可信度。' } ],
+    moat: '固定的「一二三」結構和收尾清單，讓觀眾養成「看完就截圖」的習慣。' },
+  warm: { name: '溫柔陪伴派', tag: '讓人覺得被理解的朋友', theme: '顛覆認知',
+    desc: '你共情力強，擅長安慰和陪伴。觀眾願意為「被理解的感覺」留言、轉發，你的粉絲黏著度會特別高。',
+    traits: ['共情力強', '溫柔陪伴', '情緒價值'],
+    grid: { tone: '溫柔共情', role: '避坑過來人', edge: '實戰結果', rhythm: '代價說服', cta: '留言領取' },
+    topics: [
+      { t: '{field}讓你很焦慮的時候，我想跟你說的話', how: '像跟朋友視訊一樣自然，燈光柔和，語速放慢。' },
+      { t: '允許自己慢一點：我的{field}心態轉變', how: '分享自己的低潮和轉折，最後給一個小行動。' },
+      { t: '給正在{field}卡關的你，3 個溫柔提醒', how: '三點都從觀眾的心情出發，再給具體做法。' } ],
+    moat: '溫柔的語氣和固定的結尾祝福語，讓觀眾把你當成「可以被安慰的地方」。' },
+};
+const ARCH_ORDER = ['truth', 'saver', 'logic', 'warm'];
+
+const QUESTIONS = {
+  q1: { w: 2, q: '親戚或朋友平時覺得你說話最像什麼風格？', opts: [
+    { t: '說話毒舌直白，針針見血，不給留情面', a: 'truth' },
+    { t: '經驗豐富，常提醒別人哪裡有坑、怎麼省錢', a: 'saver' },
+    { t: '條理分明，喜歡把複雜事情拆解成一二三點', a: 'logic' },
+    { t: '共情力強，擅長安慰與陪伴，給情緒價值', a: 'warm' } ] },
+  q2: { w: 1, q: '你平時最不爽或最看不慣這個行業／社會的什麼事？', opts: [
+    { t: '大家都在吹牛造假，假裝很厲害', a: 'truth' },
+    { t: '新人一直盲目跟風，白交一大堆學費', a: 'saver' },
+    { t: '大部分人只會死幹，完全不懂底層邏輯', a: 'logic' },
+    { t: '很多人明明很努力，卻沒有人好好接住他們的情緒', a: 'warm' } ] },
+  q3: { w: 2, q: '你希望看完影片的人，對你產生什麼第一印象？', opts: [
+    { t: '這個人太敢講了，說的都是大實話', a: 'truth' },
+    { t: '跟著他能少走三年彎路，一定要收藏', a: 'saver' },
+    { t: '這個人專業度極高，邏輯超強', a: 'logic' },
+    { t: '好溫暖，覺得自己被理解了', a: 'warm' } ] },
+  q4: { w: 0, q: '你在哪個領域花了最多時間或金錢、累積最多經驗？', track: true, opts: [
+    { t: '美妝保養', track: 'beauty' }, { t: '穿搭', track: 'style' }, { t: '理財存錢', track: 'money' },
+    { t: '職場成長', track: 'career' }, { t: '自媒體', track: 'creator' }, { t: '居家生活', track: 'life' } ] },
+  q5: { w: 1, q: '影片被留言酸的時候，你最可能怎麼做？', opts: [
+    { t: '直接回，講到對方說不出話', a: 'truth' },
+    { t: '拿出自己踩過的坑，用經驗說服他', a: 'saver' },
+    { t: '列數據、講道理，讓大家自己判斷', a: 'logic' },
+    { t: '不太在意，繼續溫柔回覆其他人', a: 'warm' } ] },
+  q6: { w: 1, q: '哪一種拍片方式，你最自在？', opts: [
+    { t: '對著鏡頭直接開講，不用稿', a: 'truth' },
+    { t: '開箱實測，邊做邊講', a: 'saver' },
+    { t: '先寫好大綱，條列重點再拍', a: 'logic' },
+    { t: '像跟朋友聊天一樣分享心情', a: 'warm' } ] },
+};
+const QSETS = { simple: ['q1', 'q2', 'q3'], detail: ['q1', 'q4', 'q2', 'q5', 'q6', 'q3'] };
+const THEME_DESC = {
+  顛覆認知: '拆穿常見迷思、講出反常識的真相，最容易引發討論與轉發。',
+  避坑指南: '分享踩過的坑與千萬別做的事，觀眾會為了少走彎路而收藏。',
+  實用乾貨: '步驟、清單、方法論，看完就能照做，最能建立專業與信任。',
+};
+const LETTERS = 'ABCDEF';
+
+function quizResult() {
+  const qz = S.quiz, sc = { truth: 0, saver: 0, logic: 0, warm: 0 };
+  QSETS[qz.depth].forEach(id => { const q = QUESTIONS[id], o = q.opts[qz.answers[id]]; if (o && o.a) sc[o.a] += q.w; });
+  const first = QUESTIONS.q1.opts[qz.answers.q1]?.a;
+  const rank = ARCH_ORDER.slice().sort((a, b) => sc[b] - sc[a] || (a === first ? -1 : b === first ? 1 : 0));
+  return { primary: rank[0], secondary: rank[1], scores: sc };
+}
+function routesFor(r) {
+  const A = ARCH[r.primary], themes = ['顛覆認知', '避坑指南', '實用乾貨'];
+  const support = A.theme === '實用乾貨' ? '避坑指南' : '實用乾貨';
+  const moat = themes.find(x => x !== A.theme && x !== support);
+  return [
+    { id: 'main', pct: 70, name: '主攻路線', sub: '流量', theme: A.theme, desc: '你最容易拿到結果、最適合長期輸出的方向。' + THEME_DESC[A.theme], ex: A.topics[0].t, over: {} },
+    { id: 'support', pct: 20, name: '輔助路線', sub: '變現', theme: support, desc: '用清單、教學和實測建立信任與專業度，讓觀眾願意追蹤、詢問、下單。', ex: ARCH[r.secondary].topics[1].t, over: { rhythm: '數字衝擊', edge: '實戰結果', cta: '留言領取' } },
+    { id: 'moat', pct: 10, name: '人設護城河', sub: '記憶點', theme: moat, desc: A.moat, ex: A.topics[2].t, over: { cta: '收藏重看' } },
+  ];
+}
+function applyArch(key) { Object.assign(S, ARCH[key].grid, { theme: ARCH[key].theme, hookIdx: 0 }); }
+
+function renderQuiz() {
+  const qz = S.quiz, box = $('#quizBody');
+  if (qz.done && qz.result) return renderReport();
+  if (!qz.depth) {
+    box.innerHTML = `
+      <p class="q-intro">不知道自己適合拍什麼？回答幾題選擇題，系統會幫你定義人設，推薦最適合你的 3 個爆款主題和長期內容路線。</p>
+      <p class="q-label">先選你想經營的領域（詳細測驗會再問你一次）</p>
+      <div class="tracks" role="radiogroup" aria-label="經營領域">${TRACKS.map(t => `<button class="chip" role="radio" aria-checked="${t.id === S.track}" data-qtrack="${t.id}">${t.label}</button>`).join('')}</div>
+      <p class="q-label">選擇測驗深度</p>
+      <div class="depths">
+        <button class="depth" data-depth="simple"><span class="no">QUICK</span><b>簡單問・3 題</b><small>約 30 秒，快速抓出你的說話風格與人設方向。</small></button>
+        <button class="depth" data-depth="detail"><span class="no">DETAILED</span><b>詳細問・6 題</b><small>約 1 分鐘，多看你的資源累積、心理強項與拍攝習慣。</small></button>
+      </div>`;
+    return;
+  }
+  const list = QSETS[qz.depth], id = list[qz.idx], q = QUESTIONS[id];
+  box.innerHTML = `
+    <div class="qprog"><i style="width:${(qz.idx / list.length * 100).toFixed(0)}%"></i></div>
+    <div class="qmeta"><span>第 ${qz.idx + 1} ／ ${list.length} 題</span><button data-qback>${qz.idx ? '上一題' : '重新選擇深度'}</button></div>
+    <p class="qtext rise">${esc(q.q)}</p>
+    <div class="qopts">${q.opts.map((o, i) => `<button class="opt rise" style="animation-delay:${i * 40}ms" data-qopt="${i}" aria-pressed="${qz.answers[id] === i}"><span class="lt">${LETTERS[i]}</span><span>${esc(o.t)}</span></button>`).join('')}</div>`;
+}
+
+function renderReport() {
+  const r = S.quiz.result, A = ARCH[r.primary], B = ARCH[r.secondary], t = track();
+  const total = Object.values(r.scores).reduce((a, b) => a + b, 0) || 1;
+  const persona = TONE_SHORT[A.grid.tone] + ROLE_SHORT[A.grid.role];
+  $('#quizBody').innerHTML = `
+  <div class="report rise">
+    <div class="r-hero">
+      <small>你的核心人設賽道</small>
+      <h4>${esc(persona)}<span class="x">×</span>${esc(t.label)}</h4>
+      <p class="arch">${A.name}・${A.tag}</p>
+      <p class="d">${A.desc}</p>
+      <div class="traits">${A.traits.map(x => `<span>${x}</span>`).join('')}<span>第二特質：${B.name}</span></div>
+    </div>
+    <div class="r-sec">
+      <h5>人設組成 <small>依你的回答計分</small></h5>
+      <div class="bars">${ARCH_ORDER.slice().sort((a, b) => r.scores[b] - r.scores[a]).map(k => `
+        <div class="bar ${k === r.primary ? 'top' : ''}"><span>${ARCH[k].name}</span><span class="tr"><i style="width:${Math.round(r.scores[k] / total * 100)}%"></i></span><em>${Math.round(r.scores[k] / total * 100)}%</em></div>`).join('')}</div>
+    </div>
+    <div class="r-sec">
+      <h5>最適合你的 3 個爆款主題 <small>拍什麼、怎麼拍</small></h5>
+      <ol class="r-topics">${A.topics.map((x, i) => `<li><span class="n">0${i + 1}</span><b>${esc(fill(x.t))}</b><small>拍法：${esc(x.how)}</small></li>`).join('')}</ol>
+    </div>
+    <div class="r-sec">
+      <h5>長期內容路線建議 <small>70／20／10 三大原則・點選路線，一鍵產出完整口播稿</small></h5>
+      <div class="routes">${routesFor(r).map(x => `
+        <div class="route ${x.id === 'main' ? 'main' : ''}">
+          <div class="pct">${x.pct}<span>%</span></div>
+          <div class="nm">${x.name}<small>${x.sub}・${x.theme}</small></div>
+          <p>${esc(x.desc)}</p>
+          <div class="ex">例如：${esc(fill(x.ex))}</div>
+          <button class="go" data-route="${x.id}">${ico('spark')}產出這條路線的口播稿</button>
+        </div>`).join('')}</div>
+    </div>
+    <div class="r-actions">
+      <button class="btn" data-qcopy>${ico('copy')}複製診斷報告</button>
+      <button class="btn" data-qpro>${ico('grid')}用老手模式微調</button>
+      <button class="btn" data-qreset>${ico('redo')}重新測驗</button>
+    </div>
+  </div>`;
+}
+
+function reportText() {
+  const r = S.quiz.result, A = ARCH[r.primary], t = track();
+  return [`【個人 IP 定位診斷報告】`, `核心人設賽道：${TONE_SHORT[A.grid.tone] + ROLE_SHORT[A.grid.role]} × ${t.label}`, `類型：${A.name}・${A.tag}`, A.desc, '',
+    '最適合你的 3 個爆款主題：', ...A.topics.map((x, i) => `${i + 1}. ${fill(x.t)}（拍法：${x.how}）`), '',
+    '長期內容路線（70／20／10）：', ...routesFor(r).map(x => `・${x.name} ${x.pct}%（${x.sub}・${x.theme}）：${x.desc} 例如：${fill(x.ex)}`)].join('\n');
+}
+
+function setMode(m) {
+  S.mode = m; save();
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === m));
+  $('#quizCard').classList.toggle('is-hidden', m !== 'quiz');
+  $('#gridCard').classList.toggle('is-hidden', m !== 'pro');
+  const pending = m === 'quiz' && !S.quiz.scriptReady;
+  $('#scriptCard').classList.toggle('is-hidden', pending);
+  $('#titleCard').classList.toggle('is-hidden', pending);
+  document.querySelectorAll('#sideNav a[data-go]').forEach(a => a.classList.toggle('on', a.dataset.go === m));
+  renderGrid(); renderScript(false);
+}
+
+$('#quizBody').addEventListener('click', async e => {
+  const qz = S.quiz, el = e.target;
+  const tb = el.closest('[data-qtrack]');
+  if (tb) { S.track = tb.dataset.qtrack; save(); renderQuiz(); renderGrid(); return; }
+  const d = el.closest('[data-depth]');
+  if (d) { Object.assign(qz, { depth: d.dataset.depth, idx: 0, answers: {}, done: false, result: null }); save(); renderQuiz(); return; }
+  if (el.closest('[data-qback]')) { if (qz.idx) qz.idx--; else qz.depth = null; save(); renderQuiz(); return; }
+  const o = el.closest('[data-qopt]');
+  if (o) {
+    const list = QSETS[qz.depth], id = list[qz.idx], q = QUESTIONS[id], i = +o.dataset.qopt;
+    qz.answers[id] = i;
+    if (q.track) S.track = q.opts[i].track;
+    o.setAttribute('aria-pressed', 'true');
+    setTimeout(() => {
+      if (qz.idx < list.length - 1) { qz.idx++; save(); renderQuiz(); return; }
+      qz.result = quizResult(); qz.done = true;
+      applyArch(qz.result.primary); save(); renderQuiz(); renderGrid();
+      $('#quizCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toast('診斷完成，這是你的定位報告');
+    }, 180);
+    return;
+  }
+  const rt = el.closest('[data-route]');
+  if (rt) {
+    const route = routesFor(qz.result).find(x => x.id === rt.dataset.route);
+    applyArch(qz.result.primary); Object.assign(S, { theme: route.theme }, route.over);
+    qz.scriptReady = true; save(); setMode('quiz'); renderScript(true);
+    $('#scriptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toast(`已產出「${route.name}」完整口播稿`);
+    return;
+  }
+  if (el.closest('[data-qcopy]')) { toast((await copy(reportText())) ? '診斷報告已複製' : '複製失敗，請手動選取文字'); return; }
+  if (el.closest('[data-qpro]')) { setMode('pro'); $('#gridCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('已帶入你的人設，可以直接微調'); return; }
+  if (el.closest('[data-qreset]')) { S.quiz = { depth: null, idx: 0, answers: {}, done: false, result: null }; save(); setMode('quiz'); renderQuiz(); }
+});
+document.addEventListener('click', e => { const m = e.target.closest('[data-mode]'); if (m) { setMode(m.dataset.mode); } });
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) setMode(g.dataset.go); });
+$('#topicIn').addEventListener('input', e => { S.topic = e.target.value; save(); renderGrid(); renderScript(false); });
+
+/* =========================================================
    INIT
    ========================================================= */
 (function init() {
@@ -558,8 +871,10 @@ document.addEventListener('keydown', e => {
   const h = d.getHours();
   $('#greet').textContent = (h < 11 ? '早安' : h < 18 ? '午安' : '晚安') + '，創作者';
   $('#avatar').innerHTML = ico('user', 24);
-  $('#sideNav').innerHTML = [['grid', '定位矩陣', 'Persona Grid', '#gridCard'], ['mic', '口播腳本', 'Script', '#scriptCard'], ['title', '標題標籤', 'Titles & Tags', '#titleCard']]
-    .map(([i, a, b, href], k) => `<a href="${href}" class="${k === 0 ? 'on' : ''}">${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
+  $('#sideNav').innerHTML = [['spark', '新手測定位', 'Diagnosis', '#quizCard', 'quiz'], ['grid', '老手九宮格', 'Persona Grid', '#gridCard', 'pro'], ['mic', '口播腳本', 'Script', '#scriptCard', ''], ['title', '標題標籤', 'Titles & Tags', '#titleCard', '']]
+    .map(([i, a, b, href, go]) => `<a href="${href}" ${go ? `data-go="${go}"` : ''}>${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
+  $('#icQuiz').innerHTML = ico('spark');
+  $('#topicIn').value = S.topic || '';
   $('#icGrid').innerHTML = ico('grid'); $('#icMic').innerHTML = ico('mic'); $('#icTitle').innerHTML = ico('title'); $('#icLock').innerHTML = ico('lock');
   $('#icSpark').innerHTML = ico('spark');
   $('#btnPrompter').innerHTML = ico('mic') + '提詞器';
@@ -568,10 +883,8 @@ document.addEventListener('keydown', e => {
   $('#btnRegen').innerHTML = ico('redo') + '換節奏重寫';
   $('#btnCopyTitle').innerHTML = ico('copy') + '複製標題';
   $('#tpClose').innerHTML = ico('close');
-  document.querySelectorAll('#sideNav a').forEach(a => a.addEventListener('click', () => {
-    document.querySelectorAll('#sideNav a').forEach(x => x.classList.toggle('on', x === a));
-  }));
-  renderGrid(); renderScript(false);
+  if (!S.quiz || typeof S.quiz !== 'object') S.quiz = { depth: null, idx: 0, answers: {}, done: false, result: null };
+  renderQuiz(); setMode(S.mode === 'pro' ? 'pro' : 'quiz');
 })();
 </script>
 </body>
