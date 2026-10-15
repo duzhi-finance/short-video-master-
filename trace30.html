@@ -359,7 +359,7 @@ const RESEARCH = {
 
 const PLATFORM_CTA_HINT = { 'IG Reels': '引導收藏、分享與限時動態轉發', Threads: '引導留言討論與轉發', 'YouTube Shorts': '引導訂閱與看下一支', TikTok: '引導關注與留言', 小紅書: '引導收藏筆記與留言' };
 const GOAL_NEED = { 快速漲粉: '看完就想追蹤的實用內容', 建立專業信任: '可信、專業、有依據的建議', '提高產品轉換/銷售': '能直接解決問題的方案與購買理由', 增加留言互動: '說中心聲、讓他想留言分享的觀點' };
-const LEN_CHARS = { '15秒超短衝擊': 80, '30秒黃金爆款': 150, '45秒深度轉化': 230 };
+const LEN_CHARS = { '15秒超短衝擊': 120, '30秒黃金爆款': 220, '45秒深度轉化': 320 };
 
 const CHECKS = [
   { t: '刪除贅詞', d: '砍掉「首先、此外、總結來說」等生硬連接詞。' },
@@ -402,7 +402,7 @@ const setAns = (id, v) => { S.ans = S.ans || {}; S.ans[id] = v; };
 const hasProduct = () => { const p = ans('_c.product'); return p && p !== '沒有產品'; };
 function interviewLines() {
   const lines = [];
-  const add = (q, v) => { if (Array.isArray(v) ? v.length : (v || '').trim()) lines.push(`- ${q.replace(/？$/, '')}：${Array.isArray(v) ? v.join('、') : v.trim()}`); };
+  const add = (q, v) => { if (Array.isArray(v) ? v.length : (v || '').trim()) lines.push(`- ${q.replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我')}：${Array.isArray(v) ? v.join('、') : v.trim()}`); };
   DOMAIN_Q[dKey()].forEach(q => add(q.q, ans(q.id)));
   COMMON_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
   if (hasProduct()) PRODUCT_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
@@ -430,27 +430,27 @@ const settingLine = () => `主題：${topic()}\n格式：${fmts().join('、')}\n
 function traceParts() {
   const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks(), F = fmts();
   const lenTxt = parseInt(S.len) + ' 秒', hasVo = F.includes('短影音口播稿');
-  const out = ['3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試'];
+  const out = ['研究筆記：先列出你查證過的 3～5 個關鍵知識點（例如原理、成分、數據、規定），每點標註資料來源類型；後面的文案要用上這些資訊', '3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試'];
   if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}`);
-  if (F.includes('圖文貼文')) out.push('一篇圖文貼文：分段清楚，每段不超過 3 行，可以直接貼到社群');
+  if (F.includes('圖文貼文')) out.push('一篇完整圖文貼文：開頭一句抓住人，中間分段講清楚重點與知識，結尾收在行動，可以直接貼到社群');
   if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
-  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag');
+  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出【我的拍攝資訊】和【我的補充】各自用在文案的哪一句；漏掉的請補回文案再交給我');
   const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
   const il = interviewLines();
-  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【補充】\n${material()}` : '');
+  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【我的補充（每一點都必須寫進文案，不可省略或淡化）】\n${material()}` : '');
   const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
-  if (hasVo) cons.push(`口播文案控制在 ${chars} 字左右，最多不超過 250 字。`);
-  if (F.includes('圖文貼文')) cons.push('圖文貼文控制在 300 字內。');
+  if (hasVo) cons.push(`口播文案約 ${chars} 字（${parseInt(S.len)} 秒左右的唸稿量），內容要完整、有細節，不要只寫幾句帶過。`);
+  if (F.includes('圖文貼文')) cons.push('圖文貼文約 400～600 字，段落之間要有呼吸感。');
   const feel = ans('_c.feel'), sp = SPONSOR_RULE[ans('_c.product')];
   if (feel) cons.push(`呈現感覺：${FEEL_GUIDE[feel]}。`);
   if (sp) cons.push(sp);
   cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n動筆前，${RESEARCH[dKey()]}。知識的部分由你負責查證，我的回答只提供個人經驗與真實感受。` },
+    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識、我的拍攝資訊和我的補充全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
     { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對「${topic()}」這個主題特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
     { L: 'C', h: 'Constraint', zh: '限制', t: cons.map((x, i) => `${i + 1}. ${x}`).join('\n') },
-    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考開場：\n${hooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n\n請參考這些開場的語氣與節奏，寫出這一篇。` },
+    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考開場：\n${hooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n\n請參考這些開場的語氣與節奏寫出這一篇。中段要有具體知識、數字或步驟，不要只有情緒和口號。` },
   ];
 }
 const RULE = '━━━━━━━━━━━━━━━━━━';
