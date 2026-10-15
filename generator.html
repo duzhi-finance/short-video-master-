@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Viral Script Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  if (window.tailwind) tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          canvas: 'rgb(var(--c-base) / <alpha-value>)',
+          ink: 'rgb(var(--c-ink) / <alpha-value>)',
+          mute: 'rgb(var(--c-mute) / <alpha-value>)',
+          accent: 'rgb(var(--c-accent) / <alpha-value>)',
+          alert: 'rgb(var(--c-alert) / <alpha-value>)',
+          ok: 'rgb(var(--c-ok) / <alpha-value>)',
+        },
+        fontFamily: {
+          serif: ['"Source Han Serif TC"', '"Noto Serif TC"', '"Songti TC"', 'serif'],
+          sans: ['"Noto Sans TC"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  /* Layout: mobile-first single column → desktop 3-step builder row + 4-column storyboard.
+     Theme: AURA-NAVI dark glass (default) · EYELASH minimal light. */
+  :root {
+    --c-base: 7 9 15; --c-ink: 233 236 244; --c-mute: 138 147 166; --c-accent: 157 180 255; --c-alert: 255 138 122; --c-ok: 126 220 180;
+    --glass: rgba(20, 25, 40, .55); --glass-strong: rgba(24, 30, 48, .82); --field: rgba(255, 255, 255, .04);
+    --line: rgba(255, 255, 255, .09); --line-strong: rgba(255, 255, 255, .16);
+    --glow: 0 0 0 1px rgba(157, 180, 255, .35), 0 0 24px rgba(157, 180, 255, .18);
+    --aura-1: rgba(90, 110, 255, .22); --aura-2: rgba(150, 100, 255, .14); --aura-3: rgba(60, 200, 255, .10);
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --c-base: 246 246 244; --c-ink: 18 19 24; --c-mute: 107 111 122; --c-accent: 61 79 196; --c-alert: 194 65 45; --c-ok: 22 128 90;
+      --glass: rgba(255, 255, 255, .72); --glass-strong: rgba(255, 255, 255, .92); --field: rgba(255, 255, 255, .9);
+      --line: rgba(18, 19, 24, .09); --line-strong: rgba(18, 19, 24, .18);
+      --glow: 0 0 0 1px rgba(61, 79, 196, .45), 0 8px 24px rgba(61, 79, 196, .10);
+      --aura-1: rgba(61, 79, 196, .07); --aura-2: rgba(150, 120, 220, .05); --aura-3: rgba(0, 0, 0, 0);
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --c-base: 246 246 244; --c-ink: 18 19 24; --c-mute: 107 111 122; --c-accent: 61 79 196; --c-alert: 194 65 45; --c-ok: 22 128 90;
+    --glass: rgba(255, 255, 255, .72); --glass-strong: rgba(255, 255, 255, .92); --field: rgba(255, 255, 255, .9);
+    --line: rgba(18, 19, 24, .09); --line-strong: rgba(18, 19, 24, .18);
+    --glow: 0 0 0 1px rgba(61, 79, 196, .45), 0 8px 24px rgba(61, 79, 196, .10);
+    --aura-1: rgba(61, 79, 196, .07); --aura-2: rgba(150, 120, 220, .05); --aura-3: rgba(0, 0, 0, 0);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --c-base: 7 9 15; --c-ink: 233 236 244; --c-mute: 138 147 166; --c-accent: 157 180 255; --c-alert: 255 138 122; --c-ok: 126 220 180;
+    --glass: rgba(20, 25, 40, .55); --glass-strong: rgba(24, 30, 48, .82); --field: rgba(255, 255, 255, .04);
+    --line: rgba(255, 255, 255, .09); --line-strong: rgba(255, 255, 255, .16);
+    --glow: 0 0 0 1px rgba(157, 180, 255, .35), 0 0 24px rgba(157, 180, 255, .18);
+    --aura-1: rgba(90, 110, 255, .22); --aura-2: rgba(150, 100, 255, .14); --aura-3: rgba(60, 200, 255, .10);
+    color-scheme: dark;
+  }
+
+  html, body { background: rgb(var(--c-base)); color: rgb(var(--c-ink)); }
+  body {
+    font-family: "Noto Sans TC", system-ui, sans-serif; letter-spacing: .02em;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(900px 520px at 85% -10%, var(--aura-1), transparent 65%),
+      radial-gradient(700px 460px at -10% 20%, var(--aura-2), transparent 60%),
+      radial-gradient(800px 500px at 50% 110%, var(--aura-3), transparent 60%);
+    background-attachment: fixed;
+  }
+  .serif { font-family: "Source Han Serif TC", "Noto Serif TC", "Songti TC", serif; }
+  h1, h2, h3 { text-wrap: balance; }
+  .eyebrow { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgb(var(--c-mute)); }
+  .glass { background: var(--glass); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+  .line { border-color: var(--line); }
+  .divide-line > * + * { border-color: var(--line); }
+  .field { background: var(--field); border: 1px solid var(--line); color: rgb(var(--c-ink)); }
+  .field::placeholder { color: rgb(var(--c-mute) / .7); }
+  .field:focus { outline: none; border-color: rgb(var(--c-accent) / .7); box-shadow: 0 0 0 3px rgb(var(--c-accent) / .15); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+  .thin-scroll::-webkit-scrollbar { width: 6px; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: rgba(150,150,170,.3); border-radius: 99px; }
+  svg.i { width: 1em; height: 1em; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 999px; font-size: .875rem; letter-spacing: .04em; transition: background .2s, border-color .2s, box-shadow .2s, color .2s, opacity .2s; }
+  .btn-primary { background: rgb(var(--c-ink)); color: rgb(var(--c-base)); }
+  .btn-primary:hover { box-shadow: var(--glow); }
+  .btn-accent { background: rgb(var(--c-accent) / .14); color: rgb(var(--c-accent)); border: 1px solid rgb(var(--c-accent) / .4); }
+  .btn-accent:hover { background: rgb(var(--c-accent) / .22); box-shadow: var(--glow); }
+  .btn-ghost { border: 1px solid var(--line-strong); color: rgb(var(--c-ink) / .85); }
+  .btn-ghost:hover { border-color: rgb(var(--c-accent) / .6); color: rgb(var(--c-ink)); }
+
+  [contenteditable] { outline: none; border-radius: 6px; white-space: pre-wrap; transition: background .2s, box-shadow .2s; cursor: text; }
+  [contenteditable]:hover { background: rgb(var(--c-ink) / .04); }
+  [contenteditable]:focus { background: rgb(var(--c-accent) / .06); box-shadow: 0 0 0 1px rgb(var(--c-accent) / .6); }
+  [contenteditable]:empty::before { content: attr(data-placeholder); color: rgb(var(--c-mute)); }
+  .has-risk { box-shadow: inset 2px 0 0 rgb(var(--c-alert)); padding-left: .6rem; }
+
+  .pick { background: var(--field); border: 1px solid var(--line); transition: border-color .2s, box-shadow .2s, background .2s; }
+  .pick:hover { border-color: var(--line-strong); }
+  .pick[aria-checked="true"] { border-color: rgb(var(--c-accent) / .7); box-shadow: var(--glow); background: rgb(var(--c-accent) / .08); }
+  .pick .dot { width: 8px; height: 8px; border-radius: 99px; border: 1px solid var(--line-strong); }
+  .pick[aria-checked="true"] .dot { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); box-shadow: 0 0 10px rgb(var(--c-accent) / .8); }
+  .chip { border: 1px solid var(--line); background: var(--field); }
+  .chip[aria-pressed="true"] { background: rgb(var(--c-ink)); color: rgb(var(--c-base)); border-color: rgb(var(--c-ink)); }
+  .tag { font-size: 11px; letter-spacing: .12em; padding: .15rem .6rem; border-radius: 999px; border: 1px solid var(--line-strong); color: rgb(var(--c-mute)); }
+  .tag-hook { border-color: rgb(var(--c-accent) / .6); color: rgb(var(--c-accent)); box-shadow: 0 0 12px rgb(var(--c-accent) / .2); }
+  .meter { background: rgb(var(--c-ink) / .08); }
+  :focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+  @keyframes rise { from { opacity: .001; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .45s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes flash { 0% { background: rgb(var(--c-accent) / .18); } 100% { background: transparent; } }
+  .flash { animation: flash 1s ease-out; }
+
+  #toast { transition: opacity .3s, transform .3s; background: var(--glass-strong); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--line-strong); color: rgb(var(--c-ink)); }
+  #prompter { transition: opacity .25s; background: rgba(3, 4, 8, .94); color: #F2F4FA; }
+  .mirror { transform: scaleX(-1); }
+  .reading-line { background: linear-gradient(180deg, transparent, rgba(157,180,255,.12) 45%, rgba(157,180,255,.12) 55%, transparent); }
+  .breath { display: inline-block; width: .5em; height: 2px; margin: 0 .3em .3em; background: rgba(157,180,255,.8); vertical-align: middle; border-radius: 2px; }
+  .tp-btn { border: 1px solid rgba(255,255,255,.22); border-radius: 999px; color: #F2F4FA; }
+  .tp-btn:hover { border-color: rgba(255,255,255,.6); }
+  .tp-btn[aria-pressed="true"] { background: #F2F4FA; color: #07090F; }
+  input[type=range] { accent-color: rgb(var(--c-accent)); }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .plus { transform: rotate(45deg); }
+  .plus { transition: transform .2s; }
+  @media (prefers-reduced-motion: reduce) { .rise, .flash { animation: none !important; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============ MASTHEAD ============ -->
+<header class="sticky z-30 glass border-x-0 border-t-0" style="top: env(safe-area-inset-top, 0px)">
+  <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <span class="w-2 h-2 rounded-full bg-accent shadow-[0_0_12px_rgb(var(--c-accent))]" aria-hidden="true"></span>
+      <h1 class="serif text-lg sm:text-xl font-bold tracking-wide whitespace-nowrap">Viral Script Lab</h1>
+      <span class="hidden sm:inline text-xs text-mute tracking-[.2em]">爆款分鏡腳本生成器</span>
+    </div>
+    <p id="libStat" class="hidden lg:block ml-auto text-xs text-mute tnum tracking-wider"></p>
+    <button id="btnTheme" class="btn btn-ghost w-9 h-9 ml-auto lg:ml-0 shrink-0" aria-label="切換深色／淺色"></button>
+  </div>
+</header>
+
+<main class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-28 md:pb-16 space-y-8 sm:space-y-10">
+
+  <!-- ============ HERO ============ -->
+  <section class="space-y-6">
+    <div>
+      <p class="eyebrow">The Four-Part Formula</p>
+      <h2 class="serif text-[28px] leading-[1.35] sm:text-[40px] font-bold mt-3 tracking-wide">選賽道、選人設、填關鍵字<br />一鍵拿到能直接開拍的分鏡腳本</h2>
+      <p class="text-sm text-mute mt-3 leading-relaxed max-w-xl">新手照著填就能出稿，老手可以自訂步驟與留言關鍵字。內建鉤子 A/B 替換、敏感詞檢測與提詞器。</p>
+    </div>
+    <ol class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <li class="glass rounded-xl px-4 py-3"><span class="block text-[11px] text-accent tnum tracking-[.2em]">01 · HOOK</span><span class="block text-sm mt-1">黃金 3 秒鉤子</span><span class="block text-xs text-mute mt-0.5">打斷滑動，製造好奇</span></li>
+      <li class="glass rounded-xl px-4 py-3"><span class="block text-[11px] text-mute tnum tracking-[.2em]">02 · PAIN</span><span class="block text-sm mt-1">痛點共鳴</span><span class="block text-xs text-mute mt-0.5">放大處境，拉長停留</span></li>
+      <li class="glass rounded-xl px-4 py-3"><span class="block text-[11px] text-mute tnum tracking-[.2em]">03 · VALUE</span><span class="block text-sm mt-1">乾貨解法</span><span class="block text-xs text-mute mt-0.5">具體方案，建立信任</span></li>
+      <li class="glass rounded-xl px-4 py-3"><span class="block text-[11px] text-mute tnum tracking-[.2em]">04 · CTA</span><span class="block text-sm mt-1">行動呼籲</span><span class="block text-xs text-mute mt-0.5">留言、收藏、轉發</span></li>
+    </ol>
+  </section>
+
+  <!-- ============ BUILDER ============ -->
+  <section class="glass rounded-2xl">
+    <div class="grid lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-line">
+      <div class="p-5 sm:p-6">
+        <p class="eyebrow">Step 1</p>
+        <h3 class="serif text-lg font-bold mt-1.5 tracking-wide">選擇賽道</h3>
+        <div id="tracks" role="radiogroup" aria-label="賽道" class="grid grid-cols-2 gap-2 mt-4"></div>
+      </div>
+      <div class="p-5 sm:p-6">
+        <p class="eyebrow">Step 2</p>
+        <h3 class="serif text-lg font-bold mt-1.5 tracking-wide">選擇人設與情緒基調</h3>
+        <div id="personas" role="radiogroup" aria-label="人設" class="grid gap-2 mt-4"></div>
+      </div>
+      <form id="kwForm" class="p-5 sm:p-6 flex flex-col">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <p class="eyebrow">Step 3</p>
+            <h3 class="serif text-lg font-bold mt-1.5 tracking-wide">填 3～4 個關鍵字</h3>
+          </div>
+          <button type="button" id="fillEx" class="btn btn-accent text-xs px-3 py-1.5 shrink-0">填入範例</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <label class="col-span-2 block"><span class="text-xs text-mute tracking-wider">產品／主題</span>
+            <input id="kProduct" maxlength="16" class="field mt-1.5 w-full px-3 py-2.5 rounded-lg text-[15px]" /></label>
+          <label class="col-span-2 block"><span class="text-xs text-mute tracking-wider">痛點（一句短句）</span>
+            <input id="kPain" maxlength="20" class="field mt-1.5 w-full px-3 py-2.5 rounded-lg text-[15px]" /></label>
+          <label class="block"><span class="text-xs text-mute tracking-wider">數字（時間或金額）</span>
+            <input id="kNum" maxlength="10" class="field mt-1.5 w-full px-3 py-2.5 rounded-lg text-[15px]" /></label>
+          <label class="block"><span class="text-xs text-mute tracking-wider">目標人群</span>
+            <input id="kWho" maxlength="10" class="field mt-1.5 w-full px-3 py-2.5 rounded-lg text-[15px]" /></label>
+        </div>
+        <details class="mt-3 rounded-lg border line">
+          <summary class="px-3 py-2.5 text-xs text-mute tracking-wider flex items-center justify-between">老手進階：留言關鍵字與自訂三步驟 <span class="plus text-base leading-none" aria-hidden="true">+</span></summary>
+          <div class="px-3 pb-3 space-y-2">
+            <input id="kKw" maxlength="8" class="field w-full px-3 py-2 rounded-lg text-sm" />
+            <input id="kS1" maxlength="40" placeholder="步驟一（不填就用賽道預設）" class="field w-full px-3 py-2 rounded-lg text-sm" />
+            <input id="kS2" maxlength="40" placeholder="步驟二" class="field w-full px-3 py-2 rounded-lg text-sm" />
+            <input id="kS3" maxlength="40" placeholder="步驟三" class="field w-full px-3 py-2 rounded-lg text-sm" />
+          </div>
+        </details>
+        <button type="submit" class="btn btn-primary mt-5 w-full py-3 text-[15px] font-medium tracking-[.12em]">一鍵生成爆款腳本</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ OUTPUT ============ -->
+  <section id="output" class="glass rounded-2xl scroll-mt-20">
+    <div class="px-5 sm:px-8 pt-6 pb-5 border-b line space-y-5">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="min-w-0">
+          <p class="eyebrow">The Storyboard</p>
+          <h2 id="outTitle" class="serif text-2xl font-bold mt-1.5 tracking-wide">爆款腳本輸出</h2>
+          <p id="outMeta" class="text-xs text-mute mt-1.5 tracking-wider"></p>
+        </div>
+        <div class="hidden md:flex flex-wrap gap-2">
+          <button data-act="prompter" class="btn btn-primary px-4 py-2"></button>
+          <button data-act="copyAll" class="btn btn-accent px-4 py-2"></button>
+          <button data-act="copyTsv" class="btn btn-ghost px-3 py-2" title="可直接貼到 Excel、Google 試算表或 Notion"></button>
+          <button data-act="copyVo" class="btn btn-ghost px-3 py-2"></button>
+        </div>
+      </div>
+
+      <div class="grid gap-2 grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))]">
+        <div class="col-span-2 lg:col-span-1 rounded-xl border line px-4 py-3">
+          <div class="flex items-baseline justify-between text-xs text-mute tracking-wider"><span>節奏控管・口播字數</span><span class="tnum"><b id="stChars" class="text-ink text-base font-medium">0</b> / 150–300</span></div>
+          <div class="meter relative h-1.5 mt-2.5 rounded-full overflow-hidden">
+            <div class="absolute inset-y-0 bg-ok/20" style="left:37.5%; width:37.5%"></div>
+            <div id="stBar" class="absolute inset-y-0 left-0 rounded-full" style="width:0"></div>
+          </div>
+          <p id="stCharsNote" class="text-[11px] text-mute mt-2"></p>
+        </div>
+        <div class="rounded-xl border line px-4 py-3">
+          <p class="text-xs text-mute tracking-wider">預估長度</p>
+          <p class="text-2xl font-light tnum mt-0.5"><span id="stSec">0</span><span class="text-xs text-mute ml-1">秒</span></p>
+          <label class="flex items-center gap-1.5 text-[11px] text-mute whitespace-nowrap">語速 <input id="rate" type="range" min="3" max="6.5" step="0.5" value="4.5" class="w-12 min-w-0" /> <b id="rateVal" class="text-ink tnum font-medium">4.5</b>字/秒</label>
+        </div>
+        <div class="rounded-xl border line px-4 py-3">
+          <p class="text-xs text-mute tracking-wider">情緒詞</p>
+          <p class="text-2xl font-light tnum mt-0.5"><span id="stEmo">0</span><span class="text-xs text-mute ml-1">個</span></p>
+          <p id="stEmoList" class="text-[11px] text-accent truncate"></p>
+        </div>
+        <div id="riskBox" class="col-span-2 lg:col-span-1 rounded-xl border line px-4 py-3">
+          <p class="text-xs text-mute tracking-wider">敏感詞檢測</p>
+          <p class="text-2xl font-light tnum mt-0.5"><span id="stRisk">0</span><span class="text-xs text-mute ml-1">處</span></p>
+          <p id="stRiskNote" class="text-[11px] text-mute truncate"></p>
+        </div>
+      </div>
+
+      <div class="rounded-xl border line px-4 py-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <p class="text-sm tracking-wider">鉤子 A/B 測試</p>
+          <button data-act="swap" class="btn btn-accent px-4 py-1.5"></button>
+          <span class="text-xs text-mute">或指定風格</span>
+        </div>
+        <div id="hookStyles" class="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar pb-0.5"></div>
+      </div>
+    </div>
+
+    <div class="px-4 sm:px-8 py-2">
+      <div class="hidden md:grid grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.6fr)] gap-6 py-3 border-b line eyebrow">
+        <span>時間</span><span>畫面指示</span><span>鏡頭／音效</span><span>口播文案</span>
+      </div>
+      <ol id="board"></ol>
+    </div>
+
+    <div id="riskPanel" class="hidden mx-4 sm:mx-8 mb-6 rounded-xl border border-alert/40 bg-alert/5 px-4 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <p class="text-sm text-alert flex items-center gap-2" id="riskHead"></p>
+        <button id="btnFixAll" class="btn px-3 py-1.5 text-xs bg-alert/90 text-canvas">一鍵全部替換</button>
+      </div>
+      <ul id="riskList" class="mt-3 flex flex-wrap gap-2"></ul>
+    </div>
+  </section>
+
+  <p class="text-center text-[11px] text-mute tracking-wider leading-relaxed">
+    Viral Script Lab ・ 單一檔案、本地模組庫、不需要任何 API ・ 內容儲存在這台裝置的瀏覽器<br class="sm:hidden" /> ・ 敏感詞檢測僅供參考，以各平台最新規範為準
+  </p>
+</main>
+
+<!-- mobile action bar -->
+<nav class="md:hidden fixed inset-x-0 bottom-0 z-30 glass border-x-0 border-b-0" style="padding-bottom: env(safe-area-inset-bottom, 0px)" aria-label="快速操作">
+  <div class="grid grid-cols-4 text-[11px] tracking-wider">
+    <button data-act="swap-m" class="flex flex-col items-center gap-1 py-2.5 text-mute active:text-ink"></button>
+    <button data-act="prompter-m" class="flex flex-col items-center gap-1 py-2.5 text-ink"></button>
+    <button data-act="copyAll-m" class="flex flex-col items-center gap-1 py-2.5 text-mute active:text-ink"></button>
+    <button data-act="copyTsv-m" class="flex flex-col items-center gap-1 py-2.5 text-mute active:text-ink"></button>
+  </div>
+</nav>
+
+<!-- ============ TELEPROMPTER ============ -->
+<div id="prompter" class="fixed inset-0 z-50 hidden opacity-0" role="dialog" aria-modal="true" aria-label="提詞器">
+  <div class="absolute inset-x-0 top-0 z-20 px-4 sm:px-6 pb-3 flex flex-wrap items-center gap-2 bg-gradient-to-b from-black via-black/85 to-transparent" style="padding-top: calc(env(safe-area-inset-top, 0px) + 12px)">
+    <button id="tpPlay" class="px-4 py-1.5 rounded-full bg-[#F2F4FA] text-black text-sm font-medium min-w-[84px] tracking-wider">開始</button>
+    <button id="tpRestart" class="tp-btn px-3 py-1.5 text-sm">從頭</button>
+    <label class="inline-flex items-center gap-2 text-sm text-white/75">語速
+      <input id="tpRate" type="range" min="3" max="6.5" step="0.5" value="4.5" class="w-20" />
+      <b id="tpRateVal" class="text-white tnum font-medium">4.5</b>
+    </label>
+    <div class="inline-flex gap-1" role="group" aria-label="螢幕方向">
+      <button id="tpPortrait" class="tp-btn px-3 py-1 text-sm" aria-pressed="true">豎屏</button>
+      <button id="tpLandscape" class="tp-btn px-3 py-1 text-sm" aria-pressed="false">橫屏</button>
+    </div>
+    <button id="tpSmaller" class="tp-btn w-8 h-8 text-sm" aria-label="縮小字級">A−</button>
+    <button id="tpBigger" class="tp-btn w-8 h-8 text-sm" aria-label="放大字級">A+</button>
+    <label class="inline-flex items-center gap-1.5 text-sm text-white/75"><input id="tpMirror" type="checkbox" />鏡像</label>
+    <button id="tpClose" class="tp-btn ml-auto w-9 h-9 inline-flex items-center justify-center" aria-label="關閉提詞器"></button>
+  </div>
+  <div class="reading-line pointer-events-none absolute inset-x-0 top-[36%] h-24 -translate-y-1/2 z-10"></div>
+  <div class="pointer-events-none absolute left-3 sm:left-6 top-[36%] -translate-y-1/2 z-10 w-0 h-0 border-y-[7px] border-y-transparent border-l-[10px] border-l-[#9DB4FF]"></div>
+  <div id="prompterScroll" class="absolute inset-0 overflow-y-auto thin-scroll">
+    <div id="prompterBody" class="max-w-xl mx-auto px-8 sm:px-12 pt-[36vh] pb-[72vh]"></div>
+  </div>
+  <div class="absolute inset-x-0 bottom-0 z-20 px-4 sm:px-6 pt-8 bg-gradient-to-t from-black via-black/85 to-transparent" style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px)">
+    <div class="max-w-3xl mx-auto">
+      <div class="h-0.5 bg-white/15 rounded-full overflow-hidden"><div id="tpProgress" class="h-full bg-[#9DB4FF] w-0"></div></div>
+      <div class="flex justify-between text-xs text-white/55 mt-2 gap-3 tnum tracking-wider">
+        <span>已唸 <b id="tpElapsed" class="text-white font-medium">0:00</b></span>
+        <span class="hidden sm:inline">點畫面或空白鍵：播放／暫停 ・ Esc：離開</span>
+        <span>預估 <b id="tpTotal" class="text-white font-medium">0:00</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed z-[60] left-1/2 bottom-24 md:bottom-8 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none px-5 py-3 rounded-full text-sm text-center max-w-[90vw] tracking-wider"></div>
+
+<script>
+/* =========================================================
+   ICONS（純 SVG，不使用 Emoji）
+   ========================================================= */
+const ICONS = {
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+  table: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>',
+  text: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  shuffle: '<path d="M16 4h4v4M4 20 20 4M20 16v4h-4M15 15l5 5M4 4l5 5"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  alert: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17.5v.01"/>',
+  check: '<path d="M5 12.5 10 17l9-10"/>',
+};
+const ico = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* =========================================================
+   本地模組庫（LIB）
+   變數：{產品} {痛點} {數字} {人群} {內行人} {新手} {關鍵字}
+   ========================================================= */
+const TRACKS = [
+  { id: 'knowledge', label: '知識乾貨', insider: '學霸', newbie: '自學新手', kw: '學習',
+    ex: { product: '番茄鐘學習法', pain: '讀書一直分心', num: '25 分鐘', who: '學生' },
+    steps: ['先把目標拆小，一次只做一件事', '用{產品}固定節奏，做完一輪就休息', '每天睡前花五分鐘，回想今天學了什麼'],
+    painVis: '書桌前分心滑手機的畫面', valueVis: '筆記特寫／螢幕錄影實際操作' },
+  { id: 'beauty', label: '美妝保養', insider: '美容師', newbie: '保養新手', kw: '保養',
+    ex: { product: '粉底液', pain: '底妝卡粉', num: '3 天', who: '油肌女生' },
+    steps: ['先確認自己的膚質和需求，不要跟風亂買', '{產品}用量先減半，少量多次慢慢加', '連續用兩週再看效果，不要三天就放棄'],
+    painVis: '鏡子前補妝、卡粉的臉部特寫', valueVis: '上臉實測／手背試色對比' },
+  { id: 'unbox', label: '帶貨開箱', insider: '資深買手', newbie: '網購新手', kw: '清單',
+    ex: { product: '桌上型吸塵器', pain: '桌面總是有碎屑', num: '199 元', who: '租屋族' },
+    steps: ['先想清楚自己的使用情境，再看規格', '比較的時候看三件事：尺寸、耗材、售後', '收到{產品}後先實測一週，再決定要不要留'],
+    painVis: '雜亂的使用情境、舊產品失靈的畫面', valueVis: '開箱特寫／實際使用前後對比' },
+  { id: 'career', label: '職場成長', insider: '資深主管', newbie: '職場新人', kw: '職場',
+    ex: { product: '週報模板', pain: '報告沒人聽', num: '10 分鐘', who: '上班族' },
+    steps: ['開口先講結論，再講原因', '重要的事一定留下文字紀錄', '每週花十分鐘，主動跟主管同步進度'],
+    painVis: '會議中被打斷、對方滑手機的情境演繹', valueVis: '辦公情境演繹／對話字卡' },
+  { id: 'food', label: '同城餐飲', insider: '在地老饕', newbie: '美食新手', kw: '美食',
+    ex: { product: '巷口牛肉麵', pain: '吃到地雷店', num: '150 元', who: '外食族' },
+    steps: ['先看近期評論，不要只看總分', '避開尖峰時段，用餐體驗差很多', '初訪先點招牌，其他留給下一次'],
+    painVis: '排隊人潮、餐點失望表情', valueVis: '餐點特寫／店家環境與菜單' },
+  { id: 'emotion', label: '情感共鳴', insider: '諮商師', newbie: '戀愛新手', kw: '感情',
+    ex: { product: '溝通方法', pain: '一溝通就吵架', num: '5 分鐘', who: '情侶' },
+    steps: ['先照顧好自己的情緒，再開口溝通', '把「你都…」換成「我覺得…」', '給彼此一點空間，不要急著要答案'],
+    painVis: '情侶各自滑手機、冷戰的情境演繹', valueVis: '生活情境演繹／對話文字截圖' },
+];
+
+const PERSONAS = [
+  { id: 'flip', label: '打臉反轉型', desc: '先推翻常識，再給正解', hookStyle: 'counter',
+    pains: ['大部分人都以為，{痛點}是因為不夠努力。\n其實真正的原因，根本不是這個。',
+            '你是不是也覺得，只要換一個{產品}，{痛點}就會解決？\n錯了，問題往往出在用法。',
+            '很多{人群}遇到{痛點}，直覺就是再多做一點。\n但這恰恰是讓情況更糟的原因。'],
+    intros: ['正確做法其實很簡單，而且跟你想的完全相反：', '真正有用的方法，是這樣的：'],
+    outro: '就這麼簡單，做對了，{痛點}自然就改善了。',
+    ctas: ['你之前也這樣以為嗎？留言告訴我！想要完整做法，留言「{關鍵字}」我傳給你。',
+           '收藏這支影片，下次又{痛點}的時候直接照做！留言「{關鍵字}」領取完整清單。',
+           '覺得被打臉的按個讚，轉給那個還在{痛點}的朋友。'],
+    vis: { pain: '快速切換常見錯誤做法', value: '展示正確操作／前後對比圖', cta: '指向評論區／點讚手勢' },
+    sfx: { pain: '[背景音樂：緊張快節奏]', value: '[字幕加粗＋黃色高亮] 反轉處加重音', cta: '[音效：叮～]' } },
+  { id: 'roast', label: '扎心吐槽型', desc: '戳中真實處境，說出心裡話', hookStyle: 'sting',
+    pains: ['說真的，{痛點}這件事，我真的看太多了。\n錢花了、時間也花了，結果還是原地踏步。',
+            '每次看到有人為了{痛點}到處亂試，我都好想說一句：先停下來。',
+            '你有沒有發現，越想解決{痛點}，就越焦慮？\n其實是方向一開始就錯了。'],
+    intros: ['所以，別再亂試了，照這樣做就好：', '聽好，重點我只說一次：'],
+    outro: '做到這三點，你會感謝今天看完這支影片的自己。',
+    ctas: ['如果這支影片說中了你，按讚收藏，也轉給那個一直{痛點}的朋友。',
+           '你是不是也這樣？留言「中了」，讓我知道不是只有我。想要完整清單，留言「{關鍵字}」。',
+           '收藏起來，下次想放棄的時候再看一次。留言「{關鍵字}」，我把方法整理給你。'],
+    vis: { pain: '對鏡頭無奈攤手，穿插踩雷片段', value: '邊講邊示範，關鍵處停頓看鏡頭', cta: '收起表情，真誠看鏡頭' },
+    sfx: { pain: '[背景音樂：低沉鼓點]', value: '[字幕加粗] 重點字放大', cta: '[音效：心跳聲轉輕柔]' } },
+  { id: 'save', label: '避坑省錢型', desc: '踩過的坑，幫你省下來', hookStyle: 'trap',
+    pains: ['我自己就踩過這個坑。\n為了解決{痛點}，前前後後多花了不少冤枉錢。',
+            '很多{人群}在{痛點}上花的錢，有一半其實可以省下來。',
+            '花了{數字}學到的教訓，我不希望你再重來一次。'],
+    intros: ['想省錢又不踩坑，記住這三點：', '避坑重點，我幫你整理好了：'],
+    outro: '照著做，至少能幫你省下{數字}。',
+    ctas: ['收藏這支影片，下次找不到又得踩坑！留言「{關鍵字}」領取完整避坑清單。',
+           '點擊左下角，看我整理好的{產品}清單，免費分享給你。',
+           '轉給身邊也在{痛點}的朋友，一起省下冤枉錢。留言「{關鍵字}」拿清單。'],
+    vis: { pain: '攤開踩雷物品／帳單特寫', value: '清單式逐項打勾', cta: '比讚＋收藏手勢' },
+    sfx: { pain: '[背景音樂：警示感節奏]', value: '[音效：打勾聲] 每項一個字卡', cta: '[音效：收藏提示音]' } },
+  { id: 'teach', label: '乾貨教學型', desc: '步驟清楚，看完就會', hookStyle: 'number',
+    pains: ['很多{人群}都卡在{痛點}。\n不是你不夠努力，是方法沒用對。',
+            '{痛點}其實不難解決，難的是沒有人把步驟講清楚。',
+            '我把自己解決{痛點}的過程，整理成一套簡單的方法。'],
+    intros: ['跟著這三步做：', '方法很簡單，總共三步：'],
+    outro: '只要{數字}，你就能看到變化。',
+    ctas: ['覺得有用就收藏起來，留言「{關鍵字}」，下一集教你進階版。',
+           '先存起來照著做！做完回來留言「{關鍵字}」，我幫你看看哪裡可以再調整。',
+           '追蹤我，這個系列每週更新。留言「{關鍵字}」，領取完整步驟表。'],
+    vis: { pain: '情境重現：常見卡關畫面', value: '步驟分鏡 01／02／03 實際操作', cta: '結尾小結字卡，指向留言區' },
+    sfx: { pain: '[背景音樂：輕快節奏]', value: '[字幕：步驟編號＋重點高亮]', cta: '[音效：叮～]' } },
+];
+
+/* 100 個黃金開頭公式：10 種風格 × 10 */
+const HOOK_STYLES = [
+  { id: 'suspense', label: '懸念型', vis: '近景直視鏡頭，壓低聲音，身體微微前傾', sfx: '[音效：懸疑低音] 鏡頭緩推', list: [
+    '解決{痛點}的方法，其實一直在你身邊，只是沒人告訴你。',
+    '我花了很久才想通，{痛點}真正的原因竟然是這個。',
+    '有一個關於{產品}的秘密，{內行人}很少主動說。',
+    '看完這支你就會懂，為什麼你一直{痛點}。',
+    '先別滑走，接下來這 30 秒，可能會改變你對{產品}的看法。',
+    '{人群}注意了，關於{痛點}，有件事你一定要知道。',
+    '我本來不想講的，但{痛點}這件事，真的太多人做錯了。',
+    '為什麼{內行人}從來不擔心{痛點}？答案在影片裡。',
+    '這個關於{產品}的小細節，讓我徹底告別{痛點}。',
+    '如果你也{痛點}，接下來的內容請一定看完。'] },
+  { id: 'number', label: '數字型', vis: '手比數字入鏡，大字數字彈出', sfx: '[音效：叮] 數字字卡放大', list: [
+    '只花{數字}，我把{痛點}這件事徹底解決了。',
+    '{數字}就能搞定的方法，我卻拖了好幾年才知道。',
+    '3 個步驟，讓{人群}從此告別{痛點}。',
+    '花{數字}換來的經驗，今天一次免費分享給你。',
+    '做對這 1 件事，我的{產品}效果差了好幾倍。',
+    '不到{數字}，{新手}也能學會的{產品}技巧。',
+    '90% 的{人群}都不知道的 3 個{產品}細節。',
+    '我整理了 5 個{痛點}的原因，第 3 個你一定中過。',
+    '同樣是{產品}，用對方法只要{數字}。',
+    '7 天實測{產品}，說說我的真實感受。'] },
+  { id: 'sting', label: '扎心型', vis: '近景，手指鏡頭，表情嚴肅', sfx: '[音效：重音／打臉聲]', list: [
+    '你不是不努力，你只是用錯了方法，才會一直{痛點}。',
+    '說句扎心的，{痛點}這件事，真的不能再拖了。',
+    '別人早就解決了，你還在{痛點}。',
+    '每天都在{痛點}的你，真的甘心嗎？',
+    '真正扎心的不是{痛點}，而是你明明知道，卻一直沒改。',
+    '花了那麼多錢在{產品}上，結果還是{痛點}？',
+    '你以為只有你{痛點}嗎？其實很多{人群}都一樣。',
+    '{人群}的通病，就是一邊抱怨{痛點}，一邊什麼都不改。',
+    '承認吧，你的{痛點}，有一半是習慣造成的。',
+    '再這樣{痛點}下去，你真的會後悔。'] },
+  { id: 'counter', label: '反常識型', vis: '搖頭擺手說「不是」，再指向鏡頭', sfx: '[音效：唱片刮擦聲] 畫面急停', list: [
+    '想解決{痛點}，你要做的不是加法，是減法。',
+    '越努力想改善{痛點}，反而越容易失敗。',
+    '{內行人}都知道：{產品}不是越貴越好。',
+    '你以為{痛點}是能力問題？其實是順序問題。',
+    '千萬別再相信「多做一點就好」，{痛點}不是這樣解決的。',
+    '解決{痛點}的關鍵，偏偏是大家都忽略的那一步。',
+    '真正懂{產品}的人，反而用得更少。',
+    '不要急著改善{痛點}，先停下來做這件事。',
+    '大部分人都以為{產品}才能解決{痛點}，其實真正的關鍵是這點。',
+    '我放棄了大家推薦的做法，{痛點}反而解決了。'] },
+  { id: 'trap', label: '避坑型', vis: '手掌擋住鏡頭說「停」', sfx: '[音效：警報短音] 畫面閃紅', list: [
+    '千萬別再這樣做了，這就是你一直{痛點}的原因。',
+    '買{產品}之前，先避開這 3 個坑。',
+    '停！如果你還在用這個方法面對{痛點}，趕緊停下來。',
+    '{新手}常踩的坑，我幫你整理好了。',
+    '我在{產品}上踩過的坑，今天全部告訴你。',
+    '這個錯誤，讓我白白浪費了{數字}。',
+    '避坑指南：{人群}遇到{痛點}，這幾件事千萬別做。',
+    '你現在省下的那一步，正是{痛點}的元兇。',
+    '選{產品}只看價格？小心踩坑。',
+    '先別急著下手，{產品}這樣選才不會後悔。'] },
+  { id: 'identity', label: '身份型', vis: '對鏡頭做點名手勢', sfx: '[音效：輕快提示音]', list: [
+    '身為{人群}，這支影片你一定要存起來。',
+    '給所有正在{痛點}的{人群}，一點真心建議。',
+    '跟{內行人}朋友聊完，我才知道{痛點}原來可以這樣解。',
+    '{新手}看這裡！{產品}的正確打開方式。',
+    '如果你是{人群}，請把這支影片轉給身邊的人。',
+    '只有{人群}才懂的痛：{痛點}。',
+    '我是怎麼從{新手}，一步步搞定{痛點}的？',
+    '寫給每一個被{痛點}困擾的{人群}。',
+    '{內行人}私下分享的{產品}心法，我整理出來了。',
+    '不管你是不是{新手}，這個{產品}觀念都值得知道。'] },
+  { id: 'contrast', label: '對比型', vis: '左右分割畫面，前後對照', sfx: '[音效：轉場刷聲] 分割畫面', list: [
+    '同樣是{產品}，為什麼別人用起來就是不一樣？',
+    '用對方法前 vs 用對方法後，{痛點}的差別真的很大。',
+    '以前的我{痛點}，現在只要{數字}就搞定。',
+    '普通人和{內行人}，面對{痛點}的差別在這裡。',
+    '一樣的預算，有人踩坑，有人買到真正好用的{產品}。',
+    '左邊是錯誤示範，右邊才是解決{痛點}的正確方式。',
+    '改掉這個習慣前後，{痛點}完全是兩回事。',
+    '你在{痛點}的時候，別人已經在用這招了。',
+    '花{數字}和花冤枉錢的差別，就在這一個觀念。',
+    '新手和老手用{產品}，差在這 3 個細節。'] },
+  { id: 'question', label: '提問型', vis: '歪頭看鏡頭，表情疑惑', sfx: '[音效：問號提示音] 字卡跳出問句', list: [
+    '為什麼你明明很認真，還是一直{痛點}？',
+    '你有沒有發現，{痛點}總是卡在同一個地方？',
+    '{產品}到底值不值得？我直接說結論。',
+    '如果只能改一個習慣來解決{痛點}，你會選哪個？',
+    '你知道{痛點}的真正原因嗎？',
+    '{人群}到底該怎麼面對{痛點}？',
+    '只花{數字}，真的能解決{痛點}嗎？',
+    '你是不是也覺得，{痛點}根本沒辦法改善？',
+    '為什麼{內行人}很少{痛點}？',
+    '你還要被{痛點}困擾多久？'] },
+  { id: 'result', label: '結果前置型', vis: '先秀成果畫面，再切回本人', sfx: '[音效：亮點閃光聲] 成果特寫', list: [
+    '我終於擺脫{痛點}了，方法簡單到不可思議。',
+    '這是我只花{數字}，就搞定{痛點}的方法。',
+    '先說結論：{痛點}，靠這 3 步就能改善。',
+    '從{痛點}到被朋友追問方法，我只做了一件事。',
+    '搞定{痛點}之後，我的生活輕鬆了一大半。',
+    '結果先放這裡：{產品}用對方法，效果差很多。',
+    '一個小改變，讓我徹底告別{痛點}。',
+    '現在的我，已經不會再為{痛點}煩惱了。',
+    '這招讓我省下{數字}，也解決了{痛點}。',
+    '試了一個月，{痛點}真的改善了，分享給你。'] },
+  { id: 'insider', label: '內行揭秘型', vis: '左右張望後小聲說，手半遮嘴', sfx: '[音效：耳語感低音] 鏡頭急推', list: [
+    '{內行人}不太會主動說的{產品}秘密。',
+    '做這行很久才知道，{痛點}其實有解。',
+    '這是{內行人}私下在用的方法，{新手}一定要知道。',
+    '不要再用老方法面對{痛點}了，這才是真正內行人的做法。',
+    '關於{產品}，{內行人}和一般人看的重點完全不一樣。',
+    '業內人都知道的{產品}挑選眉角，今天公開。',
+    '我問了好幾位{內行人}，他們解決{痛點}的方法都一樣。',
+    '{產品}真正的關鍵，不在你以為的地方。',
+    '內行人一眼就看出來，你{痛點}的原因在這裡。',
+    '這個{產品}小秘密，懂的人都在偷偷用。'] },
+];
+
+/* 節奏補句：字數不足 150 時依序加入 */
+const PAIN_EXT = ['相信我，這不是你一個人的問題。', '而且拖得越久，越難改回來。', '我以前也一樣，直到我發現了這件事。'];
+const VALUE_EXT = ['記住，重點不是做得多，而是做得對。', '這三步看起來簡單，但真正做完的人不多。'];
+/* 情緒詞強制嵌入：腳本裡一個情緒詞都沒有時，補一句 */
+const EMO_INJECT = ['千萬別再走冤枉路了。', '這是很多人不知道的秘密。', '這個真相，越早知道越好。'];
+
+/* 情緒詞庫：模板中已嵌入，輸出時統計 */
+const EMO_WORDS = ['避坑', '踩坑', '千萬別', '秘密', '免費', '逆襲', '真相', '後悔', '扎心', '停！', '冤枉錢', '私下', '偷偷', '徹底', '翻倍', '暴利'];
+
+/* 平台敏感詞（廣告法極限用語等）：fix = 一鍵替換的建議 */
+const RISK_RULES = [
+  { word: '100%', re: /100\s*%|百分之百/g, fix: '大部分' },
+  { word: '最', re: /最(?![後近初])/g, fix: '超' },
+  { word: '第一名', re: /第一名/g, fix: '人氣王' },
+  { word: '第一', re: /第一(?![步次個天週題點件眼時口名])/g, fix: '人氣' },
+  { word: '唯一', re: /唯一/g, fix: '少數' },
+  { word: '絕對', re: /絕對/g, fix: '真的' },
+  { word: '保證', re: /保證/g, fix: '有機會' },
+  { word: '首選', re: /首選/g, fix: '推薦' },
+  { word: '頂級', re: /頂級/g, fix: '高品質' },
+  { word: '全網', re: /全網/g, fix: '很多人' },
+  { word: '史上', re: /史上/g, fix: '少見的' },
+  { word: '永久', re: /永久/g, fix: '長效' },
+  { word: '根治', re: /根治/g, fix: '改善' },
+  { word: '零風險', re: /零風險/g, fix: '低風險' },
+  { word: '穩賺', re: /穩賺/g, fix: '有機會賺' },
+  { word: '秒殺', re: /秒殺/g, fix: '熱賣' },
+  { word: '神器', re: /神器/g, fix: '好物' },
+  { word: '療效', re: /療效/g, fix: '使用感' },
+  { word: '國家級', re: /國家級/g, fix: '專業' },
+];
+
+const HOOK_COUNT = HOOK_STYLES.reduce((a, s) => a + s.list.length, 0);
+const MODULE_COUNT = HOOK_STYLES.reduce((a, s) => a + s.list.length + 2, 0)
+  + PERSONAS.reduce((a, p) => a + p.pains.length + p.intros.length + 1 + p.ctas.length + 6, 0)
+  + TRACKS.reduce((a, t) => a + t.steps.length + 2, 0) + PAIN_EXT.length + VALUE_EXT.length + EMO_WORDS.length + RISK_RULES.length;
+const COMBOS = TRACKS.length * PERSONAS.length * HOOK_COUNT * 3 * 2 * 3;
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const STORE_KEY = 'viral-script-lab-v1';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pick = arr => Math.floor(Math.random() * arr.length);
+
+let state = { track: 'beauty', persona: 'flip', rate: 4.5, inputs: {}, script: null, theme: '' };
+try {
+  const raw = JSON.parse(localStorage.getItem(STORE_KEY));
+  if (raw && typeof raw === 'object') state = { ...state, ...raw };
+} catch (e) {}
+let saveTimer;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }, 250);
+}
+
+const trackOf = id => TRACKS.find(t => t.id === id) || TRACKS[0];
+const personaOf = id => PERSONAS.find(p => p.id === id) || PERSONAS[0];
+const styleOf = id => HOOK_STYLES.find(s => s.id === id) || HOOK_STYLES[0];
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()⋯…—\-~～"'“”‘’／/·・%\[\]［］＋+]/g, '').length;
+const secOf = t => Math.max(1, countChars(t) / state.rate);
+const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const readText = el => el.innerText.replace(/ /g, ' ').replace(/\n+$/, '');
+const fill = (tpl, v) => tpl.replace(/\{(產品|痛點|數字|人群|內行人|新手|關鍵字)\}/g, (_, k) => v[k] ?? '');
+
+let toastTimer;
+function toast(msg, icon = 'check') {
+  const t = $('#toast');
+  t.innerHTML = `<span class="inline-flex items-center gap-2">${ico(icon, 'text-accent')}${esc(msg)}</span>`;
+  t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 16px)'; }, 2200);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  ta.remove(); return ok;
+}
+
+/* =========================================================
+   THEME（AURA-NAVI 暗色 ／ EYELASH 淺色）
+   ========================================================= */
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  return t ? t === 'dark' : !window.matchMedia('(prefers-color-scheme: light)').matches;
+}
+function paintThemeBtn() { $('#btnTheme').innerHTML = ico(isDark() ? 'sun' : 'moon'); }
+if (state.theme) document.documentElement.setAttribute('data-theme', state.theme);
+
+/* =========================================================
+   GENERATOR
+   ========================================================= */
+function readInputs() {
+  const g = id => $(id).value.trim();
+  return { product: g('#kProduct'), pain: g('#kPain'), num: g('#kNum'), who: g('#kWho'), kw: g('#kKw'), s1: g('#kS1'), s2: g('#kS2'), s3: g('#kS3') };
+}
+function varsFor(track, inp) {
+  const ex = track.ex, clean = v => String(v || '').replace(/[。．！!？?，,\s]+$/, '');
+  return {
+    產品: clean(inp.product) || ex.product, 痛點: clean(inp.pain) || ex.pain, 數字: clean(inp.num) || ex.num,
+    人群: clean(inp.who) || ex.who, 內行人: track.insider, 新手: track.newbie, 關鍵字: clean(inp.kw) || track.kw,
+  };
+}
+
+/* fixed：首次載入時用固定組合，讓範例穩定 */
+function generate(fixed) {
+  const track = trackOf(state.track), persona = personaOf(state.persona), inp = state.inputs || {};
+  const v = varsFor(track, inp);
+  const style = styleOf(persona.hookStyle);
+  const hookIdx = fixed ? fixed.hook : pick(style.list);
+  const steps = [inp.s1, inp.s2, inp.s3].map((s, i) => fill(s || track.steps[i], v).replace(/[。；;]+$/, ''));
+
+  const painLines = [fill(persona.pains[fixed ? fixed.pain : pick(persona.pains)], v)];
+  const intro = persona.intros[fixed ? 0 : pick(persona.intros)];
+  let valueLines = [intro, `第一步：${steps[0]}；`, `第二步：${steps[1]}；`, `第三步：${steps[2]}。`, fill(persona.outro, v)];
+  const cta = fill(persona.ctas[fixed ? fixed.cta : pick(persona.ctas)], v);
+  const hook = fill(style.list[hookIdx], v);
+
+  // 節奏控管：口播鎖定在 150～300 字
+  const total = () => countChars([hook, ...painLines, ...valueLines, cta].join(''));
+  const pe = PAIN_EXT.slice(), ve = VALUE_EXT.slice();
+  while (total() < 150 && (pe.length || ve.length)) {
+    if (pe.length && (painLines.length <= valueLines.length - 3 || !ve.length)) painLines.push(pe.shift());
+    else valueLines.splice(valueLines.length - 1, 0, ve.shift());
+  }
+  const hasEmo = () => EMO_WORDS.some(w => [hook, ...painLines, ...valueLines, cta].join('').includes(w));
+  if (!hasEmo()) painLines.push(EMO_INJECT[fixed ? 0 : pick(EMO_INJECT)]);
+  if (total() > 300) valueLines = valueLines.slice(0, -1);
+
+  state.script = {
+    vars: v, hookStyle: style.id, hookIdx,
+    rows: [
+      { key: 'hook', vis: style.vis, sfx: style.sfx, text: hook },
+      { key: 'pain', vis: `${persona.vis.pain}／${track.painVis}`, sfx: persona.sfx.pain, text: painLines.join('\n') },
+      { key: 'value', vis: `${persona.vis.value}／${track.valueVis}`, sfx: persona.sfx.value, text: valueLines.join('\n') },
+      { key: 'cta', vis: persona.vis.cta, sfx: persona.sfx.cta, text: cta },
+    ],
+    meta: { track: track.label, persona: persona.label },
+  };
+  save();
+}
+
+function swapHook(styleId) {
+  const sc = state.script; if (!sc) return;
+  const style = styleOf(styleId || sc.hookStyle);
+  let idx = pick(style.list);
+  if (style.id === sc.hookStyle && style.list.length > 1) while (idx === sc.hookIdx) idx = pick(style.list);
+  sc.hookStyle = style.id; sc.hookIdx = idx;
+  sc.rows[0] = { key: 'hook', vis: style.vis, sfx: style.sfx, text: fill(style.list[idx], sc.vars) };
+  save(); renderBoard(); renderHookStyles();
+  const el = document.querySelector('[data-row="0"][data-f="text"]');
+  if (el) { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1000); }
+  toast(`已換成「${style.label}」開頭`, 'shuffle');
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+const ROW_META = {
+  hook:  { tag: '黃金 3 秒鉤子', en: 'Hook',  hook: true },
+  pain:  { tag: '痛點共鳴',      en: 'Pain' },
+  value: { tag: '乾貨解法',      en: 'Value' },
+  cta:   { tag: '行動呼籲',      en: 'CTA' },
+};
+
+function renderStatic() {
+  const set = (sel, html) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = html; });
+  set('[data-act="prompter"]', ico('mic') + '提詞器');
+  set('[data-act="copyAll"]', ico('copy') + '複製完整腳本');
+  set('[data-act="copyTsv"]', ico('table') + '分鏡表');
+  set('[data-act="copyVo"]', ico('text') + '只複製口播');
+  set('[data-act="swap"]', ico('shuffle') + '換一個開頭');
+  set('[data-act="swap-m"]', ico('shuffle', 'text-lg') + '換開頭');
+  set('[data-act="prompter-m"]', ico('mic', 'text-lg text-accent') + '提詞器');
+  set('[data-act="copyAll-m"]', ico('copy', 'text-lg') + '複製腳本');
+  set('[data-act="copyTsv-m"]', ico('table', 'text-lg') + '分鏡表');
+  $('#tpClose').innerHTML = ico('close');
+  $('#riskHead').innerHTML = ico('alert') + '偵測到平台敏感詞，可能導致限流或審核不過';
+  paintThemeBtn();
+}
+
+function renderPickers() {
+  $('#tracks').innerHTML = TRACKS.map((t, i) => `
+    <button type="button" role="radio" aria-checked="${t.id === state.track}" data-track="${t.id}" class="pick rounded-xl px-3 py-3 text-left flex items-center gap-2.5">
+      <span class="dot shrink-0"></span>
+      <span class="min-w-0"><span class="block text-[10px] text-mute tnum tracking-[.2em]">${String(i + 1).padStart(2, '0')}</span><span class="block text-sm tracking-wider">${t.label}</span></span>
+    </button>`).join('');
+  $('#personas').innerHTML = PERSONAS.map(p => `
+    <button type="button" role="radio" aria-checked="${p.id === state.persona}" data-persona="${p.id}" class="pick rounded-xl px-3.5 py-3 text-left flex items-center gap-3">
+      <span class="dot shrink-0"></span>
+      <span class="min-w-0"><span class="block text-sm tracking-wider">【${p.label}】</span><span class="block text-xs text-mute mt-0.5">${p.desc}・預設${styleOf(p.hookStyle).label}開頭</span></span>
+    </button>`).join('');
+  const t = trackOf(state.track), ex = t.ex;
+  $('#kProduct').placeholder = '例如：' + ex.product;
+  $('#kPain').placeholder = '例如：' + ex.pain;
+  $('#kNum').placeholder = '例如：' + ex.num;
+  $('#kWho').placeholder = '例如：' + ex.who;
+  $('#kKw').placeholder = '留言關鍵字，例如 ' + t.kw;
+}
+function fillInputs() {
+  const i = state.inputs || {};
+  $('#kProduct').value = i.product || ''; $('#kPain').value = i.pain || ''; $('#kNum').value = i.num || ''; $('#kWho').value = i.who || '';
+  $('#kKw').value = i.kw || ''; $('#kS1').value = i.s1 || ''; $('#kS2').value = i.s2 || ''; $('#kS3').value = i.s3 || '';
+}
+
+function renderHookStyles() {
+  const cur = state.script ? state.script.hookStyle : '';
+  $('#hookStyles').innerHTML = HOOK_STYLES.map(s => `
+    <button class="chip shrink-0 text-xs px-3 py-1.5 rounded-full tracking-wider" data-style="${s.id}" aria-pressed="${s.id === cur}">${s.label}</button>`).join('');
+}
+
+function timeLabels() {
+  let t = 0;
+  return state.script.rows.map((r, i) => {
+    const sec = secOf(r.text), a = Math.round(t), b = Math.max(a + 1, Math.round(t + sec)); t += sec;
+    return { range: `${a}-${b}s`, sec, end: i === 3 };
+  });
+}
+
+function renderBoard() {
+  const sc = state.script;
+  $('#outTitle').textContent = `${sc.vars.產品}・爆款腳本`;
+  $('#outMeta').textContent = `${sc.meta.track} ・ 【${sc.meta.persona}】 ・ 開頭：${styleOf(sc.hookStyle).label}`;
+  const times = timeLabels();
+  $('#board').innerHTML = sc.rows.map((r, i) => {
+    const m = ROW_META[r.key], tm = times[i];
+    return `
+    <li class="rise grid md:grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.6fr)] gap-x-6 gap-y-3 py-6 border-b line last:border-b-0" style="animation-delay:${i * 50}ms">
+      <div class="flex md:flex-col items-center md:items-start gap-2.5">
+        <span class="text-xl font-light tnum tracking-wide" data-time="${i}">${tm.end ? '結尾' : tm.range}</span>
+        <span class="text-[11px] text-mute tnum" data-time-sub="${i}">${tm.end ? tm.range : '約 ' + tm.sec.toFixed(1) + ' 秒'}</span>
+        <span class="tag ${m.hook ? 'tag-hook' : ''} md:mt-1">${m.tag}</span>
+      </div>
+      <div class="min-w-0">
+        <p class="md:hidden eyebrow mb-1">畫面指示</p>
+        <div contenteditable="true" spellcheck="false" data-row="${i}" data-f="vis" data-placeholder="畫面怎麼拍？" class="text-[15px] leading-relaxed -mx-1 px-1">${esc(r.vis)}</div>
+      </div>
+      <div class="min-w-0">
+        <p class="md:hidden eyebrow mb-1">鏡頭／音效</p>
+        <div contenteditable="true" spellcheck="false" data-row="${i}" data-f="sfx" data-placeholder="[音效：…]" class="text-[15px] leading-relaxed text-mute -mx-1 px-1">${esc(r.sfx)}</div>
+      </div>
+      <div class="min-w-0">
+        <p class="md:hidden eyebrow mb-1">口播文案</p>
+        <div contenteditable="true" spellcheck="false" data-row="${i}" data-f="text" data-placeholder="要唸的台詞…" class="serif ${i === 0 ? 'text-[21px] font-bold' : 'text-[17px]'} leading-[1.9] tracking-wide -mx-1 px-1">${esc(r.text)}</div>
+      </div>
+    </li>`;
+  }).join('');
+  updateStats();
+}
+
+function scanRisks() {
+  const hits = [];
+  state.script.rows.forEach((r, i) => RISK_RULES.forEach(rule => {
+    const n = (r.text.match(rule.re) || []).length;
+    if (n) { const h = hits.find(x => x.rule === rule); if (h) { h.n += n; h.rows.add(i); } else hits.push({ rule, n, rows: new Set([i]) }); }
+  }));
+  return hits;
+}
+
+function updateStats() {
+  const sc = state.script; if (!sc) return;
+  const all = sc.rows.map(r => r.text).join('\n');
+  const chars = countChars(all), total = sc.rows.reduce((a, r) => a + secOf(r.text), 0);
+  const inBand = chars >= 150 && chars <= 300;
+  $('#stChars').textContent = chars;
+  $('#stBar').style.width = Math.min(100, chars / 400 * 100) + '%';
+  $('#stBar').style.background = inBand ? 'rgb(var(--c-accent))' : 'rgb(var(--c-alert))';
+  $('#stBar').style.boxShadow = inBand ? '0 0 10px rgb(var(--c-accent) / .7)' : 'none';
+  $('#stCharsNote').textContent = chars < 150 ? '內容偏短，可以補一句痛點或乾貨' : chars > 300 ? '內容偏長，完播率容易下降，建議刪減' : '落在完播率黃金區間';
+  $('#stSec').textContent = Math.round(total);
+  const emos = EMO_WORDS.filter(w => all.includes(w));
+  $('#stEmo').textContent = emos.length;
+  $('#stEmoList').textContent = emos.join('・') || '可加入「避坑、千萬別、秘密」等詞';
+
+  timeLabels().forEach((tm, i) => {
+    const a = document.querySelector(`[data-time="${i}"]`), b = document.querySelector(`[data-time-sub="${i}"]`);
+    if (a) a.textContent = tm.end ? '結尾' : tm.range;
+    if (b) b.textContent = tm.end ? tm.range : '約 ' + tm.sec.toFixed(1) + ' 秒';
+  });
+
+  const hits = scanRisks(), n = hits.reduce((a, h) => a + h.n, 0);
+  $('#stRisk').textContent = n;
+  $('#stRisk').parentElement.classList.toggle('text-alert', !!n);
+  $('#stRiskNote').textContent = n ? '已標示在下方，可一鍵替換' : '沒有發現常見敏感詞';
+  const riskRows = new Set(hits.flatMap(h => [...h.rows]));
+  document.querySelectorAll('[data-f="text"]').forEach(el => el.classList.toggle('has-risk', riskRows.has(+el.dataset.row)));
+  $('#riskPanel').classList.toggle('hidden', !n);
+  $('#riskList').innerHTML = hits.map(h => `
+    <li class="inline-flex items-center gap-2 rounded-full border border-alert/40 pl-3 pr-1 py-1 text-sm">
+      <b class="text-alert font-medium">「${esc(h.rule.word)}」</b><span class="text-xs text-mute">${h.n} 處</span>
+      <button class="btn btn-ghost text-xs px-2.5 py-1" data-fix="${RISK_RULES.indexOf(h.rule)}">換成「${esc(h.rule.fix)}」</button>
+    </li>`).join('');
+}
+
+function applyFix(rules) {
+  state.script.rows.forEach(r => rules.forEach(rule => { r.text = r.text.replace(rule.re, rule.fix); }));
+  save(); renderBoard();
+}
+
+/* =========================================================
+   COPY
+   ========================================================= */
+function scriptText() {
+  const sc = state.script, times = timeLabels();
+  const out = [`【爆款腳本】${sc.vars.產品}`, `${sc.meta.track}｜${sc.meta.persona}｜口播 ${countChars(sc.rows.map(r => r.text).join(''))} 字・約 ${Math.round(sc.rows.reduce((a, r) => a + secOf(r.text), 0))} 秒`, '────────────────'];
+  sc.rows.forEach((r, i) => {
+    out.push(`▍${ROW_META[r.key].tag}　${times[i].end ? '結尾 ' : ''}${times[i].range}`);
+    out.push(`  畫面指示：${r.vis}`);
+    out.push(`  鏡頭／音效：${r.sfx}`);
+    out.push(`  口播文案：${r.text.replace(/\n/g, '\n            ')}`);
+    out.push('');
+  });
+  return out.join('\n');
+}
+function scriptTsv() {
+  const cell = s => String(s).replace(/\t/g, ' ').replace(/\n/g, ' ');
+  const times = timeLabels();
+  return ['時間\t畫面指示\t鏡頭/音效\t口播文案', ...state.script.rows.map((r, i) => [times[i].end ? '結尾' : times[i].range, r.vis, r.sfx, r.text].map(cell).join('\t'))].join('\n');
+}
+const ACTIONS = {
+  prompter: () => openPrompter(),
+  swap: () => swapHook(),
+  copyAll: async () => toast((await copyText(scriptText())) ? '完整腳本已複製' : '複製失敗，請手動選取文字', 'copy'),
+  copyTsv: async () => toast((await copyText(scriptTsv())) ? '分鏡表已複製，可直接貼到試算表或 Notion' : '複製失敗，請手動選取文字', 'table'),
+  copyVo: async () => toast((await copyText(state.script.rows.map(r => r.text).join('\n\n'))) ? '口播稿已複製' : '複製失敗，請手動選取文字', 'text'),
+};
+
+/* =========================================================
+   TELEPROMPTER
+   ========================================================= */
+const tp = { playing: false, raf: 0, last: 0, pos: 0, total: 0, land: false, font: window.matchMedia('(max-width: 640px)').matches ? 32 : 42 };
+function renderPrompter() {
+  const rows = state.script.rows, times = timeLabels();
+  tp.total = rows.reduce((a, r) => a + secOf(r.text), 0);
+  $('#prompterBody').innerHTML = rows.map((r, i) => {
+    const lines = r.text.split('\n').filter(x => x.trim()).map(l => esc(l) + '<span class="breath"></span>').join('<br>');
+    return `<section class="mb-[1.5em]">
+      <div class="flex flex-wrap items-center gap-3 mb-3 tracking-[.2em]" style="font-size:12px">
+        <span class="${i === 0 ? 'text-[#9DB4FF]' : 'text-white/50'}">${ROW_META[r.key].en.toUpperCase()} · ${ROW_META[r.key].tag}</span>
+        <span class="text-white/35 tnum">${times[i].range}</span>
+      </div>
+      <p class="serif font-bold leading-[1.6] tracking-wide ${i === 0 ? 'text-white' : 'text-white/90'}">${lines}</p>
+    </section>`;
+  }).join('');
+  const body = $('#prompterBody');
+  body.style.fontSize = (tp.land ? Math.round(tp.font * 1.25) : tp.font) + 'px';
+  body.classList.toggle('max-w-xl', !tp.land); body.classList.toggle('max-w-5xl', tp.land);
+  $('#tpTotal').textContent = fmt(tp.total);
+}
+const scroller = () => $('#prompterScroll');
+function tpRange() { const b = $('#prompterBody'), cs = getComputedStyle(b); return Math.max(1, b.scrollHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)); }
+function tpUpdate() { const p = Math.min(1, scroller().scrollTop / tpRange()); $('#tpProgress').style.width = (p * 100).toFixed(1) + '%'; $('#tpElapsed').textContent = fmt(p * tp.total); }
+function tpStep(ts) {
+  if (!tp.playing) return;
+  const s = scroller(), dt = tp.last ? (ts - tp.last) / 1000 : 0; tp.last = ts;
+  tp.pos += (tpRange() / Math.max(1, tp.total)) * dt; s.scrollTop = tp.pos; tpUpdate();
+  if (tp.pos >= tpRange() || s.scrollTop >= s.scrollHeight - s.clientHeight) { tpPause(); $('#tpPlay').textContent = '完成'; return; }
+  tp.raf = requestAnimationFrame(tpStep);
+}
+function tpPlay() { const s = scroller(); if (s.scrollTop >= tpRange() - 2) s.scrollTop = 0; tp.playing = true; tp.last = 0; tp.pos = s.scrollTop; $('#tpPlay').textContent = '暫停'; tp.raf = requestAnimationFrame(tpStep); }
+function tpPause() { tp.playing = false; cancelAnimationFrame(tp.raf); $('#tpPlay').textContent = '繼續'; }
+function rerenderKeepingPlace() { const s = scroller(), r = s.scrollTop / tpRange(); renderPrompter(); s.scrollTop = tp.pos = r * tpRange(); tpUpdate(); }
+function setOrientation(land) {
+  tp.land = land;
+  $('#tpPortrait').setAttribute('aria-pressed', !land); $('#tpLandscape').setAttribute('aria-pressed', land);
+  rerenderKeepingPlace();
+}
+function openPrompter() {
+  $('#tpRate').value = state.rate; $('#tpRateVal').textContent = state.rate;
+  renderPrompter();
+  const p = $('#prompter'); p.classList.remove('hidden'); requestAnimationFrame(() => p.classList.remove('opacity-0'));
+  scroller().scrollTop = tp.pos = 0; tpUpdate(); $('#tpPlay').textContent = '開始';
+  document.body.style.overflow = 'hidden';
+}
+function closePrompter() { tpPause(); const p = $('#prompter'); p.classList.add('opacity-0'); setTimeout(() => p.classList.add('hidden'), 250); document.body.style.overflow = ''; }
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+$('#btnTheme').addEventListener('click', () => {
+  state.theme = isDark() ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.theme);
+  paintThemeBtn(); save();
+});
+$('#tracks').addEventListener('click', e => { const b = e.target.closest('[data-track]'); if (!b) return; state.track = b.dataset.track; save(); renderPickers(); });
+$('#personas').addEventListener('click', e => { const b = e.target.closest('[data-persona]'); if (!b) return; state.persona = b.dataset.persona; save(); renderPickers(); });
+$('#fillEx').addEventListener('click', () => {
+  const ex = trackOf(state.track).ex;
+  $('#kProduct').value = ex.product; $('#kPain').value = ex.pain; $('#kNum').value = ex.num; $('#kWho').value = ex.who;
+  toast('已填入範例，改成你的關鍵字再生成');
+});
+$('#kwForm').addEventListener('submit', e => {
+  e.preventDefault();
+  state.inputs = readInputs();
+  generate(); renderBoard(); renderHookStyles();
+  $('#output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('爆款腳本已生成，每一格都能點擊修改');
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const fn = ACTIONS[b.dataset.act.replace(/-m$/, '')]; if (fn) fn();
+});
+$('#board').addEventListener('input', e => {
+  const el = e.target.closest('[data-f]'); if (!el) return;
+  state.script.rows[+el.dataset.row][el.dataset.f] = readText(el);
+  updateStats(); save();
+});
+document.addEventListener('paste', e => {
+  const el = e.target.closest && e.target.closest('[contenteditable]'); if (!el) return;
+  e.preventDefault();
+  document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
+});
+$('#hookStyles').addEventListener('click', e => { const b = e.target.closest('[data-style]'); if (b) swapHook(b.dataset.style); });
+$('#riskList').addEventListener('click', e => {
+  const b = e.target.closest('[data-fix]'); if (!b) return;
+  const rule = RISK_RULES[+b.dataset.fix]; applyFix([rule]); toast(`已把「${rule.word}」換成「${rule.fix}」`);
+});
+$('#btnFixAll').addEventListener('click', () => { applyFix(scanRisks().map(h => h.rule)); toast('敏感詞已全部替換'); });
+$('#rate').addEventListener('input', e => { state.rate = +e.target.value; $('#rateVal').textContent = state.rate; updateStats(); save(); });
+
+$('#tpPlay').addEventListener('click', () => tp.playing ? tpPause() : tpPlay());
+$('#tpRestart').addEventListener('click', () => { tpPause(); scroller().scrollTop = tp.pos = 0; tpUpdate(); $('#tpPlay').textContent = '開始'; });
+$('#tpClose').addEventListener('click', closePrompter);
+$('#tpRate').addEventListener('input', e => { state.rate = +e.target.value; $('#tpRateVal').textContent = state.rate; $('#rate').value = state.rate; $('#rateVal').textContent = state.rate; updateStats(); save(); rerenderKeepingPlace(); });
+$('#tpBigger').addEventListener('click', () => { tp.font = Math.min(72, tp.font + 4); rerenderKeepingPlace(); });
+$('#tpSmaller').addEventListener('click', () => { tp.font = Math.max(22, tp.font - 4); rerenderKeepingPlace(); });
+$('#tpPortrait').addEventListener('click', () => setOrientation(false));
+$('#tpLandscape').addEventListener('click', () => setOrientation(true));
+$('#tpMirror').addEventListener('change', e => $('#prompterBody').classList.toggle('mirror', e.target.checked));
+scroller().addEventListener('scroll', () => { if (!tp.playing) { tp.pos = scroller().scrollTop; tpUpdate(); } });
+scroller().addEventListener('click', () => tp.playing ? tpPause() : tpPlay());
+document.addEventListener('keydown', e => {
+  if ($('#prompter').classList.contains('hidden')) return;
+  const s = scroller();
+  if (e.key === 'Escape') closePrompter();
+  else if (e.key === ' ') { e.preventDefault(); tp.playing ? tpPause() : tpPlay(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); s.scrollTop += 60; tp.pos = s.scrollTop; tpUpdate(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); s.scrollTop -= 60; tp.pos = s.scrollTop; tpUpdate(); }
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#libStat').textContent = `本地模組庫 ${HOOK_COUNT} 個開頭公式・${MODULE_COUNT} 個模組・可組合 ${Math.floor(COMBOS / 1000) / 10} 萬種腳本`;
+$('#rate').value = state.rate; $('#rateVal').textContent = state.rate;
+if (!state.script || !Array.isArray(state.script.rows) || state.script.rows.length !== 4) {
+  state.track = 'beauty'; state.persona = 'flip'; state.inputs = {};
+  generate({ hook: 8, pain: 1, cta: 1 });
+}
+renderStatic(); renderPickers(); fillInputs(); renderHookStyles(); renderBoard();
+</script>
+</body>
+</html>
