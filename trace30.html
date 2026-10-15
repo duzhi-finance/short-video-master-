@@ -21,7 +21,7 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); }
   body { font-family: var(--sans); -webkit-font-smoothing: antialiased; letter-spacing: .02em; line-height: 1.6; }
-  button, input { font: inherit; color: inherit; }
+  button, input, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
   h1, h2, h3, h4, p { margin: 0; }
   h1, h2, h3 { text-wrap: balance; }
@@ -51,10 +51,15 @@
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .chip { border: 1px solid var(--line); background: var(--soft); border-radius: 99px; padding: 7px 14px; font-size: 13.5px; transition: background .2s, border-color .2s, color .2s; white-space: nowrap; }
   .chip:hover { border-color: #DCD2C6; }
-  .chip[aria-checked="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .chip[aria-checked="true"], .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
   .custom { margin-top: 10px; width: 100%; border: 1px solid var(--line); background: var(--soft); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
   .custom::placeholder { color: var(--faint); }
   .custom:focus { outline: none; border-color: var(--accent); background: #fff; }
+  textarea.custom { resize: vertical; line-height: 1.75; min-height: 104px; }
+  .custom.big { font-size: 16px; padding: 13px 16px; }
+  .empty { padding: 36px 8px 28px; text-align: center; color: var(--mute); font-size: 14.5px; line-height: 1.9; }
+  .empty b { display: block; font-family: var(--serif); font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+  .btn[disabled] { opacity: .4; cursor: not-allowed; }
   .summary { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mute); line-height: 1.8; }
   .summary b { color: var(--ink); font-weight: 700; }
 
@@ -109,19 +114,39 @@
   <header class="mast">
     <p class="eyebrow">One Post · TRACE Prompt</p>
     <h1>TRACE 爆款指令大師</h1>
-    <p>點選你的角色、領域與目標，選好這一篇的主題，立刻組出一份給 ChatGPT／Claude 用的 TRACE 高階指令，貼上就能寫出完整的爆款腳本。</p>
+    <p>先寫下今天要拍的主題和你的素材，再點選角色、領域與目標，立刻組出一份給 ChatGPT／Claude 用的 TRACE 高階指令，貼上就能寫出這一篇。</p>
   </header>
 
-  <!-- 區塊一：參數設定 -->
+  <!-- 區塊一：今天要拍什麼 -->
+  <section class="card" aria-labelledby="todayH">
+    <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>先填主題，才會產生指令</small></div>
+    <div class="fields">
+      <div class="field">
+        <label for="topicIn">今天拍攝的主題<small>TOPIC・必填</small></label>
+        <input class="custom big" id="topicIn" maxlength="30" placeholder="例如：35 歲上班族的一天" />
+        <div class="chips" id="topicChips" aria-label="主題靈感"></div>
+      </div>
+      <div class="field">
+        <label for="materialIn">這支要講的內容／你的素材<small>MATERIAL・選填</small></label>
+        <textarea class="custom" id="materialIn" rows="4" maxlength="800" placeholder="例如：早上 7 點出門、通勤 1 小時，中午只吃超商，下班後還是擠出 30 分鐘運動。想分享忙碌上班族怎麼維持體態。"></textarea>
+      </div>
+      <div class="field">
+        <p>輸出格式<small>FORMAT・可複選</small></p>
+        <div class="chips" id="formatChips" aria-label="輸出格式"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 區塊二：參數設定 -->
   <section class="card" aria-labelledby="setH">
-    <div class="card-h"><span class="no">01</span><h2 id="setH">參數設定</h2><small>點選或自訂，改了立刻重新生成</small></div>
+    <div class="card-h"><span class="no">02</span><h2 id="setH">參數設定</h2><small>點選或自訂，改了立刻重新生成</small></div>
     <div class="fields" id="fields"></div>
     <p class="summary" id="summary"></p>
   </section>
 
-  <!-- 區塊二：TRACE 指令 -->
+  <!-- 區塊三：TRACE 指令 -->
   <section class="card" aria-labelledby="outH">
-    <div class="card-h"><span class="no">02</span><h2 id="outH">這一篇的 TRACE 指令</h2></div>
+    <div class="card-h"><span class="no">03</span><h2 id="outH">這一篇的 TRACE 指令</h2></div>
     <div class="doc">
       <div class="doc-head">
         <p class="eyebrow">TRACE PROMPT</p>
@@ -133,9 +158,9 @@
     </div>
   </section>
 
-  <!-- 區塊三：微調檢查 -->
+  <!-- 區塊四：微調檢查 -->
   <section class="card" aria-labelledby="ckH">
-    <div class="card-h"><span class="no">03</span><h2 id="ckH">拍片前微調檢查</h2><small>逐項打勾，確認後再開拍</small></div>
+    <div class="card-h"><span class="no">04</span><h2 id="ckH">拍片前微調檢查</h2><small>逐項打勾，確認後再開拍</small></div>
     <div class="checks" id="checks"></div>
   </section>
 
@@ -169,7 +194,6 @@ const OPTS = {
 const FIELD_META = [
   { id: 'role', label: '你的角色', en: 'ROLE', custom: '或自訂角色，例如：營養師' },
   { id: 'domain', label: '內容領域', en: 'DOMAIN', custom: '或自訂領域，例如：寵物攝影' },
-  { id: 'topic', label: '這一篇的主題', en: 'TOPIC', custom: '或自訂主題，例如：油肌底妝' },
   { id: 'platform', label: '主要平台', en: 'PLATFORM' },
   { id: 'goal', label: '內容目標', en: 'GOAL' },
   { id: 'scenario', label: '腳本風格場景', en: 'SCENARIO' },
@@ -266,8 +290,8 @@ const CHECKS = [
 /* =========================================================
    STATE
    ========================================================= */
-const KEY = 'trace-one-v1';
-let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topic: '', topicCustom: '', checks: [] };
+const KEY = 'trace-one-v2';
+let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topicText: '', material: '', formats: ['短影音口播稿'], checks: [] };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
@@ -286,33 +310,49 @@ function domainData() {
 /* =========================================================
    這一篇的主題
    ========================================================= */
-const optsFor = id => id === 'topic' ? domainData().subs.map(x => x.n) : OPTS[id];
-const chosenSub = () => { const subs = domainData().subs; return subs.find(x => x.n === S.topic) || subs[0]; };
-const topic = () => (S.topicCustom || '').trim() || chosenSub().n;
-const isCustomTopic = () => !!(S.topicCustom || '').trim();
+const FORMATS = ['短影音口播稿', '圖文貼文', '輪播圖文案'];
+const topic = () => (S.topicText || '').trim();
+const chosenSub = () => domainData().subs.find(x => x.n === topic()) || null;
+const isCustomTopic = () => !chosenSub();
+const material = () => (S.material || '').trim();
+const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 /* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
+/* 自訂主題用：任何一句話都讀得通的開場句型 */
+const CUSTOM_SC = { 乾貨教學文: '「{n}」，我整理成 3 個重點', 避坑勸退文: '「{n}」這件事，千萬別犯這個錯', 故事觀點文: '我想分享「{n}」最真實的版本', 產品開箱評測: '「{n}」裡，我最常用的就是這個', '限時優惠/導購': '「{n}」需要的東西，我替你整理好了' };
+const CUSTOM_GOAL = { 快速漲粉: '「{n}」系列第 1 集，你絕對想不到', 建立專業信任: '{role}眼中的「{n}」', '提高產品轉換/銷售': '「{n}」能輕鬆一點，靠的是這個方法', 增加留言互動: '「{n}」，你也是這樣嗎？' };
 function sampleHooks() {
-  const sub = chosenSub(), dd = domainData(), custom = isCustomTopic();
+  if (isCustomTopic()) return [CUSTOM_SC[S.scenario], CUSTOM_GOAL[S.goal], '「{n}」，大部分人只看到表面'].map(t => t.replace('{n}', topic()).replace('{role}', role()));
+  const dd = domainData(), sub = chosenSub() || dd.subs[0], custom = isCustomTopic();
   const v = { n: topic(), myth: sub.myth, trap: sub.trap, domain: domain(), product: dd.product, role: role() };
   const ok = t => !custom || !/\{(myth|trap)\}/.test(t);
   const pickFrom = list => list.find(ok) || list[0];
   return [pickFrom(SCENARIO_TITLES[S.scenario]), pickFrom(GOAL_TITLES[S.goal]), pickFrom(COMMON_TITLES.slice(4))]
     .map(t => t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? ''));
 }
-const settingLine = () => `主題：${topic()}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
+const settingLine = () => `主題：${topic()}\n格式：${fmts().join('、')}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
 
 /* =========================================================
    TRACE 指令
    ========================================================= */
 function traceParts() {
-  const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks();
-  const lenTxt = parseInt(S.len) + ' 秒';
-  const angle = isCustomTopic() ? '' : `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。`;
+  const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks(), F = fmts();
+  const lenTxt = parseInt(S.len) + ' 秒', hasVo = F.includes('短影音口播稿');
+  const out = ['3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試'];
+  if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}`);
+  if (F.includes('圖文貼文')) out.push('一篇圖文貼文：分段清楚，每段不超過 3 行，可以直接貼到社群');
+  if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
+  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag');
+  const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
+  const mat = material() ? `\n\n我的素材（請以這些真實內容為主）：\n${material()}` : '';
+  const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
+  if (hasVo) cons.push(`口播文案控制在 ${chars} 字左右，最多不超過 250 字。`);
+  if (F.includes('圖文貼文')) cons.push('圖文貼文控制在 300 字內。');
+  cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '不要捏造我沒提供的經歷、數據或產品功效。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `請幫我寫一篇可以直接拍攝的 ${S.platform} 短影音口播腳本，主題是「${topic()}」，長度約 ${lenTxt}。\n請依序輸出：\n1. 3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試\n2. 完整口播文案，用「${S.scenario}」的寫法\n3. 結尾行動呼籲 CTA\n4. 3 個爆款標題\n5. 5 個 Hashtag${angle}` },
+    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
-    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，現在正卡在「${topic()}」這件事上。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
-    { L: 'C', h: 'Constraint', zh: '限制', t: `1. 嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。\n2. 口播文案控制在 ${chars} 字左右，最多不超過 250 字。\n3. 快節奏、不說教，每句盡量不超過 20 字。\n4. 口播最後用一句金句收尾。\n5. 全文不使用 Emoji。\n6. CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。` },
+    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對「${topic()}」這個主題特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
+    { L: 'C', h: 'Constraint', zh: '限制', t: cons.map((x, i) => `${i + 1}. ${x}`).join('\n') },
     { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考開場：\n${hooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n\n請參考這些開場的語氣與節奏，寫出這一篇。` },
   ];
 }
@@ -324,8 +364,11 @@ const traceText = () => [RULE, `TRACE 爆款指令｜${topic()}`, settingLine(),
    ========================================================= */
 function chipsFor(id) {
   const custom = (S[id + 'Custom'] || '').trim();
-  const cur = id === 'topic' ? chosenSub().n : S[id];
-  return optsFor(id).map(o => `<button class="chip" role="radio" aria-checked="${!custom && cur === o}" data-f="${id}" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+  return OPTS[id].map(o => `<button class="chip" role="radio" aria-checked="${!custom && S[id] === o}" data-f="${id}" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+}
+function renderToday() {
+  $('#topicChips').innerHTML = domainData().subs.map(x => `<button class="chip" aria-pressed="${topic() === x.n}" data-topic="${esc(x.n)}">${esc(x.n)}</button>`).join('');
+  $('#formatChips').innerHTML = FORMATS.map(f => `<button class="chip" role="checkbox" aria-checked="${S.formats.includes(f)}" data-fmt="${f}">${f}</button>`).join('');
 }
 function renderFields() {
   $('#fields').innerHTML = FIELD_META.map(m => {
@@ -338,11 +381,18 @@ function renderFields() {
   }).join('');
 }
 function renderSummary() {
-  $('#summary').innerHTML = `這一篇：<b>${esc(topic())}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
+  $('#summary').innerHTML = `這一篇：<b>${esc(topic() || '尚未填寫主題')}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
 }
 function renderTrace() {
+  $('#copyTrace').disabled = !topic();
+  if (!topic()) {
+    $('#docTitle').textContent = '等待今天的主題';
+    $('#traceTags').innerHTML = '';
+    $('#trace').innerHTML = '<div class="empty"><b>先告訴我今天要拍什麼</b>在上方「今天拍攝的主題」填一句話，<br />例如「35 歲上班族的一天」，這裡就會產生完整指令。</div>';
+    return;
+  }
   $('#docTitle').textContent = `「${topic()}」爆款指令`;
-  $('#traceTags').innerHTML = [role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
+  $('#traceTags').innerHTML = [...fmts(), role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
   $('#trace').innerHTML = traceParts().map(p => {
     const [main, ex] = p.L === 'E' ? p.t.split('參考開場：\n') : [p.t, ''];
     const [quote, tail] = ex ? ex.split('\n\n') : ['', ''];
@@ -376,17 +426,29 @@ const copied = (ok, m) => toast(ok ? m : '複製失敗，請手動選取文字')
 $('#fields').addEventListener('click', e => {
   const b = e.target.closest('[data-f]'); if (!b) return;
   const f = b.dataset.f; S[f] = b.dataset.v;
-  if (f === 'role' || f === 'domain' || f === 'topic') { S[f + 'Custom'] = ''; const inp = $('#in-' + f); if (inp) inp.value = ''; }
+  if (f === 'role' || f === 'domain') { S[f + 'Custom'] = ''; const inp = $('#in-' + f); if (inp) inp.value = ''; }
   b.parentElement.querySelectorAll('[data-f]').forEach(x => x.setAttribute('aria-checked', x === b));
-  if (f === 'domain') { S.topic = ''; $('#chips-topic').innerHTML = chipsFor('topic'); }
+  if (f === 'domain') renderToday();
   regen();
 });
 $('#fields').addEventListener('input', e => {
   const inp = e.target.closest('.custom'); if (!inp) return;
   const f = inp.id.replace('in-', ''); S[f + 'Custom'] = inp.value;
   $('#chips-' + f).innerHTML = chipsFor(f);
-  if (f === 'domain') { S.topic = ''; $('#chips-topic').innerHTML = chipsFor('topic'); }
+  if (f === 'domain') renderToday();
   regen();
+});
+$('#topicIn').addEventListener('input', e => { S.topicText = e.target.value; renderToday(); regen(); });
+$('#topicChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-topic]'); if (!b) return;
+  S.topicText = b.dataset.topic; $('#topicIn').value = S.topicText; renderToday(); regen();
+});
+$('#materialIn').addEventListener('input', e => { S.material = e.target.value; regen(); });
+$('#formatChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-fmt]'); if (!b) return;
+  const f = b.dataset.fmt, on = S.formats.includes(f);
+  if (on && S.formats.length === 1) { toast('至少要選一種輸出格式'); return; }
+  S.formats = on ? S.formats.filter(x => x !== f) : [...S.formats, f]; renderToday(); regen();
 });
 $('#copyTrace').addEventListener('click', async () => copied(await copy(traceText()), 'TRACE 指令已複製'));
 $('#checks').addEventListener('click', e => {
@@ -399,7 +461,10 @@ $('#checks').addEventListener('click', e => {
    INIT
    ========================================================= */
 $('#copyTrace').innerHTML = ico('copy') + '一鍵複製 TRACE 指令';
-renderFields(); renderChecks(); regen();
+$('#topicIn').value = S.topicText || '';
+$('#materialIn').value = S.material || '';
+if (!Array.isArray(S.formats) || !S.formats.length) S.formats = ['短影音口播稿'];
+renderToday(); renderFields(); renderChecks(); regen();
 </script>
 </body>
 </html>
