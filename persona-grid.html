@@ -157,12 +157,13 @@
   @media (min-width: 900px) { .routes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .route { border-radius: 22px; padding: 18px; border: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
   .route.main { background: var(--hero); border-color: transparent; }
+  .route.main .ex { background: rgba(255, 255, 255, .75); }
   .route .pct { font-size: 38px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
   .route .pct span { font-size: 16px; margin-left: 2px; }
   .route .nm { font-size: 16px; font-weight: 900; }
   .route .nm small { font-weight: 400; color: var(--mute); font-size: 12px; margin-left: 6px; }
   .route p { font-size: 13.5px; line-height: 1.75; color: #5E5553; }
-  .route .ex { font-size: 13px; color: var(--ink); background: rgba(255, 255, 255, .7); border-radius: 12px; padding: 8px 10px; line-height: 1.6; }
+  .route .ex { font-size: 13px; color: var(--ink); background: #FAF4F3; border-radius: 12px; padding: 8px 10px; line-height: 1.6; }
   .route .go { margin-top: auto; border: 0; border-radius: 14px; padding: 11px 12px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: .06em; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .route .go svg { width: 16px; height: 16px; }
   .r-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -230,6 +231,35 @@
   #toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); transform: translate(-50%, 12px); opacity: 0; pointer-events: none; z-index: 60; background: var(--ink); color: #fff; font-size: 14px; padding: 12px 18px; border-radius: 99px; transition: opacity .25s, transform .25s; max-width: 90vw; text-align: center; }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
   @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  /* ---------- flow ---------- */
+  .steps { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .steps span { font-size: 12px; padding: 5px 11px; border-radius: 99px; background: #F7F2F1; color: var(--faint); letter-spacing: .04em; }
+  .steps span.on { background: var(--rose-soft); color: var(--rose); }
+  .steps span.done { color: var(--mute); }
+  .domains { margin-top: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 640px) { .domains { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .domain { text-align: left; border: 1px solid var(--line); background: #FDFAF9; border-radius: 20px; padding: 16px; display: grid; gap: 4px; transition: border-color .2s, box-shadow .2s; }
+  .domain:hover { border-color: #E5CFCB; box-shadow: var(--shadow); background: #fff; }
+  .domain .no { font-family: var(--serif); font-size: 12px; color: var(--rose); letter-spacing: .15em; }
+  .domain b { font-size: 17px; font-weight: 900; letter-spacing: .04em; }
+  .domain small { font-size: 12px; color: var(--mute); line-height: 1.5; }
+  .who-line { margin-top: 6px; font-size: 13px; color: var(--mute); }
+  .who-line b { color: var(--rose); font-weight: 700; }
+  .route.sel { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .picked { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--mute); }
+  .picked b { color: var(--ink); }
+  .out-sec { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .out-sec:first-of-type { margin-top: 18px; padding-top: 0; border-top: 0; }
+  .out-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .out-h .no { font-family: var(--serif); font-size: 13px; color: var(--rose); letter-spacing: .15em; }
+  .out-h h4 { margin: 0; font-size: 17px; font-weight: 900; letter-spacing: .04em; }
+  .out-h .right { margin-left: auto; }
+  .post { margin-top: 14px; background: #FDFAF9; border: 1px solid var(--line); border-radius: 20px; padding: 18px; font-size: 15.5px; line-height: 1.95; white-space: pre-wrap; word-break: break-word; }
+  .ctas { margin-top: 14px; display: grid; gap: 10px; }
+  .cta-opt { text-align: left; display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--line); background: #FDFAF9; border-radius: 18px; padding: 14px 16px; font-size: 15px; line-height: 1.7; }
+  .cta-opt small { flex: none; font-size: 12px; padding: 3px 9px; border-radius: 99px; background: #F2ECEA; color: var(--mute); margin-top: 2px; }
+  .cta-opt[aria-pressed="true"] { border-color: var(--ink); background: #fff; }
+  .cta-opt[aria-pressed="true"] small { background: var(--ink); color: #fff; }
 </style>
 </head>
 <body>
@@ -238,16 +268,16 @@
   <aside class="side">
     <div class="brand">
       <h1>爆款定位九宮格</h1>
-      <p>人設定位・一鍵口播 ・ Persona Script Studio</p>
+      <p>先定位，再出稿 ・ Persona Script Studio</p>
     </div>
     <nav class="nav" id="sideNav"></nav>
-    <p class="note">全部用點選完成，不需要打字。<br />你的選擇只存在這台裝置。</p>
+    <p class="note">全程用點選完成，只有主題可以自己打字。<br />你的答案只存在這台裝置。</p>
   </aside>
 
   <div>
     <header class="topbar">
       <b>爆款定位九宮格</b>
-      <nav><a href="#quizCard" data-go="quiz">測定位</a><a href="#gridCard" data-go="pro">老手</a><a href="#scriptCard">腳本</a></nav>
+      <nav><a href="#quizCard">定位</a><a href="#guideCard">設定</a><a href="#outCard">內容</a></nav>
     </header>
 
     <main>
@@ -259,67 +289,73 @@
         <div class="avatar" id="avatar" aria-hidden="true"></div>
       </section>
 
-      <!-- HERO：目前人設 -->
-      <section class="hero" aria-live="polite">
-        <div class="lbl"><b>目前人設</b><small>Current Persona</small></div>
-        <div class="persona" id="heroPersona"></div>
-        <div class="stats">
-          <div class="stat"><small>目標時長<span class="en"> Length</span></small><b id="stLen">30<span>秒</span></b></div>
-          <div class="stat"><small>口播字數<span class="en"> Words</span></small><b id="stWords">0<span>字</span></b></div>
-          <div class="stat"><small>內容類型<span class="en"> Type</span></small><b id="stHook">—</b></div>
-        </div>
-      </section>
-
-      <!-- 模式切換 -->
-      <section class="modes" role="tablist" aria-label="選擇模式">
-        <button class="mode" role="tab" data-mode="quiz"><b>新手無腦測定位</b><small>3 或 6 題選擇題，自動定義人設與方向</small></button>
-        <button class="mode" role="tab" data-mode="pro"><b>老手精準</b><small>輸入主題、選時長，兩步出稿</small></button>
-      </section>
-
-      <!-- 新手：定位測驗 -->
+      <!-- STEP 1-3：定位測驗 → 長期路線 -->
       <section class="card" id="quizCard">
-        <div class="card-h"><span id="icQuiz"></span><h3>個人 IP 賽道定位診斷</h3><small>・ Persona Diagnosis</small></div>
+        <div class="card-h"><span id="icQuiz"></span><h3 id="quizTitle">個人 IP 賽道定位診斷</h3></div>
+        <div class="steps" id="steps"></div>
         <div id="quizBody"></div>
       </section>
 
-      <!-- 九宮格 -->
-      <section class="card" id="gridCard">
-        <div class="card-h"><span id="icGrid"></span><h3>老手精準出稿</h3><small>・ 只要兩步</small></div>
+      <!-- STEP 4：客製化引導 -->
+      <section class="card is-hidden" id="guideCard">
+        <div class="card-h"><span id="icGuide"></span><h3>客製化爆款內容生成</h3></div>
+        <p class="picked" id="picked"></p>
         <div class="pro-step">
-          <p class="pro-k"><span>01</span>輸入主題<small>或一鍵選熱門主題</small></p>
-          <label class="topic-in"><span class="sr">今天想拍的主題</span><input id="topicIn" maxlength="14" placeholder="例如：中古屋交屋避坑" /></label>
-          <div class="tracks" role="radiogroup" aria-label="主題類型" id="themeTags"></div>
+          <p class="pro-k"><span>01</span>這支要拍什麼主題？<small>可以自己打，或點下面的建議</small></p>
+          <label class="topic-in"><span class="sr">主題</span><input id="topicIn" maxlength="14" /></label>
+          <div class="tracks" id="topicTags"></div>
         </div>
         <div class="pro-step">
-          <p class="pro-k"><span>02</span>選擇目標時長</p>
+          <p class="pro-k"><span>02</span>目標時長</p>
           <div class="tracks" role="radiogroup" aria-label="目標時長" id="lenTags"></div>
         </div>
-        <p class="pro-note" id="proNote"></p>
-        <button class="gen" id="btnGen"><span id="icSpark"></span>一鍵生成爆款口播腳本</button>
-      </section>
-
-      <!-- 腳本 -->
-      <section class="card" id="scriptCard">
-        <div class="card-h"><span id="icMic"></span><h3>口播腳本</h3><small>・ Voice-over Script</small><span class="pill right" id="scriptMeta"></span></div>
-        <div class="tools">
-          <button class="btn dark" id="btnPrompter"></button>
-          <button class="btn" id="btnCopy"></button>
-          <button class="btn" id="btnHook"></button>
-          <button class="btn" id="btnRegen"></button>
+        <div class="pro-step">
+          <p class="pro-k"><span>03</span>希望觀眾看完做什麼？</p>
+          <div class="tracks" role="radiogroup" aria-label="行動呼籲" id="ctaTags"></div>
         </div>
-        <div class="script" id="script"></div>
+        <button class="gen" id="btnGen"><span id="icSpark"></span>生成我的爆款內容</button>
       </section>
 
-      <!-- 標題與標籤 -->
-      <section class="card" id="titleCard">
-        <div class="card-h"><span id="icTitle"></span><h3>小紅書標題・Hashtag</h3><small>・ Titles &amp; Tags</small><button class="btn right" id="btnCopyTitle"></button></div>
-        <ul class="titles" id="titles"></ul>
-        <div class="tags" id="tags"></div>
+      <!-- STEP 5：輸出 -->
+      <section class="card is-hidden" id="outCard">
+        <div class="card-h"><span id="icMic"></span><h3>你的爆款內容</h3><span class="pill right" id="scriptMeta"></span></div>
+        <div class="tools"><button class="btn dark" id="btnCopyAll"></button></div>
+
+        <div class="out-sec">
+          <div class="out-h"><span class="no">01</span><h4>爆款標題</h4><button class="btn right" id="btnCopyTitle"></button></div>
+          <ul class="titles" id="titles"></ul>
+        </div>
+
+        <div class="out-sec">
+          <div class="out-h"><span class="no">02</span><h4>口播腳本</h4></div>
+          <div class="tools">
+            <button class="btn dark" id="btnPrompter"></button>
+            <button class="btn" id="btnCopy"></button>
+            <button class="btn" id="btnHook"></button>
+            <button class="btn" id="btnRegen"></button>
+          </div>
+          <div class="script" id="script"></div>
+        </div>
+
+        <div class="out-sec">
+          <div class="out-h"><span class="no">03</span><h4>貼文文案</h4><button class="btn right" id="btnCopyPost"></button></div>
+          <div class="post" id="post"></div>
+        </div>
+
+        <div class="out-sec">
+          <div class="out-h"><span class="no">04</span><h4>行動呼籲 CTA</h4><small class="who-line">點一個，腳本和文案會跟著換</small></div>
+          <div class="ctas" id="ctas"></div>
+        </div>
+
+        <div class="out-sec">
+          <div class="out-h"><span class="no">05</span><h4>Hashtag</h4><button class="btn right" id="btnCopyTags"></button></div>
+          <div class="tags" id="tags"></div>
+        </div>
       </section>
 
       <section class="privacy">
         <span id="icLock"></span>
-        <div><b>資料保護說明</b><small>你的選擇只存在這台裝置的瀏覽器，不會上傳，也不會被誰看到</small></div>
+        <div><b>資料保護說明</b><small>你的答案只存在這台裝置的瀏覽器，不會上傳，也不會被誰看到</small></div>
       </section>
     </main>
   </div>
@@ -472,37 +508,143 @@ const TITLES = {
 const TAGS = { 商業算帳: ['商業思維', '算帳', '理性消費'], 避坑指南: ['避坑指南', '聽勸', '新手必看'], 顛覆認知: ['認知刷新', '內行人', '底層邏輯'], 實用乾貨: ['乾貨分享', '抄作業', '建議收藏'] };
 const EMPH = ['千萬別', '內行人', '踩過', '聽勸', '真相', '秘密', '抄作業', '底層邏輯', '才明白', '割韭菜', '偷偷'];
 
+const ARCH = {
+  truth: { name: '清醒毒舌派', tag: '敢講真話的內行人', theme: '顛覆認知',
+    desc: '你說話直接、看得透，最適合當觀眾的「清醒劑」：拆穿假象、講大實話，用一針見血換來討論和轉發。',
+    traits: ['直白敢講', '一針見血', '反常識觀點'],
+    grid: { tone: '毒舌清醒', role: '圈內內行人', edge: '資訊落差', rhythm: '扎心開場', cta: '避坑轉發' },
+    topics: [
+      { t: '{field}圈很少人說破的 3 個真相' },
+      { t: '那些被說得很神的{field}方法，其實沒那麼有用' },
+      { t: '{field}新手最容易聽信的 3 句話' } ],
+    moat: '固定用「講句難聽的」這類大實話口頭禪開場，讓觀眾一聽就認出你。' },
+  saver: { name: '避坑過來人', tag: '幫你省錢、少走彎路的過來人', theme: '避坑指南',
+    desc: '你踩過坑、花過冤枉錢，也願意分享。觀眾最信任「真的經歷過的人」，你的血淚史就是最強的說服力。',
+    traits: ['經驗豐富', '真實踩坑', '實用省錢'],
+    grid: { tone: '幽默吐槽', role: '避坑過來人', edge: '踩坑血淚', rhythm: '代價說服', cta: '收藏重看' },
+    topics: [
+      { t: '我在{field}上花了{cost}，換來的 3 個教訓' },
+      { t: '{field}新手千萬別做的 5 件事' },
+      { t: '如果{field}能重來，我會這樣做' } ],
+    moat: '自嘲式幽默加上真實的踩坑金額，讓觀眾覺得「這個人跟我一樣」，又忍不住想收藏。' },
+  logic: { name: '乾貨拆解派', tag: '把複雜事情講成一二三的專家', theme: '實用乾貨',
+    desc: '你條理分明，擅長把複雜的東西拆成步驟。觀眾會因為「看完就會」而收藏、追蹤，最容易建立專業感。',
+    traits: ['條理分明', '邏輯清楚', '步驟化教學'],
+    grid: { tone: '溫柔共情', role: '實操狂人', edge: '實戰結果', rhythm: '數字衝擊', cta: '留言領取' },
+    topics: [
+      { t: '3 個步驟搞懂{field}，新手直接抄作業' },
+      { t: '{field}的底層邏輯，一張圖講清楚' },
+      { t: '我實測 30 天的{field}方法，結果整理給你' } ],
+    moat: '固定的「一二三」結構和收尾清單，讓觀眾養成「看完就截圖」的習慣。' },
+  warm: { name: '溫柔陪伴派', tag: '讓人覺得被理解的朋友', theme: '顛覆認知',
+    desc: '你共情力強，擅長安慰和陪伴。觀眾願意為「被理解的感覺」留言、轉發，你的粉絲黏著度會特別高。',
+    traits: ['共情力強', '溫柔陪伴', '情緒價值'],
+    grid: { tone: '溫柔共情', role: '避坑過來人', edge: '實戰結果', rhythm: '代價說服', cta: '留言領取' },
+    topics: [
+      { t: '{field}讓你很焦慮的時候，我想跟你說的話' },
+      { t: '允許自己慢一點：我的{field}心態轉變' },
+      { t: '給正在{field}卡關的你，3 個溫柔提醒' } ],
+    moat: '溫柔的語氣和固定的結尾祝福語，讓觀眾把你當成「可以被安慰的地方」。' },
+};
+const THEME_DESC = {
+  顛覆認知: '拆穿常見迷思、講出反常識的真相，最容易引發討論與轉發。',
+  避坑指南: '分享踩過的坑與千萬別做的事，觀眾會為了少走彎路而收藏。',
+  實用乾貨: '步驟、清單、方法論，看完就能照做，最能建立專業與信任。',
+};
+/* =========================================================
+   各領域專屬詳細題庫（6 題）：選項依序對應
+   清醒毒舌派 truth ／ 避坑過來人 saver ／ 乾貨拆解派 logic ／ 溫柔陪伴派 warm
+   ========================================================= */
+const ARCH_ORDER = ['truth', 'saver', 'logic', 'warm'];
+const Q_WEIGHT = [2, 1, 1, 2, 1, 2]; // 說話風格、看不慣、資源累積、核心優勢、心理強項、第一印象
+const QUIZ = {
+  beauty: [
+    ['姐妹問你「這瓶保養品值得買嗎？」你通常會：', ['直接說實話：不適合你，別浪費錢', '先分享我自己用過、踩過雷的經驗', '拆成膚質、成分、預算三點幫她分析', '先聽她最近的皮膚困擾，再慢慢給建議']],
+    ['美妝保養圈最讓你看不慣的是：', ['誇大效果、濾鏡開太大的推薦', '新手一窩蜂跟風買爆款', '大家只看包裝，不看成分', '很多人因為皮膚問題而自卑，卻沒人好好安慰']],
+    ['你在保養這件事上，累積最多的是：', ['看穿行銷話術的眼光', '一整櫃用過、踩過雷的產品', '成分知識和保養步驟筆記', '陪朋友慢慢改善膚況的經驗']],
+    ['你覺得自己最大的優勢是：', ['敢講別人不敢講的', '我真的花過很多錢試過', '我能把保養講得很有條理', '我很會讓人安心']],
+    ['有人留言「你的皮膚也沒多好」，你會：', ['直接回：皮膚好不好，跟我說得對不對是兩回事', '大方承認，分享我改善前的樣子', '用成分和步驟解釋為什麼要這樣做', '笑笑帶過，謝謝他願意看']],
+    ['你希望觀眾看完你的影片覺得：', ['好敢講，都是大實話', '幫我省了好多冤枉錢', '好專業，終於看懂成分了', '好療癒，覺得被理解了']],
+  ],
+  style: [
+    ['朋友問你「我這套好看嗎？」你通常會：', ['不好看就直說，還會告訴他哪裡出問題', '分享我以前也買錯過類似的衣服', '從比例、顏色、材質三點幫他分析', '先稱讚優點，再溫柔給建議']],
+    ['穿搭圈最讓你看不慣的是：', ['過度修圖、根本不是真實樣子的穿搭照', '大家一直買快時尚，衣服穿一次就丟', '只會照抄模特兒，不懂自己的身形', '很多人因為身材焦慮，不敢穿自己想穿的']],
+    ['你在穿搭這件事上，累積最多的是：', ['一眼看出衣服好壞的眼光', '滿滿一櫃買錯的衣服', '身形分析和配色公式', '幫朋友找回自信的經驗']],
+    ['你覺得自己最大的優勢是：', ['審美直接、說話一針見血', '我真的踩過很多坑', '我會把穿搭講成公式', '我很會鼓勵人']],
+    ['有人留言「你身材又不好」，你會：', ['穿搭本來就不是只給身材好的人', '那正好，我更懂怎麼修飾', '用比例原則解釋怎麼穿更顯瘦', '謝謝你，我們都在學著喜歡自己']],
+    ['你希望觀眾看完你的影片覺得：', ['好敢說，審美超準', '跟著買不會踩雷', '好有邏輯，終於懂怎麼搭', '好溫暖，讓我敢穿了']],
+  ],
+  money: [
+    ['朋友問你「現在該買什麼？」你通常會：', ['直接說：你連預備金都沒有，先別想', '分享我以前亂買賠錢的經驗', '先問收入支出，再拆成三步規劃', '先聽他為什麼焦慮，再陪他一起想']],
+    ['理財圈最讓你看不慣的是：', ['到處有人炫耀報酬，只講賺不講賠', '新手聽明牌就把錢全丟進去', '大部分人只會存死錢，不懂規劃', '很多人因為錢的問題焦慮到失眠']],
+    ['你在理財這件事上，累積最多的是：', ['看穿話術和陷阱的經驗', '真金白銀賠過的學費', '記帳表和資產配置筆記', '陪身邊的人走出財務困境的經驗']],
+    ['你覺得自己最大的優勢是：', ['敢講市場不愛聽的真話', '我賠過，所以知道哪裡危險', '我能把複雜的理財講簡單', '我能讓人對錢不再焦慮']],
+    ['有人留言「你又沒多有錢」，你會：', ['有沒有錢，跟方法對不對沒關係', '所以我才更懂小資族的處境', '用數字說明這套方法的邏輯', '謝謝提醒，我們一起慢慢變好']],
+    ['你希望觀眾看完你的影片覺得：', ['好敢講，完全不畫大餅', '跟著他能少賠很多錢', '好專業，邏輯超清楚', '好安心，對錢不再焦慮']],
+  ],
+  career: [
+    ['同事跟你抱怨主管時，你通常會：', ['直接點出他自己也有問題', '分享我以前遇過更慘的狀況', '幫他拆成能改變和不能改變的部分', '先陪他罵一下，再一起想辦法']],
+    ['職場上最讓你看不慣的是：', ['有人只會邀功、做表面功夫', '新人悶頭苦幹，卻不懂爭取', '大家只會加班，卻不懂工作方法', '很多人在職場受委屈，卻沒地方說']],
+    ['你在職場上，累積最多的是：', ['看透職場潛規則的眼光', '換過很多工作、踩過很多坑', '一套整理好的工作方法和模板', '幫同事度過低潮的經驗']],
+    ['你覺得自己最大的優勢是：', ['敢說職場真話', '我真的經歷過', '我能把職場技巧講成步驟', '我很會傾聽和安慰']],
+    ['有人留言「你又不是主管」，你會：', ['不是主管，反而更看得清楚問題', '正因為我也是基層，才懂你', '用實際案例證明方法有效', '沒關係，我們都在路上']],
+    ['你希望觀眾看完你的影片覺得：', ['好敢講，說出我心裡的話', '跟著他少走好多冤枉路', '好專業，方法馬上能用', '好暖，覺得上班沒那麼累了']],
+  ],
+  creator: [
+    ['朋友問你「我的帳號為什麼沒流量？」你通常會：', ['直說：你的內容沒人想看', '分享我以前也卡了半年的經驗', '從定位、開頭、節奏三點幫他診斷', '先鼓勵他，再陪他一起調整']],
+    ['自媒體圈最讓你看不慣的是：', ['大家都在買粉、做假數據', '新手到處上課，白繳學費', '只會硬拍，不懂演算法和定位', '很多創作者被酸到不敢發']],
+    ['你在自媒體上，累積最多的是：', ['看穿流量套路的經驗', '一堆沒流量的失敗作品', '爆款拆解筆記和腳本模板', '經營社群、陪伴粉絲的經驗']],
+    ['你覺得自己最大的優勢是：', ['敢講業內不說的真相', '我真的從零做起', '我能把爆款拆成公式', '我很會跟粉絲互動']],
+    ['有人留言「你粉絲也沒多少」，你會：', ['粉絲多不代表方法對', '所以我更懂從零開始的痛', '拿出成長數據說話', '謝謝你，每個粉絲我都珍惜']],
+    ['你希望觀眾看完你的影片覺得：', ['好敢講，都是業內真話', '跟著做能少走彎路', '好專業，馬上能抄', '好溫暖，想一直追下去']],
+  ],
+  life: [
+    ['朋友說「家裡好亂，怎麼辦？」你通常會：', ['直接說：東西太多，該丟了', '分享我以前也亂到不行的經驗', '幫他拆成分區、分類、歸位三步', '先安慰他，亂也沒關係，慢慢來']],
+    ['居家生活這塊，最讓你看不慣的是：', ['網路上美到不真實的家居照', '大家買一堆收納用品，反而更亂', '只會一直整理，卻沒有系統', '很多人被家務壓得喘不過氣']],
+    ['你在居家生活上，累積最多的是：', ['看穿網美家居的眼光', '買錯一堆收納用品的經驗', '一套整理流程和清單', '把家佈置得很療癒的經驗']],
+    ['你覺得自己最大的優勢是：', ['敢講實話，不粉飾', '我真的踩過很多坑', '我能把整理講成步驟', '我很會營造放鬆感']],
+    ['有人留言「你家也沒多整齊」，你會：', ['整齊本來就不是給別人看的', '所以我更懂真實生活的樣子', '用前後對比證明方法有效', '謝謝你，生活本來就不完美']],
+    ['你希望觀眾看完你的影片覺得：', ['好真實，不做作', '跟著做能省錢又不踩雷', '好有條理，馬上能照做', '好療癒，想回家好好生活']],
+  ],
+};
+const DOMAIN_NOTE = { beauty: '保養、底妝、成分', style: '穿搭、身形、衣櫃', money: '存錢、投資、記帳', career: '升遷、溝通、轉職', creator: '起號、流量、變現', life: '收納、佈置、家務' };
+const TOPIC_SUGGEST = {
+  beauty: ['油肌底妝', '保養順序', '成分怎麼看', '防曬'], style: ['小個子穿搭', '通勤穿搭', '衣櫃斷捨離', '配色'],
+  money: ['緊急預備金', '記帳', '小資存錢', '保險'], career: ['談薪水', '面試', '向上管理', '轉職'],
+  creator: ['帳號定位', '開頭三秒', '漲粉', '接業配'], life: ['小坪數收納', '斷捨離', '租屋佈置', '家事分工'],
+};
+const LEN_TAGS = [['15秒衝擊', '15 秒衝擊'], ['30秒黃金爆款', '30 秒爆款'], ['45秒深度轉化', '45 秒轉化']];
+const CTA_KEYS = ['收藏重看', '留言領取', '避坑轉發'];
+const CTA_LABEL = { 收藏重看: '收藏重看', 留言領取: '留言領取', 避坑轉發: '轉發分享' };
+const LETTERS = 'ABCD';
+
 /* =========================================================
    STATE
    ========================================================= */
-const KEY = 'persona-grid-v1';
-const DEFAULT = { mode: 'quiz', topic: '', quiz: { depth: null, idx: 0, answers: {}, done: false, result: null }, track: 'beauty', tone: '毒舌清醒', role: '圈內內行人', edge: '踩坑血淚', pain: '迷茫踩坑', theme: '避坑指南', rhythm: '扎心開場', len: '30 秒爆款', cta: '留言領取', hookIdx: 0, rate: 4.5 };
+const KEY = 'persona-flow-v2';
+const DEFAULT = { step: 'domain', track: null, idx: 0, answers: [], result: null, route: null, topic: '', len: '30 秒爆款', cta: '留言領取', generated: false,
+  tone: '毒舌清醒', role: '圈內內行人', edge: '踩坑血淚', pain: '迷茫踩坑', theme: '避坑指南', rhythm: '扎心開場', hookIdx: 0, rate: 4.5 };
 let S = { ...DEFAULT };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const baseTrack = () => TRACKS.find(t => t.id === S.track) || TRACKS[0];
-const track = () => topicOn() ? { ...baseTrack(), ...GENERIC, field: topicOn(), label: topicOn(), kw: topicOn().length <= 4 ? topicOn() : '清單' } : baseTrack();
-const topicOn = () => S.mode === 'pro' && (S.topic || '').trim();
-/* 自訂主題時改用通用素材，避免和賽道內容對不上 */
-const GENERIC = { trap: '盲目跟風', act: '做決定', cost: '不少冤枉錢', years: '好幾年', circle: '這個圈子',
-  p: ['先搞清楚自己的需求和條件，再決定怎麼做', '一次只改一件事，才知道什麼真的有效', '把基本功做到位，就贏過一大半的人'],
-  w: ['條件不同，別人的答案不一定適合你', '同時改太多，出問題根本不知道是哪裡', '大部分人輸在基本功，不是輸在技巧'],
-  story: '我一開始也是什麼都想試，花了不少冤枉錢；後來只專注在最重要的幾件事，結果反而越來越好。' };
-const fieldName = () => track().field;
+const topicOn = () => (S.topic || '').trim();
+/* 有主題時沿用該領域的素材，只把主題換進句子 */
+const track = () => topicOn() ? { ...baseTrack(), field: topicOn(), kw: topicOn().length <= 4 ? topicOn() : baseTrack().kw } : baseTrack();
 const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : (t[k] ?? '')); };
-const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()…—\-~～"'“”%]/g, '').length;
+const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()…—\-~～"'“”%#]/g, '').length;
 const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const personaName = () => TONE_SHORT[S.tone] + ROLE_SHORT[S.role];
 let script = [];
 
 /* =========================================================
-   GENERATE（依時長組裝段落）
+   GENERATE
    ========================================================= */
 function build() {
   const t = track(), lv = S.len.startsWith('15') ? 1 : S.len.startsWith('30') ? 2 : 3;
-  const hooks = HOOKS[S.theme][S.rhythm];
-  const body = BODY[S.theme];
+  const hooks = HOOKS[S.theme][S.rhythm], body = BODY[S.theme];
   const out = [{ k: '開場・HOOK', t: fill(hooks[S.hookIdx % hooks.length]), hook: true }];
   if (lv >= 2) out.push({ k: '身分・WHO', t: fill(ROLE_LINE[S.role]) + fill(EDGE_LINE[S.edge]) });
   const pain = [TONE_OPEN[S.tone] + fill(PAIN_LINE[S.pain])];
@@ -515,54 +657,126 @@ function build() {
   out.push({ k: '行動・CTA', t: fill(CTA_LINE[S.cta]) });
   return out;
 }
+const titles = () => TITLES[S.theme].map(fill);
+const tags = () => [track().field, baseTrack().label, ...TAGS[S.theme], '爆款內容'].filter((v, i, a) => a.indexOf(v) === i).map(x => '#' + x.replace(/\s+/g, ''));
+function postText() {
+  const body = BODY[S.theme];
+  const pts = body.pts.map((x, i) => `${i + 1}. ${fill(x).replace(/^第[一二三]，/, '')}`);
+  return [titles()[0], '', fill(HOOKS[S.theme][S.rhythm][S.hookIdx % 2]), '', TONE_OPEN[S.tone] + fill(PAIN_LINE[S.pain]), '',
+    fill(body.intro), ...pts, '', fill(TONE_CLOSE[S.tone]), '', fill(CTA_LINE[S.cta]), '', tags().join(' ')].join('\n');
+}
 
 /* =========================================================
-   RENDER
+   定位測驗
    ========================================================= */
-function personaParts() { return [TONE_SHORT[S.tone] + ROLE_SHORT[S.role], S.theme]; }
+const order = qi => ARCH_ORDER.map((_, i) => (i + qi) % 4); // 每題選項輪替排列，避免固定規律
+function quizResult() {
+  const sc = { truth: 0, saver: 0, logic: 0, warm: 0 };
+  S.answers.forEach((a, qi) => { if (a) sc[a] += Q_WEIGHT[qi]; });
+  const first = S.answers[0];
+  const rank = ARCH_ORDER.slice().sort((a, b) => sc[b] - sc[a] || (a === first ? -1 : b === first ? 1 : 0));
+  return { primary: rank[0], secondary: rank[1], scores: sc };
+}
+function routesFor(r) {
+  const A = ARCH[r.primary], themes = ['顛覆認知', '避坑指南', '實用乾貨'];
+  const support = A.theme === '實用乾貨' ? '避坑指南' : '實用乾貨';
+  const moat = themes.find(x => x !== A.theme && x !== support);
+  return [
+    { id: 'main', pct: 70, name: '主攻路線', sub: '流量', theme: A.theme, desc: '你最容易拿到結果、最適合長期輸出的方向。' + THEME_DESC[A.theme], ex: A.topics[0].t, over: {} },
+    { id: 'support', pct: 20, name: '輔助路線', sub: '變現', theme: support, desc: '用清單、教學和實測建立信任與專業度，讓觀眾願意追蹤、詢問、下單。', ex: ARCH[r.secondary].topics[1].t, over: { rhythm: '數字衝擊', edge: '實戰結果' } },
+    { id: 'moat', pct: 10, name: '人設護城河', sub: '記憶點', theme: moat, desc: A.moat, ex: A.topics[2].t, over: {} },
+  ];
+}
+function applyRoute(id) {
+  const r = S.result, route = routesFor(r).find(x => x.id === id);
+  Object.assign(S, ARCH[r.primary].grid, { theme: route.theme, hookIdx: 0, route: id }, route.over);
+}
 
-const THEME_TAGS = [['揭露真相', '顛覆認知'], ['勸退指南', '避坑指南'], ['實用乾貨', '實用乾貨'], ['商業算帳', '商業算帳']];
-const LEN_TAGS = [['15秒衝擊', '15 秒衝擊'], ['30秒黃金爆款', '30 秒爆款'], ['45秒深度轉化', '45 秒轉化']];
-const themeName = th => (THEME_TAGS.find(x => x[1] === th) || [th])[0];
+function renderSteps() {
+  const st = ['選領域', '詳細問 6 題', '長期路線', '生成內容'];
+  const cur = S.step === 'domain' ? 0 : S.step === 'quiz' ? 1 : S.route ? 3 : 2;
+  $('#steps').innerHTML = st.map((x, i) => `<span class="${i === cur ? 'on' : i < cur ? 'done' : ''}">${i + 1}. ${x}</span>`).join('');
+}
 
-function renderGrid() {
-  const [p] = personaParts(), th = themeName(S.theme);
-  $('#themeTags').innerHTML = THEME_TAGS.map(([l, v]) => `<button class="chip" role="radio" aria-checked="${S.theme === v}" data-theme="${v}">${l}</button>`).join('');
+function renderQuiz() {
+  renderSteps();
+  const box = $('#quizBody');
+  if (S.step === 'domain' || !S.track) {
+    $('#quizTitle').textContent = '個人 IP 賽道定位診斷';
+    box.innerHTML = `
+      <p class="q-intro">不管你是新手還是老手，先花 1 分鐘定位。選你想經營的領域，會出現這個領域專屬的 6 道題目，測完直接給你長期內容路線，再一步一步帶你產出爆款內容。</p>
+      <div class="domains">${TRACKS.map((t, i) => `
+        <button class="domain" data-domain="${t.id}"><span class="no">0${i + 1}</span><b>${t.label}</b><small>${DOMAIN_NOTE[t.id]}</small></button>`).join('')}</div>`;
+    return;
+  }
+  if (S.step === 'quiz') {
+    const qs = QUIZ[S.track], [q, opts] = qs[S.idx];
+    $('#quizTitle').textContent = baseTrack().label + '・定位診斷';
+    box.innerHTML = `
+      <div class="qprog"><i style="width:${(S.idx / qs.length * 100).toFixed(0)}%"></i></div>
+      <div class="qmeta"><span>第 ${S.idx + 1} ／ ${qs.length} 題</span><button data-qback>${S.idx ? '上一題' : '換領域'}</button></div>
+      <p class="qtext rise">${esc(q)}</p>
+      <div class="qopts">${order(S.idx).map((oi, k) => `<button class="opt rise" style="animation-delay:${k * 40}ms" data-qopt="${ARCH_ORDER[oi]}" aria-pressed="${S.answers[S.idx] === ARCH_ORDER[oi]}"><span class="lt">${LETTERS[k]}</span><span>${esc(opts[oi])}</span></button>`).join('')}</div>`;
+    return;
+  }
+  $('#quizTitle').textContent = '長期內容路線建議';
+  box.innerHTML = `
+    <p class="who-line">依你的定位：<b>${esc(personaName())}</b>・${esc(baseTrack().label)}　70／20／10 三大原則，點選一條路線開始生成</p>
+    <div class="routes" style="margin-top:16px">${routesFor(S.result).map(x => `
+      <div class="route ${x.id === 'main' ? 'main' : ''} ${S.route === x.id ? 'sel' : ''}">
+        <div class="pct">${x.pct}<span>%</span></div>
+        <div class="nm">${x.name}<small>${x.sub}・${x.theme}</small></div>
+        <p>${esc(x.desc)}</p>
+        <div class="ex">例如：${esc(fill(x.ex))}</div>
+        <button class="go" data-route="${x.id}">${ico('spark')}${S.route === x.id ? '已選擇這條路線' : '選這條路線開始生成'}</button>
+      </div>`).join('')}</div>
+    <div class="r-actions" style="margin-top:18px">
+      <button class="btn" data-qcopy>${ico('copy')}複製路線建議</button>
+      <button class="btn" data-qreset>${ico('redo')}重新測驗</button>
+    </div>`;
+}
+
+function routeText() {
+  return [`【長期內容路線建議】${personaName()}・${baseTrack().label}`, ...routesFor(S.result).map(x => `${x.name} ${x.pct}%（${x.sub}・${x.theme}）：${x.desc} 例如：${fill(x.ex)}`)].join('\n');
+}
+
+/* =========================================================
+   引導設定 + 輸出
+   ========================================================= */
+function renderGuide() {
+  const show = S.step === 'routes' && !!S.route;
+  $('#guideCard').classList.toggle('is-hidden', !show);
+  $('#outCard').classList.toggle('is-hidden', !(show && S.generated));
+  if (!show) return;
+  const route = routesFor(S.result).find(x => x.id === S.route);
+  $('#picked').innerHTML = `已選：<b>${route.name} ${route.pct}%</b>・${route.theme}・人設 <b>${esc(personaName())}</b>`;
+  $('#topicIn').placeholder = '例如：' + TOPIC_SUGGEST[S.track][0];
+  $('#topicTags').innerHTML = TOPIC_SUGGEST[S.track].map(x => `<button class="chip" data-topic="${x}" aria-pressed="${topicOn() === x}">${x}</button>`).join('');
   $('#lenTags').innerHTML = LEN_TAGS.map(([l, v]) => `<button class="chip" role="radio" aria-checked="${S.len === v}" data-len="${v}">${l}</button>`).join('');
-  $('#proNote').innerHTML = `人設沿用：<b>${esc(p)}</b>・沒輸入主題時用「${esc(baseTrack().label)}」${S.quiz && S.quiz.done ? '' : '・<button data-go="quiz">先去測定位</button>'}`;
-  $('#heroPersona').innerHTML = `<span>${esc(p)}</span><span class="x">×</span><span>${esc(topicOn() || th)}</span>`;
-  $('#stLen').innerHTML = `${parseInt(S.len)}<span>秒</span>`;
-  $('#stHook').textContent = th;
+  $('#ctaTags').innerHTML = CTA_KEYS.map(k => `<button class="chip" role="radio" aria-checked="${S.cta === k}" data-cta="${k}">${CTA_LABEL[k]}</button>`).join('');
 }
 
-function emph(text) {
-  let h = esc(text);
-  EMPH.forEach(w => { h = h.split(w).join(`<span class="em">${w}</span>`); });
-  return h;
-}
+function emph(text) { let h = esc(text); EMPH.forEach(w => { h = h.split(w).join(`<span class="em">${w}</span>`); }); return h; }
 
-function renderScript(animate) {
+function renderOut(animate) {
+  if (!S.generated) return;
   script = build();
-  const all = script.map(x => x.t).join('');
-  const words = countChars(all), secs = words / S.rate;
+  const words = countChars(script.map(x => x.t).join(''));
+  $('#scriptMeta').textContent = `口播 ${words} 字・約 ${Math.round(words / S.rate)} 秒`;
+  $('#titles').innerHTML = titles().map((t, i) => `<li><span>0${i + 1}</span>${esc(t)}</li>`).join('');
   $('#script').innerHTML = script.map((x, i) => `
-    <div class="para ${x.hook ? 'hook' : ''} ${animate ? 'rise' : ''}" style="animation-delay:${i * 60}ms">
-      <span class="k">${x.k}</span>
-      <p>${emph(x.t)}</p>
-    </div>`).join('');
-  $('#scriptMeta').textContent = `${words} 字・約 ${Math.round(secs)} 秒`;
-  $('#stWords').innerHTML = `${words}<span>字</span>`;
-  const T = TITLES[S.theme];
-  $('#titles').innerHTML = T.map((t, i) => `<li><span>0${i + 1}</span>${esc(fill(t))}</li>`).join('');
-  $('#tags').innerHTML = [fieldName(), track().label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(t => `<span>#${esc(t)}</span>`).join('');
+    <div class="para ${x.hook ? 'hook' : ''} ${animate ? 'rise' : ''}" style="animation-delay:${i * 60}ms"><span class="k">${x.k}</span><p>${emph(x.t)}</p></div>`).join('');
+  $('#post').textContent = postText();
+  $('#ctas').innerHTML = CTA_KEYS.map(k => `<button class="cta-opt" data-cta="${k}" aria-pressed="${S.cta === k}"><small>${CTA_LABEL[k]}</small><span>${esc(fill(CTA_LINE[k]))}</span></button>`).join('');
+  $('#tags').innerHTML = tags().map(t => `<span>${esc(t)}</span>`).join('');
+}
+function scriptText() { return script.map(x => x.t).join('\n\n'); }
+function allText() {
+  return ['【爆款標題】', ...titles().map((t, i) => `${i + 1}. ${t}`), '', '【口播腳本】', scriptText(), '', '【貼文文案】', postText(), '',
+    '【CTA 備選】', ...CTA_KEYS.map(k => `・${CTA_LABEL[k]}：${fill(CTA_LINE[k])}`)].join('\n');
 }
 
-function scriptText() {
-  const t = track();
-  return [`【爆款口播腳本】${personaParts().join(' × ')}`, `${t.label}・${S.len}・${countChars(script.map(x => x.t).join(''))} 字`, '',
-    ...script.map(x => x.t), '', '── 小紅書標題 ──', ...TITLES[S.theme].map((s, i) => `${i + 1}. ${fill(s)}`), '',
-    [fieldName(), t.label, ...TAGS[S.theme], '小紅書爆款'].filter((v, i, a) => a.indexOf(v) === i).map(x => '#' + x).join(' ')].join('\n');
-}
+function renderAll(animate) { renderQuiz(); renderGuide(); renderOut(animate); }
 
 /* =========================================================
    TOAST / COPY
@@ -602,17 +816,45 @@ function tpKeep() { const r = sc().scrollTop / tpRange(); tpRender(); sc().scrol
 /* =========================================================
    EVENTS
    ========================================================= */
-$('#themeTags').addEventListener('click', e => { const b = e.target.closest('[data-theme]'); if (!b) return; S.theme = b.dataset.theme; S.hookIdx = 0; save(); renderGrid(); renderScript(false); });
-$('#lenTags').addEventListener('click', e => { const b = e.target.closest('[data-len]'); if (!b) return; S.len = b.dataset.len; save(); renderGrid(); renderScript(false); });
-$('#btnGen').addEventListener('click', () => { renderScript(true); $('#scriptCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('口播腳本已生成'); });
-$('#btnHook').addEventListener('click', () => { S.hookIdx = (S.hookIdx + 1) % HOOKS[S.theme][S.rhythm].length; save(); renderScript(true); toast('已換一個開頭'); });
+$('#quizBody').addEventListener('click', async e => {
+  const el = e.target;
+  const d = el.closest('[data-domain]');
+  if (d) { Object.assign(S, { track: d.dataset.domain, step: 'quiz', idx: 0, answers: [], result: null, route: null, generated: false, topic: '' }); save(); renderAll(); $('#quizCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (el.closest('[data-qback]')) { if (S.idx) S.idx--; else S.step = 'domain'; save(); renderAll(); return; }
+  const o = el.closest('[data-qopt]');
+  if (o) {
+    S.answers[S.idx] = o.dataset.qopt; o.setAttribute('aria-pressed', 'true');
+    setTimeout(() => {
+      if (S.idx < QUIZ[S.track].length - 1) { S.idx++; save(); renderAll(); return; }
+      S.result = quizResult(); S.step = 'routes'; S.route = null; S.generated = false;
+      Object.assign(S, ARCH[S.result.primary].grid); save(); renderAll();
+      $('#quizCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toast('定位完成，這是你的長期內容路線');
+    }, 180);
+    return;
+  }
+  const rt = el.closest('[data-route]');
+  if (rt) { applyRoute(rt.dataset.route); S.generated = false; save(); renderAll(); $('#guideCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (el.closest('[data-qcopy]')) { toast((await copy(routeText())) ? '路線建議已複製' : '複製失敗，請手動選取文字'); return; }
+  if (el.closest('[data-qreset]')) { Object.assign(S, { step: 'domain', idx: 0, answers: [], result: null, route: null, generated: false, topic: '' }); save(); renderAll(); $('#quizCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+});
+$('#topicIn').addEventListener('input', e => { S.topic = e.target.value; save(); renderGuide(); renderOut(false); });
+$('#topicTags').addEventListener('click', e => { const b = e.target.closest('[data-topic]'); if (!b) return; S.topic = b.dataset.topic; $('#topicIn').value = S.topic; save(); renderGuide(); renderOut(false); });
+$('#lenTags').addEventListener('click', e => { const b = e.target.closest('[data-len]'); if (!b) return; S.len = b.dataset.len; save(); renderGuide(); renderOut(false); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-cta]'); if (!b) return; S.cta = b.dataset.cta; save(); renderGuide(); renderOut(false); });
+$('#btnGen').addEventListener('click', () => { S.generated = true; save(); renderGuide(); renderOut(true); $('#outCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('爆款內容已生成'); });
+$('#btnHook').addEventListener('click', () => { S.hookIdx = (S.hookIdx + 1) % HOOKS[S.theme][S.rhythm].length; save(); renderOut(true); toast('已換一個開頭'); });
 $('#btnRegen').addEventListener('click', () => {
   const keys = ['扎心開場', '代價說服', '數字衝擊'];
-  S.rhythm = keys[(keys.indexOf(S.rhythm) + 1) % keys.length]; S.hookIdx = 0; save(); renderGrid(); renderScript(true);
+  S.rhythm = keys[(keys.indexOf(S.rhythm) + 1) % keys.length]; S.hookIdx = 0; save(); renderOut(true);
   toast('已換成「' + S.rhythm + '」節奏');
 });
-$('#btnCopy').addEventListener('click', async () => toast((await copy(scriptText())) ? '腳本已複製，可以直接貼上' : '複製失敗，請手動選取文字'));
-$('#btnCopyTitle').addEventListener('click', async () => toast((await copy(TITLES[S.theme].map(fill).join('\n'))) ? '標題已複製' : '複製失敗，請手動選取文字'));
+const copyBtn = (id, fn, msg) => $(id).addEventListener('click', async () => toast((await copy(fn())) ? msg : '複製失敗，請手動選取文字'));
+copyBtn('#btnCopy', scriptText, '口播腳本已複製');
+copyBtn('#btnCopyTitle', () => titles().join('\n'), '標題已複製');
+copyBtn('#btnCopyPost', postText, '貼文文案已複製');
+copyBtn('#btnCopyTags', () => tags().join(' '), 'Hashtag 已複製');
+copyBtn('#btnCopyAll', allText, '全部內容已複製');
 $('#btnPrompter').addEventListener('click', () => {
   $('#tpRate').value = S.rate; $('#tpRateVal').textContent = S.rate; tpRender();
   $('#prompter').classList.add('open'); sc().scrollTop = tp.pos = 0; tpUpd(); $('#tpPlay').textContent = '開始'; document.body.style.overflow = 'hidden';
@@ -621,7 +863,7 @@ function tpClose() { tpPause(); $('#prompter').classList.remove('open'); documen
 $('#tpClose').addEventListener('click', tpClose);
 $('#tpPlay').addEventListener('click', () => tp.on ? tpPause() : tpPlay());
 $('#tpRestart').addEventListener('click', () => { tpPause(); sc().scrollTop = tp.pos = 0; tpUpd(); $('#tpPlay').textContent = '開始'; });
-$('#tpRate').addEventListener('input', e => { S.rate = +e.target.value; $('#tpRateVal').textContent = S.rate; save(); tpKeep(); renderScript(false); });
+$('#tpRate').addEventListener('input', e => { S.rate = +e.target.value; $('#tpRateVal').textContent = S.rate; save(); tpKeep(); renderOut(false); });
 $('#tpPlus').addEventListener('click', () => { tp.font = Math.min(64, tp.font + 4); tpKeep(); });
 $('#tpMinus').addEventListener('click', () => { tp.font = Math.max(20, tp.font - 4); tpKeep(); });
 sc().addEventListener('scroll', () => { if (!tp.on) { tp.pos = sc().scrollTop; tpUpd(); } });
@@ -633,228 +875,6 @@ document.addEventListener('keydown', e => {
 });
 
 /* =========================================================
-   新手無腦測定位：題庫 × 計分 × 診斷報告
-   ========================================================= */
-const ARCH = {
-  truth: { name: '清醒毒舌派', tag: '敢講真話的內行人', theme: '顛覆認知',
-    desc: '你說話直接、看得透，最適合當觀眾的「清醒劑」：拆穿假象、講大實話，用一針見血換來討論和轉發。',
-    traits: ['直白敢講', '一針見血', '反常識觀點'],
-    grid: { tone: '毒舌清醒', role: '圈內內行人', edge: '資訊落差', rhythm: '扎心開場', cta: '避坑轉發' },
-    topics: [
-      { t: '{field}圈很少人說破的 3 個真相', how: '對鏡頭直講，一支只拆一個假象，開頭先丟結論。' },
-      { t: '那些被說得很神的{field}方法，其實沒那麼有用', how: '列出常見說法，逐條打臉，最後給你的正解。' },
-      { t: '{field}新手最容易聽信的 3 句話', how: '把話術做成大字卡，一句一句拆，節奏要快。' } ],
-    moat: '固定用「講句難聽的」這類大實話口頭禪開場，讓觀眾一聽就認出你。' },
-  saver: { name: '避坑過來人', tag: '幫你省錢、少走彎路的過來人', theme: '避坑指南',
-    desc: '你踩過坑、花過冤枉錢，也願意分享。觀眾最信任「真的經歷過的人」，你的血淚史就是最強的說服力。',
-    traits: ['經驗豐富', '真實踩坑', '實用省錢'],
-    grid: { tone: '幽默吐槽', role: '避坑過來人', edge: '踩坑血淚', rhythm: '代價說服', cta: '收藏重看' },
-    topics: [
-      { t: '我在{field}上花了{cost}，換來的 3 個教訓', how: '翻出當初買錯的東西或紀錄，用實物和數字說故事。' },
-      { t: '{field}新手千萬別做的 5 件事', how: '清單式快節奏，每一點配一個「錯誤 vs 正確」對照。' },
-      { t: '如果{field}能重來，我會這樣做', how: '用「寫給三年前的自己」的口吻，溫暖又有收藏價值。' } ],
-    moat: '自嘲式幽默加上真實的踩坑金額，讓觀眾覺得「這個人跟我一樣」，又忍不住想收藏。' },
-  logic: { name: '乾貨拆解派', tag: '把複雜事情講成一二三的專家', theme: '實用乾貨',
-    desc: '你條理分明，擅長把複雜的東西拆成步驟。觀眾會因為「看完就會」而收藏、追蹤，最容易建立專業感。',
-    traits: ['條理分明', '邏輯清楚', '步驟化教學'],
-    grid: { tone: '溫柔共情', role: '實操狂人', edge: '實戰結果', rhythm: '數字衝擊', cta: '留言領取' },
-    topics: [
-      { t: '3 個步驟搞懂{field}，新手直接抄作業', how: '畫面放大步驟編號，一步一個重點，結尾給清單。' },
-      { t: '{field}的底層邏輯，一張圖講清楚', how: '用白板或字卡畫出架構，把複雜概念拆成三層。' },
-      { t: '我實測 30 天的{field}方法，結果整理給你', how: '用 Day 1 和 Day 30 的對比與數字說話，建立可信度。' } ],
-    moat: '固定的「一二三」結構和收尾清單，讓觀眾養成「看完就截圖」的習慣。' },
-  warm: { name: '溫柔陪伴派', tag: '讓人覺得被理解的朋友', theme: '顛覆認知',
-    desc: '你共情力強，擅長安慰和陪伴。觀眾願意為「被理解的感覺」留言、轉發，你的粉絲黏著度會特別高。',
-    traits: ['共情力強', '溫柔陪伴', '情緒價值'],
-    grid: { tone: '溫柔共情', role: '避坑過來人', edge: '實戰結果', rhythm: '代價說服', cta: '留言領取' },
-    topics: [
-      { t: '{field}讓你很焦慮的時候，我想跟你說的話', how: '像跟朋友視訊一樣自然，燈光柔和，語速放慢。' },
-      { t: '允許自己慢一點：我的{field}心態轉變', how: '分享自己的低潮和轉折，最後給一個小行動。' },
-      { t: '給正在{field}卡關的你，3 個溫柔提醒', how: '三點都從觀眾的心情出發，再給具體做法。' } ],
-    moat: '溫柔的語氣和固定的結尾祝福語，讓觀眾把你當成「可以被安慰的地方」。' },
-};
-const ARCH_ORDER = ['truth', 'saver', 'logic', 'warm'];
-
-const QUESTIONS = {
-  q1: { w: 2, q: '親戚或朋友平時覺得你說話最像什麼風格？', opts: [
-    { t: '說話毒舌直白，針針見血，不給留情面', a: 'truth' },
-    { t: '經驗豐富，常提醒別人哪裡有坑、怎麼省錢', a: 'saver' },
-    { t: '條理分明，喜歡把複雜事情拆解成一二三點', a: 'logic' },
-    { t: '共情力強，擅長安慰與陪伴，給情緒價值', a: 'warm' } ] },
-  q2: { w: 1, q: '你平時最不爽或最看不慣這個行業／社會的什麼事？', opts: [
-    { t: '大家都在吹牛造假，假裝很厲害', a: 'truth' },
-    { t: '新人一直盲目跟風，白交一大堆學費', a: 'saver' },
-    { t: '大部分人只會死幹，完全不懂底層邏輯', a: 'logic' },
-    { t: '很多人明明很努力，卻沒有人好好接住他們的情緒', a: 'warm' } ] },
-  q3: { w: 2, q: '你希望看完影片的人，對你產生什麼第一印象？', opts: [
-    { t: '這個人太敢講了，說的都是大實話', a: 'truth' },
-    { t: '跟著他能少走三年彎路，一定要收藏', a: 'saver' },
-    { t: '這個人專業度極高，邏輯超強', a: 'logic' },
-    { t: '好溫暖，覺得自己被理解了', a: 'warm' } ] },
-  q4: { w: 0, q: '你在哪個領域花了最多時間或金錢、累積最多經驗？', track: true, opts: [
-    { t: '美妝保養', track: 'beauty' }, { t: '穿搭', track: 'style' }, { t: '理財存錢', track: 'money' },
-    { t: '職場成長', track: 'career' }, { t: '自媒體', track: 'creator' }, { t: '居家生活', track: 'life' } ] },
-  q5: { w: 1, q: '影片被留言酸的時候，你最可能怎麼做？', opts: [
-    { t: '直接回，講到對方說不出話', a: 'truth' },
-    { t: '拿出自己踩過的坑，用經驗說服他', a: 'saver' },
-    { t: '列數據、講道理，讓大家自己判斷', a: 'logic' },
-    { t: '不太在意，繼續溫柔回覆其他人', a: 'warm' } ] },
-  q6: { w: 1, q: '哪一種拍片方式，你最自在？', opts: [
-    { t: '對著鏡頭直接開講，不用稿', a: 'truth' },
-    { t: '開箱實測，邊做邊講', a: 'saver' },
-    { t: '先寫好大綱，條列重點再拍', a: 'logic' },
-    { t: '像跟朋友聊天一樣分享心情', a: 'warm' } ] },
-};
-const QSETS = { simple: ['q1', 'q2', 'q3'], detail: ['q1', 'q4', 'q2', 'q5', 'q6', 'q3'] };
-const THEME_DESC = {
-  顛覆認知: '拆穿常見迷思、講出反常識的真相，最容易引發討論與轉發。',
-  避坑指南: '分享踩過的坑與千萬別做的事，觀眾會為了少走彎路而收藏。',
-  實用乾貨: '步驟、清單、方法論，看完就能照做，最能建立專業與信任。',
-};
-const LETTERS = 'ABCDEF';
-
-function quizResult() {
-  const qz = S.quiz, sc = { truth: 0, saver: 0, logic: 0, warm: 0 };
-  QSETS[qz.depth].forEach(id => { const q = QUESTIONS[id], o = q.opts[qz.answers[id]]; if (o && o.a) sc[o.a] += q.w; });
-  const first = QUESTIONS.q1.opts[qz.answers.q1]?.a;
-  const rank = ARCH_ORDER.slice().sort((a, b) => sc[b] - sc[a] || (a === first ? -1 : b === first ? 1 : 0));
-  return { primary: rank[0], secondary: rank[1], scores: sc };
-}
-function routesFor(r) {
-  const A = ARCH[r.primary], themes = ['顛覆認知', '避坑指南', '實用乾貨'];
-  const support = A.theme === '實用乾貨' ? '避坑指南' : '實用乾貨';
-  const moat = themes.find(x => x !== A.theme && x !== support);
-  return [
-    { id: 'main', pct: 70, name: '主攻路線', sub: '流量', theme: A.theme, desc: '你最容易拿到結果、最適合長期輸出的方向。' + THEME_DESC[A.theme], ex: A.topics[0].t, over: {} },
-    { id: 'support', pct: 20, name: '輔助路線', sub: '變現', theme: support, desc: '用清單、教學和實測建立信任與專業度，讓觀眾願意追蹤、詢問、下單。', ex: ARCH[r.secondary].topics[1].t, over: { rhythm: '數字衝擊', edge: '實戰結果', cta: '留言領取' } },
-    { id: 'moat', pct: 10, name: '人設護城河', sub: '記憶點', theme: moat, desc: A.moat, ex: A.topics[2].t, over: { cta: '收藏重看' } },
-  ];
-}
-function applyArch(key) { Object.assign(S, ARCH[key].grid, { theme: ARCH[key].theme, hookIdx: 0 }); }
-
-function renderQuiz() {
-  const qz = S.quiz, box = $('#quizBody');
-  if (qz.done && qz.result) return renderReport();
-  if (!qz.depth) {
-    box.innerHTML = `
-      <p class="q-intro">不知道自己適合拍什麼？回答幾題選擇題，系統會幫你定義人設，推薦最適合你的 3 個爆款主題和長期內容路線。</p>
-      <p class="q-label">先選你想經營的領域（詳細測驗會再問你一次）</p>
-      <div class="tracks" role="radiogroup" aria-label="經營領域">${TRACKS.map(t => `<button class="chip" role="radio" aria-checked="${t.id === S.track}" data-qtrack="${t.id}">${t.label}</button>`).join('')}</div>
-      <p class="q-label">選擇測驗深度</p>
-      <div class="depths">
-        <button class="depth" data-depth="simple"><span class="no">QUICK</span><b>簡單問・3 題</b><small>約 30 秒，快速抓出你的說話風格與人設方向。</small></button>
-        <button class="depth" data-depth="detail"><span class="no">DETAILED</span><b>詳細問・6 題</b><small>約 1 分鐘，多看你的資源累積、心理強項與拍攝習慣。</small></button>
-      </div>`;
-    return;
-  }
-  const list = QSETS[qz.depth], id = list[qz.idx], q = QUESTIONS[id];
-  box.innerHTML = `
-    <div class="qprog"><i style="width:${(qz.idx / list.length * 100).toFixed(0)}%"></i></div>
-    <div class="qmeta"><span>第 ${qz.idx + 1} ／ ${list.length} 題</span><button data-qback>${qz.idx ? '上一題' : '重新選擇深度'}</button></div>
-    <p class="qtext rise">${esc(q.q)}</p>
-    <div class="qopts">${q.opts.map((o, i) => `<button class="opt rise" style="animation-delay:${i * 40}ms" data-qopt="${i}" aria-pressed="${qz.answers[id] === i}"><span class="lt">${LETTERS[i]}</span><span>${esc(o.t)}</span></button>`).join('')}</div>`;
-}
-
-function renderReport() {
-  const r = S.quiz.result, A = ARCH[r.primary], B = ARCH[r.secondary], t = track();
-  const total = Object.values(r.scores).reduce((a, b) => a + b, 0) || 1;
-  const persona = TONE_SHORT[A.grid.tone] + ROLE_SHORT[A.grid.role];
-  $('#quizBody').innerHTML = `
-  <div class="report rise">
-    <div class="r-hero">
-      <small>你的核心人設賽道</small>
-      <h4>${esc(persona)}<span class="x">×</span>${esc(t.label)}</h4>
-      <p class="arch">${A.name}・${A.tag}</p>
-      <p class="d">${A.desc}</p>
-      <div class="traits">${A.traits.map(x => `<span>${x}</span>`).join('')}<span>第二特質：${B.name}</span></div>
-    </div>
-    <div class="r-sec">
-      <h5>人設組成 <small>依你的回答計分</small></h5>
-      <div class="bars">${ARCH_ORDER.slice().sort((a, b) => r.scores[b] - r.scores[a]).map(k => `
-        <div class="bar ${k === r.primary ? 'top' : ''}"><span>${ARCH[k].name}</span><span class="tr"><i style="width:${Math.round(r.scores[k] / total * 100)}%"></i></span><em>${Math.round(r.scores[k] / total * 100)}%</em></div>`).join('')}</div>
-    </div>
-    <div class="r-sec">
-      <h5>最適合你的 3 個爆款主題 <small>拍什麼、怎麼拍</small></h5>
-      <ol class="r-topics">${A.topics.map((x, i) => `<li><span class="n">0${i + 1}</span><b>${esc(fill(x.t))}</b><small>拍法：${esc(x.how)}</small></li>`).join('')}</ol>
-    </div>
-    <div class="r-sec">
-      <h5>長期內容路線建議 <small>70／20／10 三大原則・點選路線，一鍵產出完整口播稿</small></h5>
-      <div class="routes">${routesFor(r).map(x => `
-        <div class="route ${x.id === 'main' ? 'main' : ''}">
-          <div class="pct">${x.pct}<span>%</span></div>
-          <div class="nm">${x.name}<small>${x.sub}・${x.theme}</small></div>
-          <p>${esc(x.desc)}</p>
-          <div class="ex">例如：${esc(fill(x.ex))}</div>
-          <button class="go" data-route="${x.id}">${ico('spark')}產出這條路線的口播稿</button>
-        </div>`).join('')}</div>
-    </div>
-    <div class="r-actions">
-      <button class="btn" data-qcopy>${ico('copy')}複製診斷報告</button>
-      <button class="btn" data-qpro>${ico('grid')}用老手模式微調</button>
-      <button class="btn" data-qreset>${ico('redo')}重新測驗</button>
-    </div>
-  </div>`;
-}
-
-function reportText() {
-  const r = S.quiz.result, A = ARCH[r.primary], t = track();
-  return [`【個人 IP 定位診斷報告】`, `核心人設賽道：${TONE_SHORT[A.grid.tone] + ROLE_SHORT[A.grid.role]} × ${t.label}`, `類型：${A.name}・${A.tag}`, A.desc, '',
-    '最適合你的 3 個爆款主題：', ...A.topics.map((x, i) => `${i + 1}. ${fill(x.t)}（拍法：${x.how}）`), '',
-    '長期內容路線（70／20／10）：', ...routesFor(r).map(x => `・${x.name} ${x.pct}%（${x.sub}・${x.theme}）：${x.desc} 例如：${fill(x.ex)}`)].join('\n');
-}
-
-function setMode(m) {
-  S.mode = m; save();
-  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === m));
-  $('#quizCard').classList.toggle('is-hidden', m !== 'quiz');
-  $('#gridCard').classList.toggle('is-hidden', m !== 'pro');
-  const pending = m === 'quiz' && !S.quiz.scriptReady;
-  $('#scriptCard').classList.toggle('is-hidden', pending);
-  $('#titleCard').classList.toggle('is-hidden', pending);
-  document.querySelectorAll('#sideNav a[data-go]').forEach(a => a.classList.toggle('on', a.dataset.go === m));
-  renderGrid(); renderScript(false);
-}
-
-$('#quizBody').addEventListener('click', async e => {
-  const qz = S.quiz, el = e.target;
-  const tb = el.closest('[data-qtrack]');
-  if (tb) { S.track = tb.dataset.qtrack; save(); renderQuiz(); renderGrid(); return; }
-  const d = el.closest('[data-depth]');
-  if (d) { Object.assign(qz, { depth: d.dataset.depth, idx: 0, answers: {}, done: false, result: null }); save(); renderQuiz(); return; }
-  if (el.closest('[data-qback]')) { if (qz.idx) qz.idx--; else qz.depth = null; save(); renderQuiz(); return; }
-  const o = el.closest('[data-qopt]');
-  if (o) {
-    const list = QSETS[qz.depth], id = list[qz.idx], q = QUESTIONS[id], i = +o.dataset.qopt;
-    qz.answers[id] = i;
-    if (q.track) S.track = q.opts[i].track;
-    o.setAttribute('aria-pressed', 'true');
-    setTimeout(() => {
-      if (qz.idx < list.length - 1) { qz.idx++; save(); renderQuiz(); return; }
-      qz.result = quizResult(); qz.done = true;
-      applyArch(qz.result.primary); save(); renderQuiz(); renderGrid();
-      $('#quizCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      toast('診斷完成，這是你的定位報告');
-    }, 180);
-    return;
-  }
-  const rt = el.closest('[data-route]');
-  if (rt) {
-    const route = routesFor(qz.result).find(x => x.id === rt.dataset.route);
-    applyArch(qz.result.primary); Object.assign(S, { theme: route.theme }, route.over);
-    qz.scriptReady = true; save(); setMode('quiz'); renderScript(true);
-    $('#scriptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    toast(`已產出「${route.name}」完整口播稿`);
-    return;
-  }
-  if (el.closest('[data-qcopy]')) { toast((await copy(reportText())) ? '診斷報告已複製' : '複製失敗，請手動選取文字'); return; }
-  if (el.closest('[data-qpro]')) { setMode('pro'); $('#gridCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('已帶入你的人設，可以直接微調'); return; }
-  if (el.closest('[data-qreset]')) { S.quiz = { depth: null, idx: 0, answers: {}, done: false, result: null }; save(); setMode('quiz'); renderQuiz(); }
-});
-document.addEventListener('click', e => { const m = e.target.closest('[data-mode]'); if (m) { setMode(m.dataset.mode); } });
-document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) setMode(g.dataset.go); });
-$('#topicIn').addEventListener('input', e => { S.topic = e.target.value; save(); renderGrid(); renderScript(false); });
-
-/* =========================================================
    INIT
    ========================================================= */
 (function init() {
@@ -863,20 +883,21 @@ $('#topicIn').addEventListener('input', e => { S.topic = e.target.value; save();
   const h = d.getHours();
   $('#greet').textContent = (h < 11 ? '早安' : h < 18 ? '午安' : '晚安') + '，創作者';
   $('#avatar').innerHTML = ico('user', 24);
-  $('#sideNav').innerHTML = [['spark', '新手測定位', 'Diagnosis', '#quizCard', 'quiz'], ['grid', '老手精準', 'Pro Mode', '#gridCard', 'pro'], ['mic', '口播腳本', 'Script', '#scriptCard', ''], ['title', '標題標籤', 'Titles & Tags', '#titleCard', '']]
-    .map(([i, a, b, href, go]) => `<a href="${href}" ${go ? `data-go="${go}"` : ''}>${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
-  $('#icQuiz').innerHTML = ico('spark');
-  $('#topicIn').value = S.topic || '';
-  $('#icGrid').innerHTML = ico('grid'); $('#icMic').innerHTML = ico('mic'); $('#icTitle').innerHTML = ico('title'); $('#icLock').innerHTML = ico('lock');
-  $('#icSpark').innerHTML = ico('spark');
+  $('#sideNav').innerHTML = [['grid', '定位測驗', 'Diagnosis', '#quizCard'], ['spark', '生成設定', 'Guide', '#guideCard'], ['mic', '爆款內容', 'Content', '#outCard']]
+    .map(([i, a, b, href], k) => `<a href="${href}" class="${k === 0 ? 'on' : ''}">${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
+  document.querySelectorAll('#sideNav a').forEach(a => a.addEventListener('click', () => document.querySelectorAll('#sideNav a').forEach(x => x.classList.toggle('on', x === a))));
+  $('#icQuiz').innerHTML = ico('grid'); $('#icGuide').innerHTML = ico('spark'); $('#icMic').innerHTML = ico('mic'); $('#icLock').innerHTML = ico('lock'); $('#icSpark').innerHTML = ico('spark');
+  $('#btnCopyAll').innerHTML = ico('copy') + '全部複製';
   $('#btnPrompter').innerHTML = ico('mic') + '提詞器';
   $('#btnCopy').innerHTML = ico('copy') + '複製腳本';
   $('#btnHook').innerHTML = ico('shuffle') + '換一個開頭';
   $('#btnRegen').innerHTML = ico('redo') + '換節奏重寫';
-  $('#btnCopyTitle').innerHTML = ico('copy') + '複製標題';
+  ['#btnCopyTitle', '#btnCopyPost', '#btnCopyTags'].forEach(id => { $(id).innerHTML = ico('copy') + '複製'; });
   $('#tpClose').innerHTML = ico('close');
-  if (!S.quiz || typeof S.quiz !== 'object') S.quiz = { depth: null, idx: 0, answers: {}, done: false, result: null };
-  renderQuiz(); setMode(S.mode === 'pro' ? 'pro' : 'quiz');
+  if (!QUIZ[S.track]) S.step = 'domain';
+  if (S.step === 'routes' && !S.result) S.step = 'domain';
+  $('#topicIn').value = S.topic || '';
+  renderAll(false);
 })();
 </script>
 </body>
