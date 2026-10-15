@@ -91,24 +91,6 @@
   .tracks { display: flex; gap: 8px; margin-top: 16px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .tracks::-webkit-scrollbar { display: none; }
 
-  /* ---------- nine grid ---------- */
-  .grid9 { margin-top: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  @media (min-width: 640px) { .grid9 { gap: 12px; } }
-  .cell { border-radius: 20px; background: #FDFAF9; border: 1px solid var(--line); padding: 12px 8px 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  @media (min-width: 640px) { .cell { padding: 16px 14px 14px; border-radius: 22px; } }
-  .cell .no { font-family: var(--serif); font-size: 12px; color: var(--rose); letter-spacing: .12em; }
-  .cell h4 { margin: 0; font-size: 14px; font-weight: 900; letter-spacing: .04em; }
-  @media (min-width: 640px) { .cell h4 { font-size: 15px; } }
-  .cell .opts { display: grid; gap: 6px; }
-  .cell .chip { width: 100%; padding: 8px 4px; font-size: 12.5px; text-align: center; }
-  @media (min-width: 640px) { .cell .chip { font-size: 13.5px; padding: 9px 8px; } }
-  .cell.center { background: var(--hero); border-color: transparent; justify-content: center; align-items: center; text-align: center; gap: 6px; }
-  .cell.center { padding-left: 4px; padding-right: 4px; }
-  .cell.center .tagline { font-size: 14.5px; font-weight: 900; line-height: 1.35; letter-spacing: 0; word-break: keep-all; }
-  @media (min-width: 640px) { .cell.center .tagline { font-size: 20px; } }
-  .cell.center .tagline i { display: block; font-style: normal; font-family: var(--serif); color: var(--rose); font-size: 13px; font-weight: 500; margin: 2px 0; }
-  .cell.center small { font-size: 11px; color: var(--mute); }
-
   .gen { margin-top: 18px; width: 100%; border: 0; border-radius: 18px; padding: 16px; background: var(--ink); color: #fff; font-size: 16px; font-weight: 700; letter-spacing: .16em; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 24px rgba(43, 37, 35, .18); transition: transform .15s, box-shadow .2s; }
   .gen:hover { box-shadow: 0 14px 30px rgba(43, 37, 35, .24); }
   .gen:active { transform: scale(.99); }
@@ -184,7 +166,17 @@
   .route .go { margin-top: auto; border: 0; border-radius: 14px; padding: 11px 12px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: .06em; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .route .go svg { width: 16px; height: 16px; }
   .r-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-  .topic-in { margin-top: 14px; display: grid; gap: 6px; }
+  .pro-step { margin-top: 22px; }
+  .pro-k { display: flex; align-items: baseline; gap: 10px; font-size: 16px; font-weight: 900; letter-spacing: .04em; }
+  .pro-k span { font-family: var(--serif); font-weight: 500; color: var(--rose); font-size: 13px; letter-spacing: .15em; }
+  .pro-k small { font-weight: 400; font-size: 12px; color: var(--mute); }
+  .pro-step .tracks { margin-top: 12px; flex-wrap: wrap; overflow: visible; }
+  .pro-step .tracks .chip { padding: 9px 16px; font-size: 14px; }
+  .pro-note { margin-top: 18px; font-size: 13px; color: var(--mute); line-height: 1.7; }
+  .pro-note b { color: var(--ink); }
+  .pro-note button { border: 0; background: none; color: var(--rose); padding: 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .topic-in { margin-top: 12px; display: grid; gap: 6px; position: relative; }
   .topic-in span { font-size: 13px; color: var(--mute); }
   .topic-in input { width: 100%; border: 1px solid var(--line); background: #FDFAF9; border-radius: 14px; padding: 12px 14px; font: inherit; font-size: 15px; color: var(--ink); }
   .topic-in input:focus { outline: none; border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-soft); }
@@ -255,7 +247,7 @@
   <div>
     <header class="topbar">
       <b>爆款定位九宮格</b>
-      <nav><a href="#quizCard" data-go="quiz">測定位</a><a href="#gridCard" data-go="pro">九宮格</a><a href="#scriptCard">腳本</a></nav>
+      <nav><a href="#quizCard" data-go="quiz">測定位</a><a href="#gridCard" data-go="pro">老手</a><a href="#scriptCard">腳本</a></nav>
     </header>
 
     <main>
@@ -274,14 +266,14 @@
         <div class="stats">
           <div class="stat"><small>目標時長<span class="en"> Length</span></small><b id="stLen">30<span>秒</span></b></div>
           <div class="stat"><small>口播字數<span class="en"> Words</span></small><b id="stWords">0<span>字</span></b></div>
-          <div class="stat"><small>開場風格<span class="en"> Hook</span></small><b id="stHook">—</b></div>
+          <div class="stat"><small>內容類型<span class="en"> Type</span></small><b id="stHook">—</b></div>
         </div>
       </section>
 
       <!-- 模式切換 -->
       <section class="modes" role="tablist" aria-label="選擇模式">
         <button class="mode" role="tab" data-mode="quiz"><b>新手無腦測定位</b><small>3 或 6 題選擇題，自動定義人設與方向</small></button>
-        <button class="mode" role="tab" data-mode="pro"><b>老手精準</b><small>已經知道自己是誰，直接點人設＋今天的主題</small></button>
+        <button class="mode" role="tab" data-mode="pro"><b>老手精準</b><small>輸入主題、選時長，兩步出稿</small></button>
       </section>
 
       <!-- 新手：定位測驗 -->
@@ -292,10 +284,17 @@
 
       <!-- 九宮格 -->
       <section class="card" id="gridCard">
-        <div class="card-h"><span id="icGrid"></span><h3>九宮格定位矩陣</h3><small>・ 每格點一個，全部不用打字</small></div>
-        <div class="tracks" role="radiogroup" aria-label="內容賽道" id="tracks"></div>
-        <label class="topic-in"><span>今天想拍的主題（可直接輸入，不填就用上方賽道）</span><input id="topicIn" maxlength="12" placeholder="例如：油肌底妝、記帳、面試" /></label>
-        <div class="grid9" id="grid9"></div>
+        <div class="card-h"><span id="icGrid"></span><h3>老手精準出稿</h3><small>・ 只要兩步</small></div>
+        <div class="pro-step">
+          <p class="pro-k"><span>01</span>輸入主題<small>或一鍵選熱門主題</small></p>
+          <label class="topic-in"><span class="sr">今天想拍的主題</span><input id="topicIn" maxlength="14" placeholder="例如：中古屋交屋避坑" /></label>
+          <div class="tracks" role="radiogroup" aria-label="主題類型" id="themeTags"></div>
+        </div>
+        <div class="pro-step">
+          <p class="pro-k"><span>02</span>選擇目標時長</p>
+          <div class="tracks" role="radiogroup" aria-label="目標時長" id="lenTags"></div>
+        </div>
+        <p class="pro-note" id="proNote"></p>
         <button class="gen" id="btnGen"><span id="icSpark"></span>一鍵生成爆款口播腳本</button>
       </section>
 
@@ -393,23 +392,16 @@ const TRACKS = [
     story: '以前我買了一堆收納盒，房間反而越收越亂；後來先丟掉一半的東西，整個家一下子就清爽了。' },
 ];
 
-/* 九宮格（05 為正中央的人設顯示區） */
-const CELLS = [
-  { id: 'tone',   no: '01', title: '性格特質', opts: ['毒舌清醒', '溫柔共情', '幽默吐槽'] },
-  { id: 'role',   no: '02', title: '核心身分', opts: ['避坑過來人', '圈內內行人', '實操狂人'] },
-  { id: 'edge',   no: '03', title: '優勢來源', opts: ['踩坑血淚', '資訊落差', '實戰結果'] },
-  { id: 'pain',   no: '04', title: '受眾痛點', opts: ['迷茫踩坑', '努力無果', '認知卡關'] },
-  { id: 'center', no: '05', title: '關於你' },
-  { id: 'theme',  no: '06', title: '影片主題', opts: ['顛覆認知', '避坑指南', '實用乾貨'] },
-  { id: 'rhythm', no: '07', title: '表達節奏', opts: ['扎心開場', '代價說服', '數字衝擊'] },
-  { id: 'len',    no: '08', title: '目標時長', opts: ['15 秒衝擊', '30 秒爆款', '45 秒轉化'] },
-  { id: 'cta',    no: '09', title: '行動呼籲', opts: ['收藏重看', '留言領取', '避坑轉發'] },
-];
 const TONE_SHORT = { 毒舌清醒: '毒舌', 溫柔共情: '溫柔', 幽默吐槽: '幽默' };
 const ROLE_SHORT = { 避坑過來人: '過來人', 圈內內行人: '內行人', 實操狂人: '實操派' };
 
 /* 爆款句型資料庫：主題 × 節奏，各 2 句（聽勸勸退／清醒覺醒／資訊差／抄作業） */
 const HOOKS = {
+  商業算帳: {
+    扎心開場: ['先別急著做決定，關於{field}，我幫你算一筆帳，算完你可能會嚇一跳。', '{field}這筆帳，大部分人都只算了一半。'],
+    代價說服: ['我花了{cost}才算明白：{field}真正的成本，從來不是你看到的那個數字。', '同樣在{field}上花錢，有人越花越值，有人越花越虧，差別就在這筆帳。'],
+    數字衝擊: ['把{field}的帳攤開來算，3 個數字就能看清楚值不值得。', '一筆帳、3 個數字，帶你算清楚{field}到底划不划算。'],
+  },
   避坑指南: {
     扎心開場: ['聽我一句勸，{field}這件事，千萬別盲目跟風！', '求求你們別再{trap}了，看完這篇少走半年彎路！'],
     代價說服: ['這是我踩過最大的一個坑，花了{cost}才換來的教訓，寫出來就是不想讓姐妹們再被割韭菜！', '我花了{cost}、踩過無數個坑才明白：{field}千萬別這樣做。'],
@@ -451,6 +443,9 @@ const COST_LINE = '我當初就是這樣，白白花了{cost}。';
 
 /* 乾貨主體：主題決定開頭與每一點的說法 */
 const BODY = {
+  商業算帳: { intro: '這筆帳，我拆成 3 個數字給你看：', pts: ['第一，算總成本，不要只看表面價格', '第二，算時間成本，你花掉的時間也是錢', '第三，算長期回報，三個月後還值不值得'],
+    ws: ['很多隱藏費用，事後才發現最傷荷包', '省下來的時間拿去做別的，可能更值錢', '短期划算，不代表長期也划算'],
+    short: '算清楚 3 件事：總成本、時間成本、長期回報。' },
   避坑指南: { intro: '我踩過的坑，濃縮成 3 個千萬別：', pts: ['第一，千萬別{trap}。{p1}', '第二，千萬別貪多。{p2}', '第三，千萬別半途而廢。{p3}'],
     short: '記住：千萬別{trap}。{p1}，{p3}。' },
   顛覆認知: { intro: '真相是：{field}拚的不是努力，是順序。', pts: ['第一，{p1}', '第二，{p2}', '第三，{p3}'],
@@ -469,11 +464,12 @@ const CTA_LINE = {
   避坑轉發: '轉給那個還在{trap}的朋友，能救一個是一個。',
 };
 const TITLES = {
+  商業算帳: ['{field}這筆帳，大部分人只算了一半', '幫你算清楚：{field}到底划不划算', '我花了{cost}才算明白的{field}成本'],
   避坑指南: ['{field}避坑｜聽勸！這 3 件事千萬別做', '求求別再{trap}了，我花了{cost}才明白', '{field}新手必看｜少走半年彎路'],
   顛覆認知: ['內行人不願公開的{field}真相', '{field}的底層邏輯，99% 的人都想錯了', '看完這篇，{field}認知徹底刷新'],
   實用乾貨: ['{field}抄作業清單｜建議先收藏', '別再交學費了，{field}方法論直接拿去用', '只要搞懂這 3 點，{field}想不進步都難'],
 };
-const TAGS = { 避坑指南: ['避坑指南', '聽勸', '新手必看'], 顛覆認知: ['認知刷新', '內行人', '底層邏輯'], 實用乾貨: ['乾貨分享', '抄作業', '建議收藏'] };
+const TAGS = { 商業算帳: ['商業思維', '算帳', '理性消費'], 避坑指南: ['避坑指南', '聽勸', '新手必看'], 顛覆認知: ['認知刷新', '內行人', '底層邏輯'], 實用乾貨: ['乾貨分享', '抄作業', '建議收藏'] };
 const EMPH = ['千萬別', '內行人', '踩過', '聽勸', '真相', '秘密', '抄作業', '底層邏輯', '才明白', '割韭菜', '偷偷'];
 
 /* =========================================================
@@ -486,10 +482,16 @@ try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw =
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const track = () => TRACKS.find(t => t.id === S.track) || TRACKS[0];
+const baseTrack = () => TRACKS.find(t => t.id === S.track) || TRACKS[0];
+const track = () => topicOn() ? { ...baseTrack(), ...GENERIC, field: topicOn(), label: topicOn(), kw: topicOn().length <= 4 ? topicOn() : '清單' } : baseTrack();
 const topicOn = () => S.mode === 'pro' && (S.topic || '').trim();
-const fieldName = () => topicOn() || track().field;
-const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : k === 'field' ? fieldName() : k === 'kw' && topicOn() ? topicOn().slice(0, 4) : (t[k] ?? '')); };
+/* 自訂主題時改用通用素材，避免和賽道內容對不上 */
+const GENERIC = { trap: '盲目跟風', act: '做決定', cost: '不少冤枉錢', years: '好幾年', circle: '這個圈子',
+  p: ['先搞清楚自己的需求和條件，再決定怎麼做', '一次只改一件事，才知道什麼真的有效', '把基本功做到位，就贏過一大半的人'],
+  w: ['條件不同，別人的答案不一定適合你', '同時改太多，出問題根本不知道是哪裡', '大部分人輸在基本功，不是輸在技巧'],
+  story: '我一開始也是什麼都想試，花了不少冤枉錢；後來只專注在最重要的幾件事，結果反而越來越好。' };
+const fieldName = () => track().field;
+const fill = s => { const t = track(); return s.replace(/\{(\w+)\}/g, (_, k) => k === 'p1' ? t.p[0] : k === 'p2' ? t.p[1] : k === 'p3' ? t.p[2] : (t[k] ?? '')); };
 const countChars = t => String(t || '').replace(/[\s，。、！？!?,.：:；;「」『』（）()…—\-~～"'“”%]/g, '').length;
 const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 let script = [];
@@ -508,7 +510,7 @@ function build() {
   if (lv >= 2 && S.rhythm === '代價說服') pain.push(fill(COST_LINE));
   out.push({ k: '痛點・PAIN', t: pain.join('\n') });
   if (lv === 1) out.push({ k: '乾貨・VALUE', t: fill(body.short) });
-  else out.push({ k: '乾貨・VALUE', t: [fill(body.intro), ...body.pts.map((x, i) => fill(x) + (lv === 3 ? '。\n' + t.w[i] : '') + (i < 2 ? '；' : '。'))].join('\n') });
+  else out.push({ k: '乾貨・VALUE', t: [fill(body.intro), ...body.pts.map((x, i) => fill(x) + (lv === 3 ? '。\n' + (body.ws || t.w)[i] : '') + (i < 2 ? '；' : '。'))].join('\n') });
   if (lv >= 2) out.push({ k: '收尾・CLOSE', t: fill(TONE_CLOSE[S.tone]) });
   out.push({ k: '行動・CTA', t: fill(CTA_LINE[S.cta]) });
   return out;
@@ -519,23 +521,18 @@ function build() {
    ========================================================= */
 function personaParts() { return [TONE_SHORT[S.tone] + ROLE_SHORT[S.role], S.theme]; }
 
+const THEME_TAGS = [['揭露真相', '顛覆認知'], ['勸退指南', '避坑指南'], ['實用乾貨', '實用乾貨'], ['商業算帳', '商業算帳']];
+const LEN_TAGS = [['15秒衝擊', '15 秒衝擊'], ['30秒黃金爆款', '30 秒爆款'], ['45秒深度轉化', '45 秒轉化']];
+const themeName = th => (THEME_TAGS.find(x => x[1] === th) || [th])[0];
+
 function renderGrid() {
-  $('#tracks').innerHTML = TRACKS.map(t => `<button class="chip" role="radio" aria-checked="${t.id === S.track}" data-track="${t.id}">${t.label}</button>`).join('');
-  const [p, th] = personaParts();
-  $('#grid9').innerHTML = CELLS.map(c => c.id === 'center' ? `
-    <div class="cell center">
-      <span class="no">${c.no}</span>
-      <div class="tagline">${esc(p)}<i>×</i>${esc(th)}</div>
-      <small>${esc(topicOn() || track().label)}・${S.len.replace(' ', '')}</small>
-    </div>` : `
-    <div class="cell" role="radiogroup" aria-label="${c.title}">
-      <span class="no">${c.no}</span>
-      <h4>${c.title}</h4>
-      <div class="opts">${c.opts.map(o => `<button class="chip" role="radio" aria-checked="${S[c.id] === o}" data-cell="${c.id}" data-val="${o}">${o}</button>`).join('')}</div>
-    </div>`).join('');
-  $('#heroPersona').innerHTML = `<span>${esc(p)}</span><span class="x">×</span><span>${esc(th)}</span>`;
+  const [p] = personaParts(), th = themeName(S.theme);
+  $('#themeTags').innerHTML = THEME_TAGS.map(([l, v]) => `<button class="chip" role="radio" aria-checked="${S.theme === v}" data-theme="${v}">${l}</button>`).join('');
+  $('#lenTags').innerHTML = LEN_TAGS.map(([l, v]) => `<button class="chip" role="radio" aria-checked="${S.len === v}" data-len="${v}">${l}</button>`).join('');
+  $('#proNote').innerHTML = `人設沿用：<b>${esc(p)}</b>・沒輸入主題時用「${esc(baseTrack().label)}」${S.quiz && S.quiz.done ? '' : '・<button data-go="quiz">先去測定位</button>'}`;
+  $('#heroPersona').innerHTML = `<span>${esc(p)}</span><span class="x">×</span><span>${esc(topicOn() || th)}</span>`;
   $('#stLen').innerHTML = `${parseInt(S.len)}<span>秒</span>`;
-  $('#stHook').textContent = HOOK_LABEL[S.rhythm];
+  $('#stHook').textContent = th;
 }
 
 function emph(text) {
@@ -605,13 +602,8 @@ function tpKeep() { const r = sc().scrollTop / tpRange(); tpRender(); sc().scrol
 /* =========================================================
    EVENTS
    ========================================================= */
-$('#tracks').addEventListener('click', e => { const b = e.target.closest('[data-track]'); if (!b) return; S.track = b.dataset.track; save(); renderGrid(); renderScript(false); });
-$('#grid9').addEventListener('click', e => {
-  const b = e.target.closest('[data-cell]'); if (!b) return;
-  S[b.dataset.cell] = b.dataset.val;
-  if (b.dataset.cell === 'theme' || b.dataset.cell === 'rhythm') S.hookIdx = 0;
-  save(); renderGrid();
-});
+$('#themeTags').addEventListener('click', e => { const b = e.target.closest('[data-theme]'); if (!b) return; S.theme = b.dataset.theme; S.hookIdx = 0; save(); renderGrid(); renderScript(false); });
+$('#lenTags').addEventListener('click', e => { const b = e.target.closest('[data-len]'); if (!b) return; S.len = b.dataset.len; save(); renderGrid(); renderScript(false); });
 $('#btnGen').addEventListener('click', () => { renderScript(true); $('#scriptCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('口播腳本已生成'); });
 $('#btnHook').addEventListener('click', () => { S.hookIdx = (S.hookIdx + 1) % HOOKS[S.theme][S.rhythm].length; save(); renderScript(true); toast('已換一個開頭'); });
 $('#btnRegen').addEventListener('click', () => {
@@ -871,7 +863,7 @@ $('#topicIn').addEventListener('input', e => { S.topic = e.target.value; save();
   const h = d.getHours();
   $('#greet').textContent = (h < 11 ? '早安' : h < 18 ? '午安' : '晚安') + '，創作者';
   $('#avatar').innerHTML = ico('user', 24);
-  $('#sideNav').innerHTML = [['spark', '新手測定位', 'Diagnosis', '#quizCard', 'quiz'], ['grid', '老手九宮格', 'Persona Grid', '#gridCard', 'pro'], ['mic', '口播腳本', 'Script', '#scriptCard', ''], ['title', '標題標籤', 'Titles & Tags', '#titleCard', '']]
+  $('#sideNav').innerHTML = [['spark', '新手測定位', 'Diagnosis', '#quizCard', 'quiz'], ['grid', '老手精準', 'Pro Mode', '#gridCard', 'pro'], ['mic', '口播腳本', 'Script', '#scriptCard', ''], ['title', '標題標籤', 'Titles & Tags', '#titleCard', '']]
     .map(([i, a, b, href, go]) => `<a href="${href}" ${go ? `data-go="${go}"` : ''}>${ico(i)}<span><b>${a}</b><small>${b}</small></span></a>`).join('');
   $('#icQuiz').innerHTML = ico('spark');
   $('#topicIn').value = S.topic || '';
