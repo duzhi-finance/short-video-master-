@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>30 天爆款腳本庫</title>
+<title>30 種爆款主題庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700;900&display=swap" rel="stylesheet" />
@@ -72,33 +72,42 @@
   .btn.dark:hover { background: #000; }
   .bar .meta { margin-left: auto; font-size: 12.5px; color: var(--mute); }
 
-  /* day list */
-  .days { margin-top: 16px; display: grid; gap: 10px; }
-  .day { border: 1px solid var(--line); border-radius: 18px; background: var(--soft); overflow: hidden; }
-  .day[open] { background: #fff; box-shadow: var(--shadow); border-color: transparent; }
-  .day summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 14px 16px; }
-  .day summary::-webkit-details-marker { display: none; }
-  .day .dn { font-family: var(--serif); font-size: 13px; color: var(--accent); letter-spacing: .1em; line-height: 1.2; }
-  .day .dn b { display: block; font-size: 24px; color: var(--ink); letter-spacing: 0; font-weight: 700; }
-  .day .tt { min-width: 0; }
-  .day .tt span { font-size: 12px; color: var(--mute); letter-spacing: .06em; }
-  .day .tt p { font-size: 14.5px; font-weight: 700; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .day .chev { width: 18px; height: 18px; color: var(--faint); transition: transform .2s; }
-  .day[open] .chev { transform: rotate(180deg); }
-  .day .body { padding: 0 16px 18px; display: grid; gap: 14px; }
-  @media (min-width: 720px) { .day .body { padding: 0 24px 22px 86px; } }
-  .seg .k { font-size: 11px; letter-spacing: .24em; color: var(--accent); }
-  .seg p { margin-top: 4px; font-size: 16px; line-height: 1.95; white-space: pre-line; }
-  .seg.hook p { font-family: var(--serif); font-size: 19px; font-weight: 700; line-height: 1.7; }
-  .day .foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--mute); }
+  /* topics */
+  .basis { margin-top: 16px; border-radius: 16px; background: var(--soft); border: 1px solid var(--line); padding: 14px 16px; font-size: 13px; color: var(--mute); line-height: 1.8; }
+  .basis b { color: var(--ink); font-weight: 700; }
+  .basis ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+  .basis li::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); margin: 0 8px 2px 0; vertical-align: middle; }
+  .topics { margin-top: 16px; display: grid; gap: 12px; }
+  @media (min-width: 720px) { .topics { grid-template-columns: 1fr 1fr; } }
+  .topic { border: 1px solid var(--line); border-radius: 18px; background: #fff; padding: 16px 18px 14px; display: flex; flex-direction: column; gap: 8px; transition: box-shadow .2s, border-color .2s; }
+  .topic:hover { box-shadow: var(--shadow); border-color: transparent; }
+  .topic .top { display: flex; align-items: baseline; gap: 10px; }
+  .topic .num { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .topic .tag { font-size: 11.5px; color: var(--mute); letter-spacing: .06em; }
+  .topic h3 { font-family: var(--serif); font-size: 17.5px; font-weight: 700; line-height: 1.55; letter-spacing: .02em; }
+  .topic p { font-size: 14.5px; line-height: 1.85; color: #4A443F; white-space: pre-line; }
+  .topic .mini { margin-top: auto; display: flex; justify-content: flex-end; }
+  .topic .mini button { border: 0; background: none; color: var(--mute); font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 0; }
+  .topic .mini button:hover { color: var(--ink); }
 
-  /* trace */
-  .trace { margin-top: 16px; display: grid; gap: 12px; }
-  .tr { border-radius: 18px; background: var(--soft); border: 1px solid var(--line); padding: 16px 18px; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 14px; }
-  .tr .L { grid-row: span 2; font-family: var(--serif); font-size: 30px; font-weight: 900; color: var(--accent); line-height: 1; }
-  .tr h4 { font-size: 14px; letter-spacing: .08em; }
-  .tr h4 small { color: var(--mute); font-weight: 400; margin-left: 6px; }
-  .tr p { font-size: 14.5px; line-height: 1.9; white-space: pre-line; word-break: break-word; }
+  /* trace document */
+  .doc { margin-top: 16px; border-radius: 20px; background: linear-gradient(180deg, #FFFDFB, #FAF7F3); border: 1px solid var(--line); padding: 22px 18px; }
+  @media (min-width: 720px) { .doc { padding: 32px 36px; } }
+  .doc-head { text-align: center; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .doc-head .eyebrow { font-size: 11px; letter-spacing: .32em; color: var(--accent); }
+  .doc-head h3 { margin-top: 8px; font-family: var(--serif); font-size: 22px; font-weight: 900; letter-spacing: .06em; }
+  .doc-head .tags { margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .doc-head .tags span { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: #fff; border: 1px solid var(--line); color: var(--mute); }
+  .trace { margin-top: 6px; display: grid; }
+  .tr { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 14px; padding: 20px 0; border-bottom: 1px dashed var(--line); }
+  .tr:last-child { border-bottom: 0; padding-bottom: 4px; }
+  .tr .L { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-family: var(--serif); font-size: 20px; font-weight: 700; }
+  .tr h4 { font-size: 15px; letter-spacing: .1em; margin-top: 2px; }
+  .tr h4 small { color: var(--accent); font-weight: 500; margin-left: 8px; letter-spacing: .06em; }
+  .tr p { margin-top: 8px; font-size: 14.5px; line-height: 1.95; white-space: pre-line; word-break: break-word; color: #3E3833; }
+  .tr .ex { margin-top: 10px; border-left: 2px solid var(--accent); padding: 4px 0 4px 14px; font-size: 14px; line-height: 1.9; color: #4A443F; white-space: pre-line; }
+  .doc-foot { margin-top: 18px; text-align: center; }
+  .doc-foot .btn { padding: 12px 22px; font-size: 14.5px; }
 
   /* checklist */
   .checks { margin-top: 16px; display: grid; gap: 10px; }
@@ -121,9 +130,9 @@
 <div class="wrap">
 
   <header class="mast">
-    <p class="eyebrow">30-Day Script Library · TRACE Prompt</p>
-    <h1>30 天爆款腳本庫・TRACE 指令大師</h1>
-    <p>點選你的角色、領域與目標，立刻產出 30 天可以直接口播的完整腳本，也能一鍵帶走一份給 ChatGPT／Claude 用的高階指令。</p>
+    <p class="eyebrow">30 Viral Topics · TRACE Prompt</p>
+    <h1>30 種爆款主題・TRACE 指令大師</h1>
+    <p>點選你的角色、領域與目標，立刻產出 30 種專屬你的爆款主題與短文案，也能一鍵帶走一份給 ChatGPT／Claude 用的高階指令。</p>
   </header>
 
   <!-- 區塊一：參數設定 -->
@@ -137,25 +146,29 @@
   <section class="card" aria-labelledby="outH">
     <div class="card-h"><span class="no">02</span><h2 id="outH">生成結果</h2></div>
     <div class="tabs" role="tablist" style="margin-top:16px">
-      <button class="tab" role="tab" id="tabDays" aria-controls="paneDays" data-tab="days">30 天腳本庫<small>SCRIPTS</small></button>
+      <button class="tab" role="tab" id="tabDays" aria-controls="paneDays" data-tab="days"><span id="tabTopicLabel">30 種爆款主題</span><small>TOPICS</small></button>
       <button class="tab" role="tab" id="tabTrace" aria-controls="paneTrace" data-tab="trace">TRACE 指令<small>PROMPT</small></button>
     </div>
 
     <div id="paneDays" role="tabpanel" aria-labelledby="tabDays">
+      <div class="basis" id="basis"></div>
       <div class="bar">
         <button class="btn dark" id="copyAll"></button>
-        <button class="btn" id="toggleAll"></button>
         <span class="meta" id="daysMeta"></span>
       </div>
-      <div class="days" id="days"></div>
+      <div class="topics" id="days"></div>
     </div>
 
     <div id="paneTrace" role="tabpanel" aria-labelledby="tabTrace" hidden>
-      <div class="bar">
-        <button class="btn dark" id="copyTrace"></button>
-        <span class="meta">貼到 ChatGPT 或 Claude 直接使用</span>
+      <div class="doc">
+        <div class="doc-head">
+          <p class="eyebrow">TRACE PROMPT</p>
+          <h3>爆款內容萬用指令</h3>
+          <div class="tags" id="traceTags"></div>
+        </div>
+        <div class="trace" id="trace"></div>
+        <div class="doc-foot"><button class="btn dark" id="copyTrace"></button><p class="meta" style="margin-top:10px;font-size:12.5px;color:var(--mute)">複製後貼到 ChatGPT 或 Claude 直接使用</p></div>
       </div>
-      <div class="trace" id="trace"></div>
     </div>
   </section>
 
@@ -258,49 +271,56 @@ const GENERIC = { product: '我整理的{D}清單', pain: '剛開始接觸{D}，
 ] };
 
 /* =========================================================
-   10 種題材類型（hook + 內文），30 天輪替
+   爆款主題角度庫：場景決定 3 種角度、目標決定 2 種角度
+   6 個子題 × 5 種角度 = 30 種主題（兩兩不重複）
    ========================================================= */
-const TYPES = [
-  { n: '顛覆認知型', hook: '大部分人都以為{myth}，其實真正的關鍵根本不是這個。',
-    body: ['內行人都知道：{truth}。', '很多人卡關，是因為{trap}。', '正確做法只有三步：第一，{s1}；第二，{s2}；第三，{s3}。', '做對了，{result}。'] },
-  { n: '聽勸避坑型', hook: '聽我一句勸，{sub}這件事，千萬別{trap}。',
-    body: ['我踩過無數坑才明白：{truth}。', '千萬別再相信「{myth}」這種說法。', '要做就這樣做：先{s1}，再{s2}。', '{result}，這就是聽勸的價值。'] },
-  { n: '乾貨教學型', hook: '{sub}只要三步，看完直接照做。',
-    body: ['第一步，{s1}。', '第二步，{s2}。', '第三步，{s3}。', '很多人卡在第二步，是因為{trap}。', '照著做，{result}。'] },
-  { n: '過來人故事型', hook: '我踩過無數坑，才終於搞懂{sub}。',
-    body: ['一開始我也以為{myth}，結果{story}。', '後來我才明白：{truth}。', '所以現在我只做兩件事：{s1}，還有{s2}。', '聽一個過來人說一句：{result}。'] },
-  { n: '數字清單型', hook: '{sub}的 3 個關鍵，第 2 個最多人做錯。',
-    body: ['一，{s1}。', '二，{s2}，很多人在這裡吃虧，因為{trap}。', '三，{s3}。', '三個都做到，{result}。'] },
-  { n: '內行揭秘型', hook: '內行人不會主動告訴你的{sub}秘密。',
-    body: ['外行人只看表面，以為{myth}。', '內行人看的是：{truth}。', '所以我們都會先{s1}，再{s2}。', '懂了這一點，{result}。'] },
-  { n: '對比反轉型', hook: '同樣在做{sub}，為什麼有人輕鬆有成果，有人越做越累？',
-    body: ['越做越累的人，通常{trap}。', '輕鬆有成果的人，只是先{s1}。', '差別不在努力，在順序：{truth}。', '從今天開始，{s2}。'] },
-  { n: '問答解惑型', hook: '很多人問我：{sub}到底該怎麼開始？',
-    body: ['我的答案很簡單：先別{trap}。', '真正該做的是{s1}。', '等基礎穩了，再{s2}。', '記住，{truth}。'] },
-  { n: '情緒共鳴型', hook: '如果你在{sub}這件事上覺得好累，這支影片是為你拍的。',
-    body: ['我懂那種感覺，明明很努力，結果還是不如預期。', '不是你不夠好，是沒人告訴你：{truth}。', '先從一件小事開始：{s1}。', '{result}，一切會慢慢變順。'] },
-  { n: '案例拆解型', hook: '我拆解了上百個{domain}案例，做得好的人都有一個共通點。',
-    body: ['他們不會{trap}。', '他們會先{s1}，再{s2}。', '最重要的是，{truth}。', '照這個邏輯做，{result}。'] },
-];
-/* 依腳本場景決定 Day 1 從哪種題材開始 */
-const SCENARIO_START = { 乾貨教學文: 2, 避坑勸退文: 1, 故事觀點文: 3, 產品開箱評測: 6, '限時優惠/導購': 0 };
-const SCENARIO_LINE = {
-  乾貨教學文: '',
-  避坑勸退文: '再說一次，千萬別{trap}。',
-  故事觀點文: '這是我自己的真實經驗，不一定適合每個人，但很值得參考。',
-  產品開箱評測: '這次我實際用了{product}一整週，最有感的就是它幫我{s1}。',
-  '限時優惠/導購': '我把這套方法整理成{product}，這幾天剛好有限時優惠。',
+const SCENARIO_ANGLES = {
+  乾貨教學文: [
+    { tag: '乾貨教學', t: '{n}只要三步，新手直接照做', c: ['第一步{s1}，第二步{s2}，第三步{s3}。', '很多人卡在第二步，因為{trap}。', '照著做，{result}。'] },
+    { tag: '數字清單', t: '{n}的 3 個關鍵，第 2 個最多人做錯', c: ['最常被做錯的關鍵是：{s2}。', '做錯的人，通常{trap}。', '三個都做到，{result}。'] },
+    { tag: '懶人清單', t: '一張清單搞懂{n}', c: ['{truth}。', '先{s1}，最後記得{s3}。', '存起來，下次直接對照。'] },
+  ],
+  避坑勸退文: [
+    { tag: '聽勸避坑', t: '聽勸！{n}千萬別{trap}', c: ['我踩過無數坑才明白：{truth}。', '千萬別再相信「{myth}」。', '先{s1}，就能少走一大段彎路。'] },
+    { tag: '錯誤盤點', t: '{n}最常見的錯誤，你中了幾個？', c: ['第一個就是{trap}。', '「{myth}」？其實剛好相反。', '{truth}。'] },
+    { tag: '過來人勸退', t: '如果{n}能重來，我絕對不會這樣做', c: ['以前的我，{story}。', '後來才發現，{truth}。', '現在我只會先{s1}。'] },
+  ],
+  故事觀點文: [
+    { tag: '過來人故事', t: '我花了好幾年才搞懂的{n}', c: ['一開始我也以為{myth}，結果{story}。', '後來才明白：{truth}。', '{result}。'] },
+    { tag: '真心觀點', t: '關於{n}，我想說句真心話', c: ['{truth}。', '很多人{trap}，不是不努力，是沒人提醒。', '慢一點沒關係，方向對就好。'] },
+    { tag: '觀念轉變', t: '{n}這件事，徹底改變了我的想法', c: ['以前我相信{myth}。', '直到{story}，我才開始改變。', '現在我會先{s1}。'] },
+  ],
+  產品開箱評測: [
+    { tag: '實測開箱', t: '實測一週：{product}真的能幫我搞定{n}嗎？', c: ['我最在意的，是能不能幫我{s1}。', '結果比想像中有感，{result}。', '缺點也會老實說，不吹不黑。'] },
+    { tag: '好物對比', t: '{n}好物 vs 雷品，差在這一點', c: ['雷品只會讓你更焦慮。', '好物會幫你{s2}。', '買之前先問自己：真的需要嗎？'] },
+    { tag: '使用前後', t: '沒有{product}之前，我的{n}是這樣的', c: ['以前的我，{story}。', '有了它之後，我開始{s1}。', '{result}，這是最真實的改變。'] },
+  ],
+  '限時優惠/導購': [
+    { tag: '懶人包', t: '{n}懶人包｜這週限時整理好給你', c: ['我把{n}濃縮成{product}。', '照著做就能{s1}。', '這週限時開放，錯過要再等。'] },
+    { tag: '推薦理由', t: '{n}該從哪裡開始？我推薦{product}', c: ['因為{truth}。', '它能幫你先{s1}，再{s2}。', '這幾天剛好有優惠，需要的別錯過。'] },
+    { tag: '新手組合', t: '{n}新手入門組合，一次幫你配好', c: ['不用自己東拼西湊。', '{product}已經幫你把「{s1}」整理好。', '{result}，比自己摸索快很多。'] },
+  ],
 };
-const GOAL_CTA = {
-  快速漲粉: ['追蹤我，30 天帶你把{domain}一次搞懂，明天見。', '想看下一集的，先追蹤，不然會滑不到。', '關注我，每天一個{domain}關鍵，看完少走半年彎路。'],
-  建立專業信任: ['這是我做了十年整理出來的方法，覺得有用就收藏起來。', '有任何{domain}的問題，留言給我，我一個一個回。', '先收藏，下次遇到同樣狀況，直接照這個做。'],
-  '提高產品轉換/銷售': ['想要{product}，留言「要」，我直接私訊給你。', '{product}的連結放在主頁，需要的直接去拿。', '留言「清單」，我把{product}傳給你。'],
-  增加留言互動: ['你是哪一種？留言告訴我，我挑幾個幫你分析。', '你踩過最大的坑是什麼？留言分享，讓更多人少走冤枉路。', '同意的留言「懂」，不同意的也歡迎來吵。'],
+const GOAL_ANGLES = {
+  快速漲粉: [
+    { tag: '系列開篇', t: '{n}系列第 1 集：大部分人都想錯了', c: ['大部分人以為{myth}。', '其實{truth}。', '這個系列會帶你一次搞懂。'] },
+    { tag: '一句說破', t: '一句話說破{n}', c: ['{truth}。', '懂這一句，你就贏過一大半的人。', '剩下的，就是{s1}。'] },
+  ],
+  建立專業信任: [
+    { tag: '專業拆解', t: '{role}的專業拆解：{n}到底該怎麼做', c: ['身為{role}，這是我最常被問的問題。', '答案是：{s1}，再{s2}。', '{truth}。'] },
+    { tag: '十年觀察', t: '做了十年{domain}，我對{n}的 3 個觀察', c: ['{truth}。', '最常見的問題，是{trap}。', '做得好的人，都會{s3}。'] },
+  ],
+  '提高產品轉換/銷售': [
+    { tag: '痛點解方', t: '{n}卡關？你缺的可能是一套方法', c: ['大部分人卡在{trap}。', '{product}就是為了解決這件事。', '先{s1}，成果會比你想的快。'] },
+    { tag: '成果對比', t: '同樣在做{n}，有人輕鬆有成果的原因', c: ['他們不是比較努力，是用對了方法。', '先{s1}，再{s2}。', '{result}。'] },
+  ],
+  增加留言互動: [
+    { tag: '立場選邊', t: '{n}，你是哪一派？', c: ['有人相信{myth}。', '也有人認為{truth}。', '你站哪一邊？'] },
+    { tag: '爭議觀點', t: '說出來可能會被罵：{n}其實沒那麼難', c: ['{truth}。', '真正難的，是改掉{trap}這個習慣。', '你同意嗎？'] },
+  ],
 };
-const PROMO_CTA = '優惠只到這週，名額有限，想要的現在就留言「要」。';
-const PLATFORM_TAIL = { 'IG Reels': '記得存到收藏。', Threads: '轉發給需要的朋友。', 'YouTube Shorts': '訂閱頻道，下一支更精彩。', TikTok: '點個關注，別滑走。', 小紅書: '收藏這篇，下次照著做。' };
+const XHS_SUFFIX = ['建議收藏', '新手必看', '乾貨分享'];
 const PLATFORM_CTA_HINT = { 'IG Reels': '引導收藏、分享與限時動態轉發', Threads: '引導留言討論與轉發', 'YouTube Shorts': '引導訂閱與看下一支', TikTok: '引導關注與留言', 小紅書: '引導收藏筆記與留言' };
-const GOLDEN = ['方向對了，慢一點也沒關係。', '少走彎路，本身就是一種快。', '做對一件事，勝過做錯一百件。', '你不是不夠努力，只是還沒用對方法。', '真正的高手，都把基本功做到極致。', '先開始，比做到完美更重要。'];
 const GOAL_NEED = { 快速漲粉: '看完就想追蹤的實用內容', 建立專業信任: '可信、專業、有依據的建議', '提高產品轉換/銷售': '能直接解決問題的方案與購買理由', 增加留言互動: '說中心聲、讓他想留言分享的觀點' };
 const LEN_CHARS = { '15秒超短衝擊': 80, '30秒黃金爆款': 150, '45秒深度轉化': 230 };
 
@@ -314,8 +334,8 @@ const CHECKS = [
 /* =========================================================
    STATE
    ========================================================= */
-const KEY = 'trace30-v1';
-let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', tab: 'days', open: [1], checks: [] };
+const KEY = 'trace30-v2';
+let S = { role: '行銷顧問', domain: '自媒體經營', platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', tab: 'days', checks: [] };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
@@ -332,52 +352,41 @@ function domainData() {
 }
 
 /* =========================================================
-   GENERATE：30 天完整腳本
+   GENERATE：30 種爆款主題（標題＋短文案）
    ========================================================= */
-function scriptFor(day) {
-  const dd = domainData(), i = day - 1;
-  const type = TYPES[(i + (SCENARIO_START[S.scenario] || 0)) % TYPES.length];
-  const sub = dd.subs[i % dd.subs.length]; // (天數 mod 6, 天數 mod 10) 在 30 天內兩兩不重複
-  const v = { sub: sub.n, myth: sub.myth, truth: sub.truth, trap: sub.trap, s1: sub.s[0], s2: sub.s[1], s3: sub.s[2], result: sub.result, story: sub.story, domain: domain(), product: dd.product, role: role() };
-  const f = s => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '').replace(/先先/g, '先').replace(/再先/g, '再');
+function topicFor(k) {
+  const dd = domainData();
+  const angles = [...SCENARIO_ANGLES[S.scenario], ...GOAL_ANGLES[S.goal]];
+  const sub = dd.subs[k % dd.subs.length], ang = angles[k % angles.length]; // (k mod 6, k mod 5) 在 30 內兩兩不重複
+  const v = { n: sub.n, myth: sub.myth, truth: sub.truth, trap: sub.trap, s1: sub.s[0], s2: sub.s[1], s3: sub.s[2], result: sub.result, story: sub.story, domain: domain(), product: dd.product, role: role() };
+  const f = x => x.replace(/\{(\w+)\}/g, (_, key) => v[key] ?? '').replace(/先先/g, '先').replace(/再先/g, '再');
+  let title = f(ang.t);
+  if (S.platform === '小紅書' && !title.includes('｜')) title += '｜' + XHS_SUFFIX[k % 3];
   const lv = S.len.startsWith('15') ? 1 : S.len.startsWith('30') ? 2 : 3;
-
-  const body = type.body.map(f);
-  let lines;
-  if (lv === 1) lines = body.slice(0, 2);
-  else lines = body.slice();
-  if (lv === 3) {
-    lines.unshift(`我是${role()}，在${domain()}這一行做了十年。`);
-    const sl = f(SCENARIO_LINE[S.scenario] || '');
-    if (sl) lines.splice(lines.length - 1, 0, sl);
-    lines.push(GOLDEN[i % GOLDEN.length]);
-  } else if (lv === 2) {
-    const sl = f(SCENARIO_LINE[S.scenario] || '');
-    if (sl && (S.scenario === '產品開箱評測' || S.scenario === '限時優惠/導購')) lines.splice(lines.length - 1, 0, sl);
-    lines.push(GOLDEN[i % GOLDEN.length]);
-  }
-
-  let cta = S.scenario === '限時優惠/導購' && lv > 1 ? PROMO_CTA : f(GOAL_CTA[S.goal][i % 3]);
-  if (lv > 1) cta += PLATFORM_TAIL[S.platform];
-  return { day, type: type.n, sub: sub.n, hook: f(type.hook), body: lines.join('\n'), cta };
+  const lines = ang.c.map(f).slice(0, lv === 1 ? 2 : 3);
+  if (lv === 3 && ang.tag !== '專業拆解') lines.push(`身為${role()}，我最想提醒你：${sub.s[2]}。`);
+  return { no: k + 1, tag: ang.tag, sub: sub.n, title, copy: lines.join('') };
 }
-const allScripts = () => Array.from({ length: 30 }, (_, k) => scriptFor(k + 1));
-const dayText = s => `Day ${s.day}｜${s.type}・${s.sub}\n【開場鉤子】${s.hook}\n【口播文案】\n${s.body}\n【行動呼籲】${s.cta}`;
+const allTopics = () => Array.from({ length: 30 }, (_, k) => topicFor(k));
+const pad = n => String(n).padStart(2, '0');
+const topicText = t => `${pad(t.no)}｜${t.tag}・${t.sub}\n標題：${t.title}\n文案：${t.copy}`;
+const settingLine = () => `角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
 
 /* =========================================================
    TRACE 指令
    ========================================================= */
 function traceParts() {
-  const ex = scriptFor(1), dd = domainData(), chars = LEN_CHARS[S.len];
+  const ex = topicFor(0), dd = domainData(), chars = LEN_CHARS[S.len];
   return [
     { L: 'T', h: 'Task', zh: '任務', t: `請幫我產出一份《30天爆款內容排程表》，共 30 天，每天一支可以直接改寫成 ${S.platform} 貼文與短影音腳本的內容。\n每一天都要包含：天數與題材類型、黃金 3 秒開場鉤子、${S.len.replace(/秒/, ' 秒')}的完整口播文案、行動呼籲 CTA。\n題材以「${S.scenario}」為主，穿插顛覆認知、聽勸避坑、過來人故事、數字清單、內行揭秘等類型，相鄰兩天不要重複。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
     { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
     { L: 'C', h: 'Constraint', zh: '限制', t: `1. 嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。\n2. 每支腳本控制在 ${chars} 字左右，最多不超過 250 字。\n3. 快節奏、不說教，每句盡量不超過 20 字。\n4. 每支腳本最後用一句金句收尾。\n5. 全文不使用 Emoji。\n6. CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。` },
-    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考格式：\nDay 1｜${ex.type}・${ex.sub}\n開場鉤子：${ex.hook}\n口播文案：${ex.body.replace(/\n/g, '')}\n行動呼籲：${ex.cta}\n\n請用清單依序列出 Day 1 到 Day 30，方便我直接複製使用。` },
+    { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考主題：\n${ex.title}\n${ex.copy}\n\n請把它延伸成完整腳本，並用清單依序列出 Day 1 到 Day 30，方便我直接複製使用。` },
   ];
 }
-const traceText = () => traceParts().map(p => `【${p.L}｜${p.h} ${p.zh}】\n${p.t}`).join('\n\n');
+const RULE = '━━━━━━━━━━━━━━━━━━';
+const traceText = () => [RULE, 'TRACE 爆款內容萬用指令', settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
 
 /* =========================================================
    RENDER
@@ -394,31 +403,35 @@ function renderFields() {
   }).join('');
 }
 function renderSummary() {
-  const list = allScripts(), avg = Math.round(list.reduce((a, s) => a + countChars(s.hook + s.body + s.cta), 0) / list.length);
-  $('#summary').innerHTML = `目前設定：<b>${esc(role())}</b>・<b>${esc(domain())}</b>・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}<br />已生成 30 支完整腳本，平均每支約 ${avg} 字（約 ${Math.round(avg / 4.5)} 秒）`;
-  $('#daysMeta').textContent = `30 支・平均 ${avg} 字`;
+  const list = allTopics(), avg = Math.round(list.reduce((a, t) => a + countChars(t.copy), 0) / list.length);
+  $('#summary').innerHTML = `目前設定：<b>${esc(role())}</b>・<b>${esc(domain())}</b>・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}<br />已依你的設定產出 30 種爆款主題，每則短文案約 ${avg} 字`;
+  $('#daysMeta').textContent = `30 種主題・短文案約 ${avg} 字`;
+  $('#tabTopicLabel').textContent = `30 種${domain()}爆款主題`;
+  const lenWord = S.len.startsWith('15') ? '兩句話' : S.len.startsWith('30') ? '三句話' : '三句話加一句專業提醒';
+  $('#basis').innerHTML = `<b>這 30 種主題是依你上面的設定客製的</b><ul>
+    <li>領域「${esc(domain())}」：拆成 6 個核心子題</li>
+    <li>場景「${esc(S.scenario)}」：決定 3 種寫法角度</li>
+    <li>目標「${esc(S.goal)}」：再加 2 種角度${S.goal === '建立專業信任' ? `，並以「${esc(role())}」的身分寫` : ''}</li>
+    <li>時長「${esc(S.len)}」：短文案寫成${lenWord}${S.len.startsWith('45') ? `，以「${esc(role())}」口吻收尾` : ''}</li>
+    ${S.platform === '小紅書' ? '<li>平台「小紅書」：標題加上收藏型後綴</li>' : `<li>平台「${esc(S.platform)}」：套用在 TRACE 指令的平台規則</li>`}
+  </ul>`;
 }
 function renderDays() {
-  const list = allScripts();
-  $('#days').innerHTML = list.map(s => `
-    <details class="day" data-day="${s.day}" ${S.open.includes(s.day) ? 'open' : ''}>
-      <summary>
-        <span class="dn">DAY<b>${String(s.day).padStart(2, '0')}</b></span>
-        <span class="tt"><span>${s.type}・${esc(s.sub)}</span><p>${esc(s.hook)}</p></span>
-        <svg class="i chev" viewBox="0 0 24 24" aria-hidden="true">${ICONS.chev}</svg>
-      </summary>
-      <div class="body">
-        <div class="seg hook"><span class="k">HOOK・黃金 3 秒開場</span><p>${esc(s.hook)}</p></div>
-        <div class="seg"><span class="k">STORY / VALUE・核心口播</span><p>${esc(s.body)}</p></div>
-        <div class="seg"><span class="k">CTA・行動呼籲</span><p>${esc(s.cta)}</p></div>
-        <div class="foot"><span>約 ${countChars(s.hook + s.body + s.cta)} 字</span><button class="btn" data-copy-day="${s.day}">${ico('copy')}一鍵複製單日腳本</button></div>
-      </div>
-    </details>`).join('');
-  $('#toggleAll').innerHTML = ico('expand') + (S.open.length >= 30 ? '全部收合' : '全部展開');
+  $('#days').innerHTML = allTopics().map(t => `
+    <article class="topic">
+      <div class="top"><span class="num">${pad(t.no)}</span><span class="tag">${esc(t.tag)}・${esc(t.sub)}</span></div>
+      <h3>${esc(t.title)}</h3>
+      <p>${esc(t.copy)}</p>
+      <div class="mini"><button data-copy-day="${t.no}">${ico('copy')}複製這則</button></div>
+    </article>`).join('');
 }
 function renderTrace() {
-  $('#trace').innerHTML = traceParts().map(p => `
-    <div class="tr"><span class="L">${p.L}</span><h4>${p.h}<small>${p.zh}</small></h4><p>${esc(p.t)}</p></div>`).join('');
+  $('#traceTags').innerHTML = [role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
+  $('#trace').innerHTML = traceParts().map(p => {
+    const [main, ex] = p.L === 'E' ? p.t.split('參考主題：\n') : [p.t, ''];
+    const [quote, tail] = ex ? ex.split('\n\n') : ['', ''];
+    return `<div class="tr"><span class="L">${p.L}</span><div><h4>${p.h}<small>${p.zh}</small></h4><p>${esc(main.trim())}</p>${ex ? `<div class="ex">${esc('參考主題：\n' + quote)}</div><p>${esc(tail || '')}</p>` : ''}</div></div>`;
+  }).join('');
 }
 function renderTabs() {
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === S.tab));
@@ -463,20 +476,13 @@ $('#fields').addEventListener('input', e => {
   regen();
 });
 document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { S.tab = b.dataset.tab; save(); renderTabs(); }));
-$('#days').addEventListener('toggle', e => {
-  const d = e.target.closest('[data-day]'); if (!d) return;
-  const n = +d.dataset.day;
-  S.open = d.open ? [...new Set([...S.open, n])] : S.open.filter(x => x !== n); save();
-  $('#toggleAll').innerHTML = ico('expand') + (S.open.length >= 30 ? '全部收合' : '全部展開');
-}, true);
 $('#days').addEventListener('click', async e => {
   const b = e.target.closest('[data-copy-day]'); if (!b) return;
-  copied(await copy(dayText(scriptFor(+b.dataset.copyDay))), `Day ${b.dataset.copyDay} 腳本已複製`);
+  copied(await copy(topicText(topicFor(+b.dataset.copyDay - 1))), `第 ${pad(+b.dataset.copyDay)} 則已複製`);
 });
-$('#toggleAll').addEventListener('click', () => { S.open = S.open.length >= 30 ? [] : Array.from({ length: 30 }, (_, k) => k + 1); save(); renderDays(); });
 $('#copyAll').addEventListener('click', async () => {
-  const head = `《30 天爆款短影音腳本》${role()}・${domain()}・${S.platform}・${S.goal}・${S.scenario}・${S.len}`;
-  copied(await copy([head, '', ...allScripts().map(dayText)].join('\n\n')), '30 天完整腳本已複製');
+  const text = [RULE, `30 種${domain()}爆款主題`, settingLine(), RULE, '', allTopics().map(topicText).join('\n\n'), '', RULE].join('\n');
+  copied(await copy(text), '30 種爆款主題已複製');
 });
 $('#copyTrace').addEventListener('click', async () => copied(await copy(traceText()), 'TRACE 指令已複製'));
 $('#checks').addEventListener('click', e => {
@@ -488,7 +494,7 @@ $('#checks').addEventListener('click', e => {
 /* =========================================================
    INIT
    ========================================================= */
-$('#copyAll').innerHTML = ico('copy') + '一鍵複製 30 天完整腳本';
+$('#copyAll').innerHTML = ico('copy') + '一鍵複製 30 種主題';
 $('#copyTrace').innerHTML = ico('copy') + '一鍵複製 TRACE 指令';
 renderFields(); renderTabs(); renderChecks(); regen();
 </script>
