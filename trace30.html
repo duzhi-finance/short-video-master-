@@ -109,6 +109,19 @@
   .ck small { display: block; font-size: 13px; color: var(--mute); margin-top: 2px; line-height: 1.7; }
   .ck[aria-checked="true"] b { text-decoration: line-through; text-decoration-color: var(--faint); }
 
+  .draft { min-height: 220px; font-size: 15.5px; line-height: 1.9; }
+  .rv-prompt { margin: 14px 0 0; white-space: pre-wrap; word-break: break-word; font-family: var(--sans); font-size: 13.5px; line-height: 1.85; color: #3E3833; max-height: 340px; overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .reply { margin-top: 18px; border-radius: 18px; border: 1px solid var(--line); background: #fff; padding: 16px 18px; box-shadow: var(--shadow); }
+  .reply-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; }
+  .reply-h span { font-size: 12.5px; color: var(--mute); }
+  .reply-t { margin-top: 10px; white-space: pre-wrap; font-size: 15px; line-height: 1.9; }
+  .vers { display: grid; gap: 8px; margin-top: 10px; }
+  .ver { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--soft); border-radius: 14px; padding: 10px 12px; }
+  .ver button.load { text-align: left; border: 0; background: none; padding: 0; min-width: 0; }
+  .ver b { display: block; font-size: 13px; }
+  .ver small { display: block; font-size: 12.5px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ver .del { border: 0; background: none; color: var(--faint); font-size: 12px; }
+  .vers-empty { font-size: 13px; color: var(--faint); }
   .foot-note { text-align: center; font-size: 12px; color: var(--faint); letter-spacing: .06em; }
   #toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translate(-50%, 10px); opacity: 0; pointer-events: none; z-index: 60; background: var(--ink); color: #fff; font-size: 13.5px; padding: 11px 18px; border-radius: 99px; transition: opacity .25s, transform .25s; max-width: 90vw; text-align: center; }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -143,10 +156,13 @@
         <div id="qB" class="fields qbox"></div>
       </div>
 
-      <h3 class="sec"><span>C</span>你想要的感覺</h3>
+      <h3 class="sec"><span>C</span>你想說的故事</h3>
+      <div id="qStory" class="fields qbox"></div>
+
+      <h3 class="sec"><span>D</span>你想要的感覺</h3>
       <div id="qC" class="fields qbox"></div>
 
-      <h3 class="sec"><span>D</span>你要拿到什麼</h3>
+      <h3 class="sec"><span>E</span>你要拿到什麼</h3>
       <div class="field">
         <p>輸出格式<small>可複選</small></p>
         <div class="chips" id="formatChips" aria-label="輸出格式"></div>
@@ -176,13 +192,52 @@
         <div class="tags" id="traceTags"></div>
       </div>
       <div class="trace" id="trace"></div>
-      <div class="doc-foot"><button class="btn dark" id="copyTrace"></button><p style="margin-top:10px;font-size:12.5px;color:var(--mute)">複製後貼到 ChatGPT 或 Claude，就會寫出這一篇</p></div>
+      <div class="doc-foot"><div class="bar" style="justify-content:center"><button class="btn dark" id="copyTrace"></button><button class="btn" id="askFirst" hidden></button></div><p style="margin-top:10px;font-size:12.5px;color:var(--mute)">複製後貼到 ChatGPT、Gemini 或 Claude，就會寫出初稿；拿到初稿後到下一步來回修改</p></div>
     </div>
   </section>
 
-  <!-- 區塊四：微調檢查 -->
+  <!-- 區塊四：來回修稿 -->
+  <section class="card" id="reviseCard" aria-labelledby="rvH">
+    <div class="card-h"><span class="no">04</span><h2 id="rvH">來回修稿</h2><small>第一版還差一點時再用</small></div>
+    <div class="fields">
+      <div class="field">
+        <label for="draftIn">目前的文案</label>
+        <textarea class="custom draft" id="draftIn" rows="9" placeholder="把 AI 給的初稿或你自己改過的版本貼在這裡。&#10;想補的地方按「這裡要補」，想重寫的句子先選起來再按「打掉重練」。"></textarea>
+        <div class="chips" id="markBar">
+          <button class="chip" data-mark="fill">這裡要補</button>
+          <button class="chip" data-mark="redo">選取文字 → 打掉重練</button>
+          <button class="chip" data-mark="keep">選取文字 → 一字不改</button>
+          <button class="chip" id="saveVer">存成一個版本</button>
+        </div>
+      </div>
+      <div class="field">
+        <p>這次要 AI 幫你做什麼？<small>可複選</small></p>
+        <div class="chips" id="reqChips"></div>
+      </div>
+      <div class="field">
+        <label for="askIn">還想跟 AI 說什麼？（選填）</label>
+        <textarea class="custom" id="askIn" rows="2" maxlength="400" placeholder="例如：從「實測一週下來」後面開始改，要有反轉感，最後自然帶到留言"></textarea>
+      </div>
+    </div>
+    <div class="doc" style="margin-top:18px">
+      <div class="doc-head"><p class="eyebrow">REVISION PROMPT</p><h3>這一輪的修稿指令</h3></div>
+      <pre class="rv-prompt" id="rvPrompt"></pre>
+      <div class="doc-foot"><div class="bar" style="justify-content:center"><button class="btn dark" id="copyRv"></button><button class="btn" id="askRv" hidden></button></div></div>
+    </div>
+    <div class="reply" id="replyBox" hidden>
+      <div class="reply-h"><b>Claude 的回覆</b><span id="replyState"></span></div>
+      <div class="reply-t" id="replyText"></div>
+      <div class="bar"><button class="btn dark" id="useReply"></button><button class="btn" id="copyReply"></button><button class="btn" id="stopReply" hidden>停止</button></div>
+    </div>
+    <div class="field" style="margin-top:22px">
+      <p>版本紀錄<small>點一下載回草稿</small></p>
+      <div class="vers" id="vers"></div>
+    </div>
+  </section>
+
+  <!-- 區塊五：微調檢查 -->
   <section class="card" aria-labelledby="ckH">
-    <div class="card-h"><span class="no">04</span><h2 id="ckH">拍片前微調檢查</h2><small>逐項打勾，確認後再開拍</small></div>
+    <div class="card-h"><span class="no">05</span><h2 id="ckH">拍片前微調檢查</h2><small>逐項打勾，確認後再開拍</small></div>
     <div class="checks" id="checks"></div>
   </section>
 
@@ -360,6 +415,7 @@ function productQ() {
   const ph = PRODUCT_PH[domain()] || PRODUCT_PH._default, src = ans('_c.source');
   const q = [
     { id: 'pname', q: '產品名稱（多個用 + 分開）', t: 'text', ph: ph[0] },
+    { id: 'pkey', lbl: '產品最想讓人記住的重點', q: '產品最想讓人記住的一個重點', t: 'text', ph: domain() === '美妝保養' ? '例如：主打低分子植物性 PDRN、精華含十萬 ppm' : '例如：最大的特色或規格' },
     { id: 'puse', q: '你怎麼用？（順序、頻率、用量）', t: 'area', ph: ph[1] },
     { id: 'peffect', lbl: '實際感受到的變化', q: '用了之後，你實際感受到什麼變化？', t: 'area', ph: ph[2] },
     { id: 'pcons', lbl: '可以更好的地方', q: '有沒有覺得可以更好的地方？', t: 'text', ph: '例如：精華有點黏、價格偏高（說出缺點反而更可信）' },
@@ -369,12 +425,32 @@ function productQ() {
     { id: 'pbriefMode', lbl: '廠商建議的處理方式', q: '廠商的建議，你想怎麼處理？', t: 'chips', o: ['自然帶到就好', '只講我認同的', '不採用，照我的感受'] });
   return q;
 }
+/* 你想說的故事：決定文案「像不像你」的核心，依領域給例子 */
+const STORY_PH = {
+  美妝保養: ['例如：養好皮的秘密，是讓角質層的水分和油脂平衡', '例如：原本一直相信底妝蜜糖毒藥論，後來才發現是洗完臉太乾、或保養擦太油', '例如：洗完臉太乾，上妝就卡粉；擦太油，又會搓泥浮粉', '例如：洗臉 → 補水保濕 → 讓肌膚表面穩定 → 再上妝'],
+  健身運動: ['例如：瘦不下來不是你不努力，是吃得太少', '例如：原本以為練到很累才有效，後來才發現動作做對比練多重要', '例如：下班累到不想動，週末又一口氣練到受傷', '例如：每天 15 分鐘，先練深蹲和伏地挺身，一週三次'],
+  理財投資: ['例如：存錢靠的是順序，不是收入', '例如：原本以為收入高才存得到錢，後來才發現是我月底才存', '例如：發薪後一週錢就花一半，月底只能吃泡麵', '例如：發薪日先自動轉存一成，再把剩下的分成生活費和預備金'],
+  職場成長: ['例如：主管要的是結論，不是過程', '例如：原本以為做得多就會被看見，後來才發現要主動回報', '例如：報告講了十分鐘，主管只回一句「所以呢」', '例如：先講結論，再給三個理由，最後說需要什麼支援'],
+  自媒體經營: ['例如：帳號沒流量，是因為平台不知道你是誰', '例如：原本以為什麼都拍才有機會爆，後來才發現要先定位', '例如：花一整晚剪的影片，播放只有兩百', '例如：先寫下你想幫助的一種人，再連續拍 30 支同主題'],
+  品牌打造: ['例如：顧客買的是他相信的故事，不只是產品', '例如：原本以為打折才賣得動，後來才發現把價值說清楚更有用', '例如：一直降價，結果利潤越來越薄', '例如：先講你為誰而做，再講你和別人不一樣的地方'],
+  _custom: ['例如：這支影片最想讓人記住的一個觀念', '例如：原本以為…，後來才發現…', '例如：你或觀眾最常遇到的那個卡關畫面', '例如：想順便教觀眾的觀念或步驟'],
+};
+const storyQ = () => { const ph = STORY_PH[domain()] || STORY_PH._custom; return [
+  { id: 'takeaway', lbl: '觀眾看完要記住的一句話', q: '觀眾看完，你最希望他記住哪一句話？', t: 'area', ph: ph[0] },
+  { id: 'flip', lbl: '我的轉折（原本以為…後來才發現…）', q: '有沒有「我原本以為…，後來才發現…」的轉折？', t: 'area', ph: ph[1] },
+  { id: 'scene', lbl: '最常遇到的困擾畫面', q: '你或觀眾最常遇到的困擾畫面是什麼？', t: 'area', ph: ph[2] },
+  { id: 'teach', lbl: '想順便教的觀念或步驟', q: '想順便教觀眾什麼觀念或步驟？', t: 'area', ph: ph[3] },
+]; };
 const C_Q = [
   { id: 'feel', q: '想呈現的感覺', t: 'chips', o: ['真實生活感', '專業教學感', '輕鬆幽默', '質感氛圍', '犀利直白'] },
   { id: 'avoid', q: '不想要的感覺', t: 'multi', o: ['太業配', '太像廣告台詞', '太說教', '太浮誇', '太冷冰冰', '太長太囉嗦'] },
   { id: 'catch', lbl: '口頭禪或說話習慣', q: '你平常的口頭禪或說話習慣（選填）', t: 'text', ph: '例如：常說「真的會哭」、習慣叫觀眾「姊妹」' },
 ];
 const D_Q = [
+  { id: 'mylines', lbl: '我已經寫好的句子', q: '你已經想好的句子或草稿（選填）', t: 'area', ph: '例如：開頭想用「最近發現不管是暗沉、閉鎖粉刺還是乾荒，其實只要搞定角質層油水平衡」，中間請幫我補' },
+  { id: 'must', lbl: '一定要出現的句子', q: '一定要出現的句子（選填）', t: 'text', ph: '例如：它主打低分子植物性 PDRN' },
+  { id: 'ref', lbl: '喜歡的參考內容', q: '喜歡的參考內容（選填，只學結構與節奏，不照抄）', t: 'area', ph: '例如：最近發現不管是剛冒出來的痘痘、紅豆印，還是閉鎖粉刺，現在都有對應的保養方式' },
+  { id: 'ending', lbl: '結尾想怎麼收', q: '結尾想怎麼收？', t: 'chips', o: ['自然帶到留言', '引導收藏', '引導追蹤', '不要 CTA，用一句話收尾'] },
   { id: 'versions', q: '要幾個版本？', t: 'chips', o: ['1 個', '2 個（不同角度）', '3 個（不同角度）'] },
 ];
 const AVOID_RULE = {
@@ -469,7 +545,9 @@ function interviewLines() {
     ...DOMAIN_Q[dKey()].map(q => fmt(q, ans(q.id))),
   ]);
   if (hasProduct()) group('產品資訊', productQ().map(q => fmt(q, ans('_c.' + q.id))));
+  group('我想說的故事與重點', storyQ().map(q => fmt(q, ans('_c.' + q.id))));
   group('想要的感覺', C_Q.map(q => fmt(q, ans('_c.' + q.id))));
+  if (ans('_c.ending')) group('結尾', [fmt(D_Q[3], ans('_c.ending'))]);
   return groups;
 }
 const fmts = () => FORMATS.filter(f => S.formats.includes(f));
@@ -502,10 +580,15 @@ function traceParts() {
   if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}${multi(nv)}`);
   if (F.includes('圖文貼文')) out.push('完整圖文貼文：開頭一句抓住人，中間分段講清楚重點與知識，結尾收在行動，可以直接貼到社群' + (hasVo ? '' : multi(nv)));
   if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
-  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出我提供的每一項資訊（這支影片、產品資訊、想要的感覺、補充）各自用在文案的哪一句；漏掉的請補回文案再交給我');
+  const ending = ans('_c.ending');
+  out.push(ending === '不要 CTA，用一句話收尾' ? '結尾不放 CTA，用一句有記憶點的話收尾' : `3 種不同的結尾寫法讓我挑${ending ? `（${ending}）` : ''}，要像跟粉絲聊天一樣自然`, '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出我提供的每一項資訊（這支影片、產品資訊、故事與重點、想要的感覺、我寫好的句子、補充）各自用在文案的哪一句；漏掉的請補回文案再交給我');
   const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
   const il = interviewLines();
-  const mat = (il.length ? `\n\n${il.join('\n\n')}` : '') + (material() ? `\n\n【我的補充（請先想清楚每一點想表達什麼，再用我的口吻自然融入文案；每一點都要出現，不可省略或淡化，也不要原封不動照貼）】\n${material()}` : '');
+  const tv = k => (ans('_c.' + k) || '').trim();
+  const own = (tv('mylines') ? `\n\n【我已經寫好的句子】\n${tv('mylines')}\n請保留我寫的句子（只能微調讓它更順），在需要的地方補上內容，把它們串成一篇完整的文案；如果句子之間接不起來，請加自然的轉折句。` : '')
+    + (tv('must') ? `\n\n【一定要出現的句子】\n${tv('must')}（請原句保留）` : '')
+    + (tv('ref') ? `\n\n【我喜歡的參考內容】\n${tv('ref')}\n只參考它的結構與節奏，不要模仿用字。` : '');
+  const mat = (il.length ? `\n\n${il.join('\n\n')}` : '') + own + (material() ? `\n\n【我的補充（請先想清楚每一點想表達什麼，再用我的口吻自然融入文案；每一點都要出現，不可省略或淡化，也不要原封不動照貼）】\n${material()}` : '');
   const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
   if (hasVo) cons.push(`口播文案約 ${chars} 字（${parseInt(S.len)} 秒左右的唸稿量），內容要完整、有細節，不要只寫幾句帶過。`);
   if (F.includes('圖文貼文')) cons.push('圖文貼文約 400～600 字，段落之間要有呼吸感。');
@@ -515,8 +598,14 @@ function traceParts() {
   if (sp) cons.push(sp);
   if (hasProduct() && (ans('_c.puse') || '').trim()) cons.push('介紹產品時，要依照我的使用順序和用法來講，順序不能錯。');
   if (hasProduct() && BRIEF_RULE[ans('_c.pbriefMode')]) cons.push(BRIEF_RULE[ans('_c.pbriefMode')] + '。');
+  const sv = k => (ans('_c.' + k) || '').trim();
+  if (sv('takeaway')) cons.push(`整篇都要圍繞「${sv('takeaway')}」這句話，觀眾看完要能記住它。`);
+  if (sv('flip')) cons.push('開頭或前段要用到我的轉折（原本以為…後來才發現…），這是讓觀眾想看下去的關鍵。');
+  if (sv('scene')) cons.push('困擾畫面要寫得具體，讓觀眾一聽就覺得「這就是我」。');
+  if (sv('teach')) cons.push('教觀念或步驟時，照我給的內容和順序講，用白話解釋為什麼。');
+  if (hasProduct() && (ans('_c.pkey') || '').trim()) cons.push(`產品段落一定要清楚講到「${ans('_c.pkey').trim()}」，但要像分享，不像唸規格。`);
   if ((ans('_c.catch') || '').trim()) cons.push(`自然穿插我的口頭禪或說話習慣：${ans('_c.catch').trim()}。`);
-  cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
+  cons.push('句子和句子之間要接得順，唸起來不能卡或怪怪的。', '不要重複講同一件事，每一句都要帶來新資訊或新感受。', '效果只寫我實際感受到的，不要說太滿（例如不要說「通通消失」「完全改善」）。', '快節奏、不說教，每句盡量不超過 20 字。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', ending ? `結尾照我選的方式「${ending}」，寫法要符合 ${S.platform} 的使用習慣。` : `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
     { L: 'T', h: 'Task', zh: '任務', t: `${topic() ? `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。` : `這支的主題還沒決定。請先根據下方資訊提出 3 個主題方向（每個一句話，並說明為什麼適合我），再選你最推薦的一個，寫出可以直接在 ${S.platform} 發布的內容。`}\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識和我提供的每一項資訊全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
@@ -550,6 +639,7 @@ function renderQuestions() {
   $('#qDomain').innerHTML = DOMAIN_Q[k].map(q => qHtml(q, k + '.' + q.id)).join('');
   $('#secB').hidden = !hasProduct();
   $('#qB').innerHTML = hasProduct() ? productQ().map(c).join('') : '';
+  $('#qStory').innerHTML = storyQ().map(c).join('');
   $('#qC').innerHTML = C_Q.map(c).join('');
   $('#qD').innerHTML = D_Q.map(c).join('');
 }
@@ -573,6 +663,7 @@ function renderSummary() {
 }
 function renderTrace() {
   $('#copyTrace').disabled = !canGen();
+  $('#askFirst').disabled = !canGen();
   if (!canGen()) {
     $('#docTitle').textContent = '等待今天的主題';
     $('#traceTags').innerHTML = '';
@@ -594,7 +685,109 @@ function renderChecks() {
       <span><b>${i + 1}. ${c.t}</b><small>${c.d}</small></span>
     </button>`).join('');
 }
-function regen() { renderSummary(); renderTrace(); save(); }
+/* =========================================================
+   來回修稿
+   ========================================================= */
+const REQS = [
+  { id: 'fill', t: '只補我標〔補〕的地方', r: '只在〔補〕的位置補上內容，其他沒標記的地方一字不改' },
+  { id: 'redo', t: '把〔重寫〕的段落打掉重練', r: '〔重寫〕…〔/重寫〕之間的內容打掉重練，語氣要跟前後一致' },
+  { id: 'smooth', t: '讓句子接得更順', r: '檢查每一句的銜接，唸起來不能卡卡或怪怪的，需要時加轉折句' },
+  { id: 'dup', t: '檢查有沒有重複', r: '刪掉或改寫重複講同一件事的地方，每一句都要帶來新資訊或新感受' },
+  { id: 'cta', t: '結尾自然帶到留言（給 3 種）', r: '給我 3 種不同的結尾，像跟粉絲聊天一樣自然帶到留言，不要像硬塞的業配 CTA' },
+  { id: 'claim', t: '檢查有沒有誇大或說太滿', r: '檢查有沒有誇大、保證效果或我沒實際觀察到的說法，改成真實、有分寸的講法，並告訴我改了哪裡' },
+  { id: 'oral', t: '更口語，像我在說話', r: '改得更口語、更像我本人在講話，避免書面語' },
+  { id: 'opts', t: '同一段給我 3 種寫法挑', r: '針對要改的段落，給我 3 種不同寫法讓我挑，每種標上特色' },
+  { id: 'trim', t: '刪短一點', r: '在不丟掉重點的前提下刪短，控制在原本的七成左右' },
+];
+const draft = () => (S.draft || '').trim();
+function contextRecap() {
+  const r = [`- 平台：${S.platform}，長度約 ${parseInt(S.len)} 秒`, `- 角色：${role()}，領域：${domain()}`];
+  if (topic()) r.push(`- 主題：${topic()}`);
+  if (hasProduct()) {
+    if ((ans('_c.pname') || '').trim()) r.push(`- 產品：${ans('_c.pname').trim()}（${ans('_c.source')}）`);
+    if ((ans('_c.puse') || '').trim()) r.push(`- 使用順序：${ans('_c.puse').trim()}（介紹時順序不能錯）`);
+    if ((ans('_c.peffect') || '').trim()) r.push(`- 我實際感受到的：${ans('_c.peffect').trim()}`);
+    if (BRIEF_RULE[ans('_c.pbriefMode')]) r.push(`- 廠商重點：${BRIEF_RULE[ans('_c.pbriefMode')]}`);
+  }
+  if ((ans('_c.takeaway') || '').trim()) r.push(`- 觀眾要記住的一句話：${ans('_c.takeaway').trim()}`);
+  if ((ans('_c.pkey') || '').trim() && hasProduct()) r.push(`- 產品重點：${ans('_c.pkey').trim()}`);
+  if (ans('_c.feel')) r.push(`- 想要的感覺：${FEEL_GUIDE[ans('_c.feel')]}`);
+  const avoid = Array.isArray(ans('_c.avoid')) ? ans('_c.avoid') : [];
+  if (avoid.length) r.push(`- 不想要：${avoid.map(a => AVOID_RULE[a]).join('；')}`);
+  if ((ans('_c.catch') || '').trim()) r.push(`- 我的口頭禪：${ans('_c.catch').trim()}`);
+  return r.join('\n');
+}
+function revisePrompt() {
+  const reqs = REQS.filter(x => (S.reqs || []).includes(x.id));
+  const asks = reqs.map(x => x.r);
+  if ((S.askText || '').trim()) asks.push(S.askText.trim());
+  if (!asks.length) asks.push('幫我整體潤飾，讓它更像我、更好唸，但保留原本的結構');
+  const parts = [
+    `我們正在一起修一支短影音的文案，請延續以下設定，不要忘記：\n${contextRecap()}`,
+    `【目前的文案】\n${draft() || '（還沒貼上文案）'}`,
+  ];
+  if (/〔(補|重寫|保留)/.test(draft())) parts.push('【標記說明】〔補〕＝請在這裡補上內容；〔重寫〕…〔/重寫〕＝這段打掉重練；〔保留〕…〔/保留〕＝一字不改；沒有標記的地方可以微調，但不要大改。');
+  const must = (ans('_c.must') || '').trim(), ref = (ans('_c.ref') || '').trim();
+  if (must) parts.push(`【一定要出現的句子】\n${must}（請原句保留）`);
+  if (ref) parts.push(`【我想參考的內容】\n${ref}\n只參考它的結構與節奏，不要模仿用字。`);
+  parts.push(`【這次請你】\n${asks.map((a, i) => `${i + 1}. ${a}`).join('\n')}`);
+  parts.push('【交付方式】先給修改後的完整文案（可以直接唸），再用 3 行以內說明你改了什麼、為什麼。不使用 Emoji，不捏造我沒提供的效果或經歷。');
+  return parts.join('\n\n');
+}
+function renderRevise() {
+  $('#reqChips').innerHTML = REQS.map(x => `<button class="chip" role="checkbox" aria-checked="${(S.reqs || []).includes(x.id)}" data-req="${x.id}">${x.t}</button>`).join('');
+  $('#rvPrompt').textContent = revisePrompt();
+  $('#copyRv').disabled = !draft();
+  if (sampleFn) $('#askRv').disabled = !draft();
+}
+function renderVersions() {
+  const v = S.versions || [];
+  $('#vers').innerHTML = v.length ? v.map((x, i) => `<div class="ver"><button class="load" data-ver="${i}"><b>版本 ${v.length - i}・${esc(x.at)}</b><small>${esc(x.text.replace(/\n/g, ' '))}</small></button><button class="del" data-delver="${i}" aria-label="刪除這個版本">刪除</button></div>`).join('')
+    : '<p class="vers-empty">還沒有存版本。每改到一個滿意的階段，就按「存成一個版本」。</p>';
+}
+function saveVersion(text) {
+  if (!text.trim()) return;
+  const d = new Date(), at = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  S.versions = [{ at, text }, ...(S.versions || [])].slice(0, 20); save(); renderVersions();
+}
+function insertMark(kind) {
+  const ta = $('#draftIn'), a = ta.selectionStart, b = ta.selectionEnd, v = ta.value, sel = v.slice(a, b);
+  let ins;
+  if (kind === 'fill') ins = '〔補〕';
+  else { if (!sel) { toast('先在文案裡選取要標記的文字'); return; } ins = kind === 'redo' ? `〔重寫〕${sel}〔/重寫〕` : `〔保留〕${sel}〔/保留〕`; }
+  ta.value = v.slice(0, a) + ins + v.slice(b); S.draft = ta.value; ta.focus(); ta.selectionStart = ta.selectionEnd = a + ins.length;
+  save(); renderRevise();
+}
+
+/* 在 claude.ai 開啟時可直接詢問 Claude（使用瀏覽者自己的 Claude）；其他地方改用複製 */
+let sampleFn = null, askCtl = null;
+(window.claude && typeof window.claude.use === 'function' ? window.claude.use('sample').catch(() => null) : Promise.resolve(null)).then(fn => {
+  sampleFn = fn; if (!fn) return;
+  $('#askFirst').hidden = false; $('#askRv').hidden = false; renderRevise(); renderTrace();
+});
+const ASK_ERR = { rate_limited: '使用次數有點多，請稍等一下再試。', session_expired: '登入狀態過期了，請重新登入後再試。', refused: '這段內容 Claude 無法協助，請換個說法。', empty_completion: 'Claude 沒有寫出內容，請再試一次。', upstream_error: '連線中斷了，請再試一次。' };
+async function askClaude(prompt, intoDraft) {
+  if (!sampleFn) return;
+  askCtl = new AbortController();
+  $('#replyBox').hidden = false; $('#replyText').textContent = ''; $('#replyState').textContent = '思考中…（第一次使用會先詢問是否允許）';
+  $('#stopReply').hidden = false; $('#askRv').disabled = true; $('#askFirst').disabled = true;
+  $('#replyBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    const { text } = await sampleFn(prompt, { signal: askCtl.signal, cache: false, onText: ({ text }) => { $('#replyText').textContent = text; $('#replyState').textContent = '撰寫中…'; } });
+    $('#replyText').textContent = text; $('#replyState').textContent = '完成';
+    if (intoDraft) { S.draft = text; $('#draftIn').value = text; save(); renderRevise(); toast('初稿已放進「目前的文案」，可以開始來回修改'); }
+  } catch (e) {
+    const c = e && e.code;
+    if (c === 'cancelled') $('#replyState').textContent = '已停止';
+    else if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c)) { $('#replyState').textContent = '這裡無法直接詢問，請改用複製指令'; sampleFn = null; $('#askFirst').hidden = true; $('#askRv').hidden = true; }
+    else $('#replyState').textContent = ASK_ERR[c] || ASK_ERR.upstream_error;
+    if (e && e.text) $('#replyText').textContent = e.text;
+  } finally {
+    askCtl = null; $('#stopReply').hidden = true; renderRevise(); $('#askFirst').disabled = !canGen();
+  }
+}
+
+function regen() { renderSummary(); renderTrace(); if ($('#rvPrompt')) renderRevise(); save(); }
 
 /* =========================================================
    COPY / TOAST
@@ -647,6 +840,32 @@ $('#formatChips').addEventListener('click', e => {
   S.formats = on ? S.formats.filter(x => x !== f) : [...S.formats, f]; renderToday(); regen();
 });
 $('#copyTrace').addEventListener('click', async () => copied(await copy(traceText()), 'TRACE 指令已複製'));
+$('#askFirst').addEventListener('click', () => askClaude(traceText(), true));
+$('#draftIn').addEventListener('input', e => { S.draft = e.target.value; save(); renderRevise(); });
+$('#markBar').addEventListener('click', e => {
+  const m = e.target.closest('[data-mark]'); if (m) { insertMark(m.dataset.mark); return; }
+  if (e.target.closest('#saveVer')) { if (!draft()) { toast('先貼上文案再存版本'); return; } saveVersion(S.draft); toast('已存成一個版本'); }
+});
+$('#reqChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-req]'); if (!b) return;
+  const id = b.dataset.req, cur = S.reqs || []; S.reqs = cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id]; save(); renderRevise();
+});
+$('#askIn').addEventListener('input', e => { S.askText = e.target.value; save(); renderRevise(); });
+$('#copyRv').addEventListener('click', async () => copied(await copy(revisePrompt()), '修稿指令已複製，貼到同一個 AI 對話裡'));
+$('#askRv').addEventListener('click', () => askClaude(revisePrompt(), false));
+$('#stopReply').addEventListener('click', () => askCtl && askCtl.abort());
+$('#useReply').addEventListener('click', () => {
+  const t = $('#replyText').textContent.trim(); if (!t) return;
+  if (draft()) saveVersion(S.draft);
+  S.draft = t; $('#draftIn').value = t; save(); renderRevise(); $('#draftIn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  toast('已放回草稿，上一版已存進版本紀錄');
+});
+$('#copyReply').addEventListener('click', async () => copied(await copy($('#replyText').textContent), '回覆已複製'));
+$('#vers').addEventListener('click', e => {
+  const l = e.target.closest('[data-ver]'), d = e.target.closest('[data-delver]');
+  if (l) { const v = S.versions[+l.dataset.ver]; S.draft = v.text; $('#draftIn').value = v.text; save(); renderRevise(); toast('已載回這個版本'); }
+  if (d) { S.versions.splice(+d.dataset.delver, 1); save(); renderVersions(); }
+});
 $('#checks').addEventListener('click', e => {
   const b = e.target.closest('[data-ck]'); if (!b) return;
   const i = +b.dataset.ck; S.checks = S.checks.includes(i) ? S.checks.filter(x => x !== i) : [...S.checks, i];
@@ -657,6 +876,12 @@ $('#checks').addEventListener('click', e => {
    INIT
    ========================================================= */
 $('#copyTrace').innerHTML = ico('copy') + '一鍵複製 TRACE 指令';
+$('#askFirst').textContent = '直接請 Claude 寫初稿';
+$('#copyRv').innerHTML = ico('copy') + '複製這一輪的修稿指令';
+$('#askRv').textContent = '直接請 Claude 改';
+$('#useReply').textContent = '放回草稿，繼續下一輪';
+$('#copyReply').innerHTML = ico('copy') + '複製回覆';
+$('#draftIn').value = S.draft || ''; $('#askIn').value = S.askText || '';
 $('#topicIn').value = S.topicText || '';
 $('#materialIn').value = S.material || '';
 if (!Array.isArray(S.formats) || !S.formats.length) S.formats = ['短影音口播稿'];
@@ -665,7 +890,7 @@ if (!S.ans || typeof S.ans !== 'object') S.ans = {};
   if (S.ans['_c.product'] && !S.ans['_c.source']) S.ans['_c.source'] = old[S.ans['_c.product']] || '';
   if (S.ans['_c.pfeel'] && !S.ans['_c.peffect']) S.ans['_c.peffect'] = S.ans['_c.pfeel'];
   delete S.ans['_c.product']; delete S.ans['_c.pfeel']; }
-renderToday(); renderQuestions(); renderFields(); renderChecks(); regen();
+renderToday(); renderQuestions(); renderFields(); renderChecks(); renderVersions(); regen();
 </script>
 </body>
 </html>
