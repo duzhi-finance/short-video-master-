@@ -73,6 +73,13 @@
 
   /* 沒有文本的人：範例答案、AI 訪問 */
   .chip.ex { white-space: normal; text-align: left; border-radius: 14px; line-height: 1.6; }
+  .chips.types { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 720px) { .chips.types { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .types .chip { display: grid; align-content: start; gap: 2px; padding: 10px 14px; }
+  .types .chip b { font-size: 14px; letter-spacing: .04em; }
+  .types .chip small { font-size: 12px; color: var(--mute); }
+  .types .chip[aria-checked="true"] small { color: #D9D2CA; }
+  .flow { margin-top: 10px; font-size: 13px; color: var(--accent); letter-spacing: .04em; }
   .ex-cap { margin-top: 10px; font-size: 12px; color: var(--faint); letter-spacing: .04em; }
   .ex-cap + .chips { margin-top: 6px; }
   .iv { border: 1px solid var(--line); background: var(--soft); border-radius: 18px; padding: 16px; }
@@ -147,7 +154,7 @@
   <header class="mast">
     <p class="eyebrow">One Post · TRACE Prompt</p>
     <h1>TRACE 爆款指令大師</h1>
-    <p>選好領域、回答幾個關於今天拍攝的問題，就會組出一份給 ChatGPT／Claude 用的 TRACE 高階指令。正確知識讓 AI 自己查，你只要負責回答。</p>
+    <p>選好領域和影片類型，回答幾個好回答的問題，就會組出一份給 ChatGPT、Gemini、Claude 用的完整指令。沒有想法也可以點範例，或讓 AI 一題一題問你。</p>
   </header>
 
   <!-- 區塊一：今天要拍什麼 -->
@@ -182,7 +189,7 @@
         <div id="qB" class="fields qbox"></div>
       </div>
 
-      <h3 class="sec"><span>C</span>你想說的故事</h3>
+      <h3 class="sec"><span>C</span>影片類型與內容</h3>
       <div id="qStory" class="fields qbox"></div>
 
       <h3 class="sec"><span>D</span>你想要的感覺</h3>
@@ -396,7 +403,7 @@ const COMMON_TITLES = ['{n}做不好？問題可能出在這裡', '90% 的人都
    ========================================================= */
 const DOMAIN_Q = {
   美妝保養: [
-    { id: 'kind', q: '這支是哪一種內容？', t: 'chips', o: ['單品使用心得', '保養流程分享', '化妝教學', '成分知識', '平價替代', '空瓶回顧'] },
+    { id: 'kind', q: '這支在講什麼？', t: 'chips', o: ['單品心得', '保養流程', '化妝技巧', '成分知識', '平價替代', '空瓶回顧'] },
     { id: 'skin', q: '你的膚質', t: 'chips', o: ['乾肌', '油肌', '混合肌', '敏感肌', '不確定'] },
     { id: 'concern', q: '這支想解決什麼問題？', t: 'multi', o: ['保濕', '控油', '痘痘粉刺', '暗沉', '細紋', '底妝服貼', '毛孔'] },
     { id: 'used', q: '你實際用了多久？', t: 'chips', o: ['第一次用', '一週左右', '一個月以上', '回購很多次', '不適用'] },
@@ -429,7 +436,6 @@ const DOMAIN_Q = {
   ],
   _custom: [
     { id: 'who', q: '你在這個領域的身分或經驗', t: 'text', ph: '例如：養了 3 隻貓、拍寵物照 5 年' },
-    { id: 'kind', q: '這支是哪一種內容？', t: 'chips', o: ['經驗分享', '教學步驟', '好物推薦', '觀點討論', '日常記錄'] },
     { id: 'pain', q: '觀眾最常卡在哪裡？', t: 'text', ph: '例如：寵物一直亂動拍不清楚' },
   ],
 };
@@ -438,7 +444,7 @@ const A_Q = [
   { id: 'topicMode', q: '主題想好了嗎？', t: 'chips', o: ['想好了', '還沒，請 AI 幫我想'] },
 ];
 const PRODUCT_PH = {
-  美妝保養: ['例如：PDRN 光澤化妝水 + PDRN 精華 + PDRN 光澤面膜', '例如：洗臉後依序 化妝水 → 精華 → 面膜，面膜一週 2 次', '例如：用一週後上妝比較服貼，早上臉看起來比較透亮'],
+  美妝保養: ['例如：保濕精華 + 防曬乳', '例如：早晚洗臉後擦精華，出門前 15 分鐘擦防曬', '例如：用兩週後上妝比較不卡粉'],
   健身運動: ['例如：某品牌乳清蛋白 + 彈力帶', '例如：訓練後 30 分鐘內喝一份，彈力帶用來熱身', '例如：練完比較不容易餓，肩膀熱身後比較不卡'],
   _default: ['例如：產品名稱，多個用 + 分開', '例如：什麼時候用、怎麼用、用多少', '例如：用了之後最明顯的改變'],
 };
@@ -446,43 +452,69 @@ function productQ() {
   const ph = PRODUCT_PH[domain()] || PRODUCT_PH._default, src = ans('_c.source');
   const q = [
     { id: 'pname', q: '產品名稱（多個用 + 分開）', t: 'text', ph: ph[0] },
-    { id: 'pkey', lbl: '產品最想讓人記住的重點', q: '產品最想讓人記住的一個重點', t: 'text', ph: domain() === '美妝保養' ? '例如：主打低分子植物性 PDRN、精華含十萬 ppm' : '例如：最大的特色或規格' },
+    { id: 'pkey', lbl: '產品最想讓人記住的重點', q: '產品最想讓人記住的一個重點', t: 'text', ph: '例如：主打的成分、最大的特色或規格' },
     { id: 'puse', q: '你怎麼用？（順序、頻率、用量）', t: 'area', ph: ph[1] },
     { id: 'peffect', lbl: '實際感受到的變化', q: '用了之後，你實際感受到什麼變化？', t: 'area', ph: ph[2] },
     { id: 'pcons', lbl: '可以更好的地方', q: '有沒有覺得可以更好的地方？', t: 'text', ph: '例如：精華有點黏、價格偏高（說出缺點反而更可信）' },
   ];
   if (src === '廠商寄來的' || src === '品牌有酬合作') q.push(
-    { id: 'pbrief', lbl: '廠商指定的重點', q: '廠商有指定一定要講的重點嗎？', t: 'area', ph: '例如：主打 PDRN 成分、要提到品牌名稱與上市優惠' },
+    { id: 'pbrief', lbl: '廠商指定的重點', q: '廠商有指定一定要講的重點嗎？', t: 'area', ph: '例如：要提到品牌名稱、主打成分與上市優惠' },
     { id: 'pbriefMode', lbl: '廠商建議的處理方式', q: '廠商的建議，你想怎麼處理？', t: 'chips', o: ['自然帶到就好', '只講我認同的', '不採用，照我的感受'] });
   return q;
 }
-/* 你想說的故事：決定文案「像不像你」的核心，依領域給例子 */
-const STORY_PH = {
-  美妝保養: ['例如：養好皮的秘密，是讓角質層的水分和油脂平衡', '例如：原本一直相信底妝蜜糖毒藥論，後來才發現是洗完臉太乾、或保養擦太油', '例如：洗完臉太乾，上妝就卡粉；擦太油，又會搓泥浮粉', '例如：洗臉 → 補水保濕 → 讓肌膚表面穩定 → 再上妝'],
-  健身運動: ['例如：瘦不下來不是你不努力，是吃得太少', '例如：原本以為練到很累才有效，後來才發現動作做對比練多重要', '例如：下班累到不想動，週末又一口氣練到受傷', '例如：每天 15 分鐘，先練深蹲和伏地挺身，一週三次'],
-  理財投資: ['例如：存錢靠的是順序，不是收入', '例如：原本以為收入高才存得到錢，後來才發現是我月底才存', '例如：發薪後一週錢就花一半，月底只能吃泡麵', '例如：發薪日先自動轉存一成，再把剩下的分成生活費和預備金'],
-  職場成長: ['例如：主管要的是結論，不是過程', '例如：原本以為做得多就會被看見，後來才發現要主動回報', '例如：報告講了十分鐘，主管只回一句「所以呢」', '例如：先講結論，再給三個理由，最後說需要什麼支援'],
-  自媒體經營: ['例如：帳號沒流量，是因為平台不知道你是誰', '例如：原本以為什麼都拍才有機會爆，後來才發現要先定位', '例如：花一整晚剪的影片，播放只有兩百', '例如：先寫下你想幫助的一種人，再連續拍 30 支同主題'],
-  品牌打造: ['例如：顧客買的是他相信的故事，不只是產品', '例如：原本以為打折才賣得動，後來才發現把價值說清楚更有用', '例如：一直降價，結果利潤越來越薄', '例如：先講你為誰而做，再講你和別人不一樣的地方'],
-  _custom: ['例如：這支影片最想讓人記住的一個觀念', '例如：原本以為…，後來才發現…', '例如：你或觀眾最常遇到的那個卡關畫面', '例如：想順便教觀眾的觀念或步驟'],
-};
-/* 沒有想法的人用：可以直接點的句型，＿＿是留給自己或 AI 填的空格 */
-const STORY_FRAMES = [
-  ['＿＿不是靠＿＿，而是靠＿＿', '其實只要做對＿＿，就能＿＿'],
-  ['原本以為＿＿，後來才發現＿＿', '我以前都＿＿，直到＿＿才知道'],
-  ['每次＿＿的時候，就會＿＿', '明明已經＿＿了，結果還是＿＿'],
-  ['先＿＿ → 再＿＿ → 最後＿＿', '記住一個原則：＿＿'],
+/* 短影音公式：先選類型，問題跟著類型換。ex 是通用句型，＿＿留給自己或 AI 填 */
+const TYPES = [
+  { n: '教學步驟', d: '教觀眾一個方法', sc: '乾貨教學文', flow: ['痛點：觀眾卡在哪', '方法：一步一步怎麼做', '成果：照做之後的改變'], q: [
+    { id: 'pain', lbl: '觀眾卡住的問題', q: '觀眾遇到什麼問題，才會想看這支？', ph: '例如：每天都很忙，卻不知道時間花去哪', ex: ['每次＿＿的時候，都會＿＿', '明明想＿＿，卻一直＿＿'] },
+    { id: 'steps', lbl: '方法或步驟', q: '你的方法或步驟是什麼？', ph: '例如：睡前寫下明天三件事 → 早上先做最難的 → 中午檢查進度', ex: ['先＿＿ → 再＿＿ → 最後＿＿', '只要記住一個原則：＿＿'] },
+    { id: 'result', lbl: '照做之後的改變', q: '照做之後，會有什麼改變？', ph: '例如：下班前就能做完，不用再加班', ex: ['原本要＿＿，現在只要＿＿', '做了＿＿之後，我發現＿＿'] },
+    { id: 'mistake', lbl: '最多人做錯的地方', q: '最多人做錯的地方是什麼？（選填）', ph: '例如：一次排太多事，結果一件都做不完', ex: ['很多人會＿＿，其實應該＿＿'] },
+  ] },
+  { n: '好物分享', d: '分享一個用過的東西', sc: '產品開箱評測', flow: ['情境：在什麼情況下用到它', '亮點：最有感的地方', '真實感受：優點和可以更好的地方', '適合誰'], q: [
+    { id: 'moment', lbl: '開始用它的契機', q: '你是在什麼情況下開始用它的？', ph: '例如：搬家後書桌太小，才開始找折疊桌', ex: ['因為＿＿，才開始找＿＿', '之前一直用＿＿，後來＿＿'] },
+    { id: 'best', lbl: '最有感的地方', q: '用下來最有感的是哪一點？', ph: '例如：收起來只有 5 公分，塞床底剛好', ex: ['最喜歡的是＿＿', '用了之後，＿＿變得＿＿'] },
+    { id: 'who', lbl: '適合誰、不適合誰', q: '你覺得它適合誰？不適合誰？', ph: '例如：適合小套房，家裡空間大的人不一定需要', ex: ['適合＿＿的人；如果你＿＿，就不一定需要'] },
+  ] },
+  { n: '故事經歷', d: '說一段自己的經歷', sc: '故事觀點文', flow: ['當時：處境和心情', '事件：發生了什麼', '轉折：什麼讓事情改變', '收穫：想讓觀眾帶走什麼'], q: [
+    { id: 'before', lbl: '當時的處境', q: '事情發生前，你是什麼狀態？', ph: '例如：剛離職，每天睡到中午，很焦慮', ex: ['那時候的我＿＿，每天都＿＿'] },
+    { id: 'event', lbl: '發生了什麼事', q: '發生了什麼事？', ph: '例如：朋友約我去爬山，我差點拒絕', ex: ['有一天＿＿，我＿＿'] },
+    { id: 'turn', lbl: '轉折', q: '後來是什麼讓事情改變？', ph: '例如：站在山頂那一刻，突然覺得休息也沒關係', ex: ['原本以為＿＿，後來才發現＿＿', '直到＿＿，我才＿＿'] },
+    { id: 'lesson', lbl: '想讓觀眾帶走的', q: '你最想讓觀眾帶走什麼？', ph: '例如：慢下來不是落後', ex: ['＿＿不是＿＿，而是＿＿'] },
+  ] },
+  { n: '觀點看法', d: '說出你對一件事的看法', sc: '故事觀點文', flow: ['立場：先說出看法', '對照：大部分人怎麼想', '理由：為什麼這樣想，舉個例子', '收尾：一句讓人記住的話'], q: [
+    { id: 'stance', lbl: '我的看法', q: '你的看法，用一句話說？', ph: '例如：存錢不用等收入變高', ex: ['我覺得＿＿', '其實＿＿不需要＿＿'] },
+    { id: 'common', lbl: '大部分人的想法', q: '大部分人通常怎麼想？', ph: '例如：薪水太低，根本存不了錢', ex: ['很多人覺得＿＿'] },
+    { id: 'why', lbl: '理由或例子', q: '你為什麼這樣想？有什麼例子？', ph: '例如：我月薪三萬時，靠發薪先存一成，存到第一筆十萬', ex: ['因為＿＿，像我＿＿'] },
+  ] },
+  { n: '迷思破解', d: '破解一個常見的錯誤說法', sc: '避坑勸退文', flow: ['迷思：大家常說的錯誤說法', '真相：正確的是什麼', '依據：為什麼', '做法：那該怎麼做'], q: [
+    { id: 'myth', lbl: '常見的錯誤說法', q: '大家常相信的錯誤說法是什麼？', ph: '例如：流汗越多，燃脂越多', ex: ['大家都說＿＿'] },
+    { id: 'truth', lbl: '正確的說法', q: '正確的說法是什麼？', ph: '例如：流汗只是在散熱，跟燃脂沒有直接關係', ex: ['其實＿＿，跟＿＿沒有關係'] },
+    { id: 'todo', lbl: '那該怎麼做', q: '那觀眾應該怎麼做？', ph: '例如：看心率和運動時間，不要看流多少汗', ex: ['與其＿＿，不如＿＿'] },
+  ] },
+  { n: '清單盤點', d: '一次整理好幾個重點', sc: '乾貨教學文', flow: ['開場：說出主題和數量', '逐一介紹：每一項一句重點', '收尾：最推薦哪一個'], q: [
+    { id: 'what', lbl: '清單主題', q: '要盤點什麼？想列幾個？', ph: '例如：第一次租屋一定要問房東的 5 件事', ex: ['＿＿一定要知道的 ＿＿ 件事'] },
+    { id: 'items', lbl: '清單內容', q: '清單裡有哪些？（想到幾個寫幾個）', ph: '例如：押金怎麼退、電費怎麼算、能不能養寵物', ex: ['1. ＿＿　2. ＿＿　3. ＿＿'] },
+    { id: 'top', lbl: '最推薦的一項', q: '裡面最推薦或最重要的是哪個？為什麼？（選填）', ph: '例如：電費怎麼算，因為很多人被多收', ex: ['最重要的是＿＿，因為＿＿'] },
+  ] },
+  { n: '日常紀錄', d: '記錄一天或一段生活', sc: '故事觀點文', flow: ['帶入：這是誰的哪一天', '片段：3～5 個生活片段', '收尾：一個小心得或感受'], q: [
+    { id: 'who', lbl: '這是誰的哪一天', q: '這是誰的哪一天（或哪段時間）？', ph: '例如：35 歲上班族的週一', ex: ['＿＿歲＿＿的＿＿'] },
+    { id: 'moments', lbl: '想放進去的片段', q: '想放進去的片段有哪些？', ph: '例如：七點起床、捷運上看書、午休散步、下班煮飯', ex: ['＿＿點＿＿、＿＿、＿＿'] },
+    { id: 'after', lbl: '想留下的感受', q: '想讓觀眾看完有什麼感受或心得？', ph: '例如：平凡的日子也可以過得很舒服', ex: ['原來＿＿也可以＿＿'] },
+  ] },
+  { n: '共鳴心聲', d: '說中觀眾心裡的話', sc: '故事觀點文', flow: ['說中：一個觀眾一定遇過的狀況', '放大：當下的心情', '回應：給一句安慰或方法'], q: [
+    { id: 'situ', lbl: '想說中的狀況', q: '你想說中觀眾的什麼狀況？', ph: '例如：週日晚上一想到要上班就心情很差', ex: ['你是不是也會＿＿', '每次＿＿，就會＿＿'] },
+    { id: 'inner', lbl: '當下的心情', q: '那時候心裡通常在想什麼？', ph: '例如：明明什麼都還沒做，就已經覺得好累', ex: ['明明＿＿，卻＿＿'] },
+    { id: 'reply', lbl: '想給的一句話', q: '想給他們一句什麼話或一個方法？', ph: '例如：週日晚上留一小時，只做讓自己開心的事', ex: ['＿＿也沒關係，你可以＿＿'] },
+  ] },
 ];
-const storyQ = () => { const ph = STORY_PH[domain()] || STORY_PH._custom, ex = i => [...(domain() in STORY_PH ? [ph[i].replace(/^例如：/, '')] : []), ...STORY_FRAMES[i]]; return [
-  { id: 'takeaway', lbl: '觀眾看完要記住的一句話', q: '觀眾看完，你最希望他記住哪一句話？', t: 'area', ph: ph[0], ex: ex(0) },
-  { id: 'flip', lbl: '我的轉折（原本以為…後來才發現…）', q: '有沒有「我原本以為…，後來才發現…」的轉折？', t: 'area', ph: ph[1], ex: ex(1) },
-  { id: 'scene', lbl: '最常遇到的困擾畫面', q: '你或觀眾最常遇到的困擾畫面是什麼？', t: 'area', ph: ph[2], ex: ex(2) },
-  { id: 'teach', lbl: '想順便教的觀念或步驟', q: '想順便教觀眾什麼觀念或步驟？', t: 'area', ph: ph[3], ex: ex(3) },
-]; };
+const TYPE_AI = '不知道，請 AI 推薦';
+const vType = () => TYPES.find(t => t.n === ans('_c.type')) || null;
+const aiType = () => ans('_c.type') === TYPE_AI;
+const typeQ = () => vType() ? vType().q.map(q => ({ ...q, t: 'area', key: `_t.${vType().n}.${q.id}` })) : [];
+const tval = q => (ans(q.key) || '').trim();
 const aiFlag = key => !!(S.ans || {})[key + '!ai'];
-const STORY_IDS = ['takeaway', 'flip', 'scene', 'teach'];
-/* 資訊少（故事題寫不到 2 題）時，預設先請 AI 給方向 */
-const thin = () => STORY_IDS.filter(k => (ans('_c.' + k) || '').trim()).length < 2;
+/* 資訊少（類型題寫不到 2 題）時，預設先請 AI 給方向 */
+const thin = () => typeQ().filter(tval).length < 2;
 const dirMode = () => (ans('_c.deliver') || (thin() ? '先給我 3 個方向挑' : '直接寫完整版')) === '先給我 3 個方向挑';
 const C_Q = [
   { id: 'feel', q: '想呈現的感覺', t: 'chips', o: ['真實生活感', '專業教學感', '輕鬆幽默', '質感氛圍', '犀利直白'] },
@@ -490,9 +522,9 @@ const C_Q = [
   { id: 'catch', lbl: '口頭禪或說話習慣', q: '你平常的口頭禪或說話習慣（選填）', t: 'text', ph: '例如：常說「真的會哭」、習慣叫觀眾「姊妹」' },
 ];
 const D_Q = [
-  { id: 'mylines', lbl: '我已經寫好的句子', q: '你已經想好的句子或草稿（選填）', t: 'area', ph: '例如：開頭想用「最近發現不管是暗沉、閉鎖粉刺還是乾荒，其實只要搞定角質層油水平衡」，中間請幫我補' },
-  { id: 'must', lbl: '一定要出現的句子', q: '一定要出現的句子（選填）', t: 'text', ph: '例如：它主打低分子植物性 PDRN' },
-  { id: 'ref', lbl: '喜歡的參考內容', q: '喜歡的參考內容（選填，只學結構與節奏，不照抄）', t: 'area', ph: '例如：最近發現不管是剛冒出來的痘痘、紅豆印，還是閉鎖粉刺，現在都有對應的保養方式' },
+  { id: 'mylines', lbl: '我已經寫好的句子', q: '你已經想好的句子或草稿（選填）', t: 'area', ph: '例如：開頭想用「這件事我花了三個月才搞懂」，中間請幫我補' },
+  { id: 'must', lbl: '一定要出現的句子', q: '一定要出現的句子（選填）', t: 'text', ph: '例如：每天只要 10 分鐘' },
+  { id: 'ref', lbl: '喜歡的參考內容', q: '喜歡的參考內容（選填，只學結構與節奏，不照抄）', t: 'area', ph: '例如：貼一段你喜歡的文案，或寫「像朋友聊天、講完會想收藏的感覺」' },
   { id: 'ending', lbl: '結尾想怎麼收', q: '結尾想怎麼收？', t: 'chips', o: ['自然帶到留言', '引導收藏', '引導追蹤', '不要 CTA，用一句話收尾'] },
   { id: 'versions', q: '要幾個版本？', t: 'chips', o: ['1 個', '2 個（不同角度）', '3 個（不同角度）'] },
   { id: 'deliver', q: 'AI 要怎麼交稿？', t: 'chips', o: ['先給我 3 個方向挑', '直接寫完整版'], hint: 1 },
@@ -582,7 +614,7 @@ function interviewLines() {
   const groups = [];
   const lbl = q => (q.lbl || q.q).replace(/（[^）]*）$/, '').replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我');
   const fmt = (q, v) => (Array.isArray(v) ? v.length : (v || '').trim()) ? `- ${lbl(q)}：${Array.isArray(v) ? v.join('、') : v.trim()}` : '';
-  const story = q => fmt(q, ans('_c.' + q.id)) || (aiFlag('_c.' + q.id) ? `- ${lbl(q)}：我還沒想好，${dirMode() ? '請在每個方向裡各幫我想一個' : '請依照主題和研究結果幫我決定最適合的，並在自我檢查裡告訴我你選了什麼'}` : '');
+  const story = q => fmt(q, ans(q.key)) || (aiFlag(q.key) ? `- ${lbl(q)}：我還沒想好，${dirMode() ? '請在每個方向裡各幫我想一個' : '請依照主題和研究結果幫我決定最適合的，並在自我檢查裡告訴我你選了什麼'}` : '');
   const group = (title, rows) => { const r = rows.filter(Boolean); if (r.length) groups.push(`【${title}】\n${r.join('\n')}`); };
   group('這支影片', [
     `- 領域：${domain()}`,
@@ -591,13 +623,13 @@ function interviewLines() {
     ...DOMAIN_Q[dKey()].map(q => fmt(q, ans(q.id))),
   ]);
   if (hasProduct()) group('產品資訊', productQ().map(q => fmt(q, ans('_c.' + q.id))));
-  group('我想說的故事與重點', storyQ().map(story));
+  group('影片類型與內容', [vType() ? `- 影片類型：${vType().n}（${vType().d}）` : aiType() ? '- 影片類型：還沒決定，請你推薦' : '', ...typeQ().map(story)]);
   group('想要的感覺', C_Q.map(q => fmt(q, ans('_c.' + q.id))));
   if (ans('_c.ending')) group('結尾', [fmt(D_Q[3], ans('_c.ending'))]);
   return groups;
 }
 /* 寫法不另外選，由內容推得：有產品走開箱，其餘看想要的感覺 */
-const style = () => hasProduct() ? '產品開箱評測' : ({ 專業教學感: '乾貨教學文', 犀利直白: '避坑勸退文', 真實生活感: '故事觀點文', 輕鬆幽默: '故事觀點文', 質感氛圍: '故事觀點文' }[ans('_c.feel')] || '乾貨教學文');
+const style = () => vType() ? vType().sc : hasProduct() ? '產品開箱評測' : ({ 專業教學感: '乾貨教學文', 犀利直白: '避坑勸退文', 真實生活感: '故事觀點文', 輕鬆幽默: '故事觀點文', 質感氛圍: '故事觀點文' }[ans('_c.feel')] || '乾貨教學文');
 const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 /* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
 /* 自訂主題用：任何一句話都讀得通的開場句型 */
@@ -647,14 +679,11 @@ function traceParts(forceFull) {
   if (sp) cons.push(sp);
   if (hasProduct() && (ans('_c.puse') || '').trim()) cons.push('介紹產品時，要依照我的使用順序和用法來講，順序不能錯。');
   if (hasProduct() && BRIEF_RULE[ans('_c.pbriefMode')]) cons.push(BRIEF_RULE[ans('_c.pbriefMode')] + '。');
-  const sv = k => (ans('_c.' + k) || '').trim();
-  if (sv('takeaway')) cons.push(`整篇都要圍繞「${sv('takeaway')}」這句話，觀眾看完要能記住它。`);
-  if (sv('flip')) cons.push('開頭或前段要用到我的轉折（原本以為…後來才發現…），這是讓觀眾想看下去的關鍵。');
-  if (sv('scene')) cons.push('困擾畫面要寫得具體，讓觀眾一聽就覺得「這就是我」。');
-  if (sv('teach')) cons.push('教觀念或步驟時，照我給的內容和順序講，用白話解釋為什麼。');
+  if (vType()) cons.push(`照「${vType().n}」的結構寫：${vType().flow.join(' → ')}。每一段都要有內容，我在每一段的回答都要用上，用我的口吻改寫，不要原封不動照貼。`);
+  else cons.push(`影片類型還沒決定：請從這幾種短影音公式選最適合這個主題的一種，在研究筆記後面說明選了哪種、為什麼，再照它的結構寫：${TYPES.map(t => `${t.n}（${t.flow.map(f => f.split('：')[0]).join('→')}）`).join('、')}。`);
   if (hasProduct() && (ans('_c.pkey') || '').trim()) cons.push(`產品段落一定要清楚講到「${ans('_c.pkey').trim()}」，但要像分享，不像唸規格。`);
   if ((ans('_c.catch') || '').trim()) cons.push(`自然穿插我的口頭禪或說話習慣：${ans('_c.catch').trim()}。`);
-  if (/＿＿/.test(STORY_IDS.map(k => ans('_c.' + k) || '').join(''))) cons.push('我回答裡的「＿＿」是我還沒填完的空格，請依照主題幫我補上最合理的內容，並在自我檢查中告訴我補了什麼。');
+  if (/＿＿/.test(typeQ().map(tval).join(''))) cons.push('我回答裡的「＿＿」是我還沒填完的空格，請依照主題幫我補上最合理的內容，並在自我檢查中告訴我補了什麼。');
   cons.push('句子和句子之間要接得順，唸起來不能卡或怪怪的。', '不要重複講同一件事，每一句都要帶來新資訊或新感受。', '效果只寫我實際感受到的，不要說太滿（例如不要說「通通消失」「完全改善」）。', '快節奏、不說教，每句盡量不超過 20 字。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', ending ? `結尾照我選的方式「${ending}」，寫法要符合 ${S.platform} 的使用習慣。` : `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
     { L: 'T', h: 'Task', zh: '任務', t: `${topic() ? `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。` : `這支的主題還沒決定。請先根據下方資訊提出 3 個主題方向（每個一句話，並說明為什麼適合我），再選你最推薦的一個，寫出可以直接在 ${S.platform} 發布的內容。`}${dir ? `\n\n這一輪請先不要寫完整文案。我手上的資訊還不多，請先做下方工作順序的第一步（研究），然後給我 3 個明顯不同的方向，每個方向都包含：\n- 方向名稱與一句話說明在講什麼\n- 開場第一句（直接可以唸）\n- 中段要講的 2～3 個重點\n- 收尾一句\n- 適合的感覺\n最後告訴我你最推薦哪一個、為什麼。\n等我回覆選哪一個（也可能是「方向 1 的開頭加方向 3 的感覺」），再依照下方所有要求輸出：` : '\n請依序輸出：'}\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識和我提供的每一項資訊全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
@@ -693,7 +722,7 @@ function renderQuestions() {
   $('#qDomain').innerHTML = DOMAIN_Q[k].map(q => qHtml(q, k + '.' + q.id)).join('');
   $('#secB').hidden = !hasProduct();
   $('#qB').innerHTML = hasProduct() ? productQ().map(c).join('') : '';
-  $('#qStory').innerHTML = storyQ().map(c).join('');
+  $('#qStory').innerHTML = `<div class="field"><p>這支影片是哪一種？<small>問題會跟著類型換</small></p><div class="chips types">${[...TYPES.map(t => [t.n, t.d]), [TYPE_AI, '交給 AI 判斷']].map(([n, d]) => `<button class="chip ex" role="radio" aria-checked="${ans('_c.type') === n}" data-q="_c.type" data-qv="${n}"><b>${n}</b><small>${d}</small></button>`).join('')}</div>${vType() ? `<p class="flow">結構：${vType().flow.map(f => esc(f.split('：')[0])).join(' → ')}</p>` : ''}</div>` + typeQ().map(q => qHtml(q, q.key)).join('');
   $('#qC').innerHTML = C_Q.map(c).join('');
   $('#qD').innerHTML = D_Q.map(c).join('');
 }
@@ -764,7 +793,7 @@ function contextRecap() {
     if ((ans('_c.peffect') || '').trim()) r.push(`- 我實際感受到的：${ans('_c.peffect').trim()}`);
     if (BRIEF_RULE[ans('_c.pbriefMode')]) r.push(`- 廠商重點：${BRIEF_RULE[ans('_c.pbriefMode')]}`);
   }
-  if ((ans('_c.takeaway') || '').trim()) r.push(`- 觀眾要記住的一句話：${ans('_c.takeaway').trim()}`);
+  if (vType()) r.push(`- 影片類型：${vType().n}（${vType().flow.map(f => f.split('：')[0]).join(' → ')}）`);
   if ((ans('_c.pkey') || '').trim() && hasProduct()) r.push(`- 產品重點：${ans('_c.pkey').trim()}`);
   if (ans('_c.feel')) r.push(`- 想要的感覺：${FEEL_GUIDE[ans('_c.feel')]}`);
   const avoid = Array.isArray(ans('_c.avoid')) ? ans('_c.avoid') : [];
@@ -848,23 +877,22 @@ async function askClaude(prompt, intoDraft, asDirs) {
    AI 訪問：沒有文本的人，一題一題被問出來
    ========================================================= */
 const FEELS = C_Q[0].o;
-const IV_MAP = { 主題: 'topic', 觀眾要記住的一句話: '_c.takeaway', 轉折: '_c.flip', 困擾畫面: '_c.scene', 想教的觀念或步驟: '_c.teach', 想要的感覺: '_c.feel' };
+const typeLine = t => `${t.n}（${t.d}；要問：${t.q.map(q => q.lbl).join('、')}）`;
 function ivRules(inPage) {
-  const known = interviewLines().join('\n\n');
+  const known = interviewLines().join('\n\n'), t = vType();
   return `你是一位很會訪問的短影音文案教練。我想拍一支「${domain()}」領域的短影音，但腦中只有模糊的想法，也沒有任何草稿。請你訪問我，幫我把想法挖出來。
 訪問規則：
 1. 一次只問一題，用口語、好回答的方式問，不要一次丟很多問題。
 2. 每題附 3 個具體選項，格式是「A. …」「B. …」「C. …」各一行，選項要符合我的領域和前面的回答；我也可以用自己的話回答。
-3. 最多問 6 題，依序弄清楚：主題、觀眾看完要記住的一句話、我的轉折（原本以為…後來才發現…）、觀眾最常遇到的困擾畫面、想教的觀念或步驟、想要的感覺。下面已經知道的就不要再問。
-4. 我回答得很短也沒關係，請從我的回答幫我延伸，不要要求我寫長。
-5. 不使用 Emoji，不評論任何品牌。
+3. 最多問 6 題，依序弄清楚：主題、影片類型、這個類型需要的內容、想要的感覺。下面已經知道的就不要再問。
+4. ${t ? `影片類型已經是「${t.n}」，內容要問：${t.q.map(q => q.lbl).join('、')}。` : `影片類型還沒決定，請在問完主題後，從下面挑最適合的 3 種當選項讓我選：\n${TYPES.map(x => '- ' + typeLine(x)).join('\n')}`}
+5. 我回答得很短也沒關係，請從我的回答幫我延伸，不要要求我寫長。
+6. 不使用 Emoji，不評論任何品牌。
 問完之後，用下面的格式把答案整理給我，每一項都用我的口吻寫成一句完整的話：
 〔整理〕
 主題：
-觀眾要記住的一句話：
-轉折：
-困擾畫面：
-想教的觀念或步驟：
+影片類型：
+${t ? t.q.map(q => q.lbl + '：').join('\n') : '（這裡依選定的類型，逐行列出它要問的每一項，格式是「項目名稱：內容」，項目名稱照上面寫的）'}
 想要的感覺：（只能從 ${FEELS.join('、')} 選一個）
 〔/整理〕
 ${inPage ? '整理之後不用寫文案。' : '整理完問我「這樣對嗎？」。我確認後，再依照最下面的 TRACE 指令寫出內容；訪問得到的答案優先，指令裡沒寫到的部分以訪問為準。'}
@@ -909,9 +937,12 @@ async function ivAsk(answer) {
 }
 function ivFill() {
   const iv = S.iv || [], sum = ivSummary((iv[iv.length - 1] || {}).t); let n = 0;
-  sum.split('\n').forEach(line => {
-    const m = /^\s*([^：:]+)[：:]\s*(.+)$/.exec(line); if (!m) return;
-    const k = IV_MAP[m[1].trim()], v = m[2].trim(); if (!k || !v) return;
+  const rows = sum.split('\n').map(line => /^\s*([^：:]+)[：:]\s*(.+)$/.exec(line)).filter(Boolean).map(m => [m[1].trim(), m[2].trim()]);
+  const tr = rows.find(r => r[0] === '影片類型'), t = (tr && TYPES.find(x => tr[1].includes(x.n))) || vType();
+  if (t) { setAns('_c.type', t.n); n++; }
+  rows.forEach(([lb, v]) => {
+    const tq = t && t.q.find(q => q.lbl === lb);
+    const k = lb === '主題' ? 'topic' : lb === '想要的感覺' ? '_c.feel' : tq ? `_t.${t.n}.${tq.id}` : ''; if (!k) return;
     if (k === 'topic') { S.topicText = v.slice(0, 30); $('#topicIn').value = S.topicText; setAns('_c.topicMode', '想好了'); n++; return; }
     if (k === '_c.feel') { const f = FEELS.find(x => v.includes(x)); if (f) { setAns(k, f); n++; } return; }
     setAns(k, v); setAns(k + '!ai', false); n++;
