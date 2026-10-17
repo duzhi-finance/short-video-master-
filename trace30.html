@@ -60,6 +60,12 @@
   .empty { padding: 36px 8px 28px; text-align: center; color: var(--mute); font-size: 14.5px; line-height: 1.9; }
   .empty b { display: block; font-family: var(--serif); font-size: 18px; color: var(--ink); margin-bottom: 4px; }
   .btn[disabled] { opacity: .4; cursor: not-allowed; }
+  .sec { display: flex; align-items: center; gap: 10px; margin: 10px 0 -4px; padding-top: 18px; border-top: 1px solid var(--line); font-family: var(--serif); font-size: 17px; font-weight: 700; letter-spacing: .06em; }
+  .sec span { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-size: 13px; }
+  .qbox { margin-top: 0; }
+  #secB { display: grid; gap: 20px; }
+  #secB[hidden] { display: none !important; }
+  .qbox:empty { display: none; }
   .summary { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mute); line-height: 1.8; }
   .summary b { color: var(--ink); font-weight: 700; }
 
@@ -118,23 +124,37 @@
   </header>
 
   <!-- 區塊一：今天要拍什麼 -->
-  <section class="card" aria-labelledby="todayH">
-    <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>回答越多，指令越準</small></div>
+  <section class="card" id="todayCard" aria-labelledby="todayH">
+    <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>一題只問一件事，照著回答就好</small></div>
     <div class="fields">
       <div class="field" id="domainField"></div>
-      <div class="field">
-        <label for="topicIn">今天拍攝的主題<small>TOPIC・必填</small></label>
-        <input class="custom big" id="topicIn" maxlength="30" placeholder="例如：35 歲上班族的一天" />
+
+      <h3 class="sec"><span>A</span>這支影片的起點</h3>
+      <div id="qA" class="fields qbox"></div>
+      <div class="field" id="topicField">
+        <label for="topicIn">你想拍的主題</label>
+        <input class="custom big" id="topicIn" maxlength="30" placeholder="例如：35 歲上班族的一天、油肌夏天不脫妝" />
         <div class="chips" id="topicChips" aria-label="主題靈感"></div>
       </div>
-      <div id="qBlock" class="fields" style="margin-top:0"></div>
-      <div class="field">
-        <label for="materialIn">還有什麼想補充的？<small>NOTES・選填</small></label>
-        <textarea class="custom" id="materialIn" rows="3" maxlength="800" placeholder="例如：想強調早上只有 10 分鐘出門、這次特別想講的一件事"></textarea>
+      <div id="qDomain" class="fields qbox"></div>
+
+      <div id="secB">
+        <h3 class="sec"><span>B</span>產品資訊</h3>
+        <div id="qB" class="fields qbox"></div>
       </div>
+
+      <h3 class="sec"><span>C</span>你想要的感覺</h3>
+      <div id="qC" class="fields qbox"></div>
+
+      <h3 class="sec"><span>D</span>你要拿到什麼</h3>
       <div class="field">
-        <p>輸出格式<small>FORMAT・可複選</small></p>
+        <p>輸出格式<small>可複選</small></p>
         <div class="chips" id="formatChips" aria-label="輸出格式"></div>
+      </div>
+      <div id="qD" class="fields qbox"></div>
+      <div class="field">
+        <label for="materialIn">還有什麼想補充的？<small>選填</small></label>
+        <textarea class="custom" id="materialIn" rows="3" maxlength="800" placeholder="上面沒問到、但你很想講的事，例如：這次想特別強調早上只有 10 分鐘"></textarea>
       </div>
     </div>
   </section>
@@ -327,14 +347,49 @@ const DOMAIN_Q = {
     { id: 'pain', q: '觀眾最常卡在哪裡？', t: 'text', ph: '例如：寵物一直亂動拍不清楚' },
   ],
 };
-const COMMON_Q = [
+const A_Q = [
+  { id: 'source', lbl: '產品來源', q: '這支有沒有產品？', t: 'chips', o: ['沒有產品', '廠商寄來的', '自己買的', '品牌有酬合作'] },
+  { id: 'topicMode', q: '主題想好了嗎？', t: 'chips', o: ['想好了', '還沒，請 AI 幫我想'] },
+];
+const PRODUCT_PH = {
+  美妝保養: ['例如：PDRN 光澤化妝水 + PDRN 精華 + PDRN 光澤面膜', '例如：洗臉後依序 化妝水 → 精華 → 面膜，面膜一週 2 次', '例如：用一週後上妝比較服貼，早上臉看起來比較透亮'],
+  健身運動: ['例如：某品牌乳清蛋白 + 彈力帶', '例如：訓練後 30 分鐘內喝一份，彈力帶用來熱身', '例如：練完比較不容易餓，肩膀熱身後比較不卡'],
+  _default: ['例如：產品名稱，多個用 + 分開', '例如：什麼時候用、怎麼用、用多少', '例如：用了之後最明顯的改變'],
+};
+function productQ() {
+  const ph = PRODUCT_PH[domain()] || PRODUCT_PH._default, src = ans('_c.source');
+  const q = [
+    { id: 'pname', q: '產品名稱（多個用 + 分開）', t: 'text', ph: ph[0] },
+    { id: 'puse', q: '你怎麼用？（順序、頻率、用量）', t: 'area', ph: ph[1] },
+    { id: 'peffect', lbl: '實際感受到的變化', q: '用了之後，你實際感受到什麼變化？', t: 'area', ph: ph[2] },
+    { id: 'pcons', lbl: '可以更好的地方', q: '有沒有覺得可以更好的地方？', t: 'text', ph: '例如：精華有點黏、價格偏高（說出缺點反而更可信）' },
+  ];
+  if (src === '廠商寄來的' || src === '品牌有酬合作') q.push(
+    { id: 'pbrief', lbl: '廠商指定的重點', q: '廠商有指定一定要講的重點嗎？', t: 'area', ph: '例如：主打 PDRN 成分、要提到品牌名稱與上市優惠' },
+    { id: 'pbriefMode', lbl: '廠商建議的處理方式', q: '廠商的建議，你想怎麼處理？', t: 'chips', o: ['自然帶到就好', '只講我認同的', '不採用，照我的感受'] });
+  return q;
+}
+const C_Q = [
   { id: 'feel', q: '想呈現的感覺', t: 'chips', o: ['真實生活感', '專業教學感', '輕鬆幽默', '質感氛圍', '犀利直白'] },
-  { id: 'product', q: '這支有沒有出現產品？', t: 'chips', o: ['沒有產品', '自己買的', '廠商提供', '品牌合作（有酬）'] },
+  { id: 'avoid', q: '不想要的感覺', t: 'multi', o: ['太業配', '太像廣告台詞', '太說教', '太浮誇', '太冷冰冰', '太長太囉嗦'] },
+  { id: 'catch', lbl: '口頭禪或說話習慣', q: '你平常的口頭禪或說話習慣（選填）', t: 'text', ph: '例如：常說「真的會哭」、習慣叫觀眾「姊妹」' },
 ];
-const PRODUCT_Q = [
-  { id: 'pname', q: '產品名稱／品項', t: 'text', ph: '例如：某品牌修護精華、氣墊粉餅' },
-  { id: 'pfeel', q: '你的真實感受（優點、缺點都可以）', t: 'text', ph: '例如：保濕很夠，但夏天有點黏' },
+const D_Q = [
+  { id: 'versions', q: '要幾個版本？', t: 'chips', o: ['1 個', '2 個（不同角度）', '3 個（不同角度）'] },
 ];
+const AVOID_RULE = {
+  太業配: '不要出現「推薦給大家」「快去買」「必買」這類推銷句，也不要一直重複品牌名',
+  太像廣告台詞: '不要照念產品文案，也不要堆疊廣告形容詞',
+  太說教: '不要用「你應該」「一定要」這種說教口吻',
+  太浮誇: '不要用「神級」「逆天」「秒變」這類誇大詞',
+  太冷冰冰: '要有我的情緒和真實反應，不要像在念說明書',
+  太長太囉嗦: '句子要短，不要重複同一個意思',
+};
+const BRIEF_RULE = {
+  自然帶到就好: '廠商指定的重點要講到，但用我自己的話自然帶出，不要照念',
+  只講我認同的: '廠商的重點只保留我真的認同、和我使用感受一致的部分，其他不用講',
+  '不採用，照我的感受': '不採用廠商的拍攝建議，完全依照我的真實感受來寫',
+};
 const FEEL_GUIDE = {
   真實生活感: '像跟朋友聊天分享，語氣自然，完全不要有推銷或業配感',
   專業教學感: '條理清楚、有依據，像專業的人在教學',
@@ -344,8 +399,8 @@ const FEEL_GUIDE = {
 };
 const SPONSOR_RULE = {
   自己買的: '產品是我自己花錢買的，可以自然提到，但不要寫成推銷文。',
-  廠商提供: '產品是廠商提供的，請完全用我真實使用的心得來寫：不要用「廠商寄給我」「這是業配」這類說法開場，不要過度推銷，也不要只講優點；合作只需在貼文說明或結尾自然標註，符合平台規範即可。',
-  '品牌合作（有酬）': '這是有酬合作，請保持真實分享的語氣，優缺點都提，避免硬廣；口播不用強調合作，依平台規範在貼文標示即可（例如 IG 的品牌合作標籤）。',
+  廠商寄來的: '產品是廠商提供的，請完全用我真實使用的心得來寫：不要用「廠商寄給我」「這是業配」這類說法開場，不要過度推銷，也不要只講優點；合作只需在貼文說明或結尾自然標註，符合平台規範即可。',
+  品牌有酬合作: '這是有酬合作，請保持真實分享的語氣，優缺點都提，避免硬廣；口播不用強調合作，依平台規範在貼文標示即可（例如 IG 的品牌合作標籤）。',
 };
 const RESEARCH = {
   美妝保養: '請自行查證產品與成分的正確知識（主要成分、作用、適合膚質、使用注意事項），不使用醫療或療效用語，不誇大效果',
@@ -399,14 +454,23 @@ const material = () => (S.material || '').trim();
 const dKey = () => DOMAIN_Q[domain()] ? domain() : '_custom';
 const ans = id => (S.ans || {})[id.includes('.') ? id : dKey() + '.' + id];
 const setAns = (id, v) => { S.ans = S.ans || {}; S.ans[id] = v; };
-const hasProduct = () => { const p = ans('_c.product'); return p && p !== '沒有產品'; };
+const hasProduct = () => { const p = ans('_c.source'); return !!p && p !== '沒有產品'; };
+const aiTopic = () => ans('_c.topicMode') === '還沒，請 AI 幫我想';
+const canGen = () => !!topic() || aiTopic();
+const topicLabel = () => aiTopic() && !topic() ? '由 AI 提議' : topic();
 function interviewLines() {
-  const lines = [];
-  const add = (q, v) => { if (Array.isArray(v) ? v.length : (v || '').trim()) lines.push(`- ${q.replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我')}：${Array.isArray(v) ? v.join('、') : v.trim()}`); };
-  DOMAIN_Q[dKey()].forEach(q => add(q.q, ans(q.id)));
-  COMMON_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
-  if (hasProduct()) PRODUCT_Q.forEach(q => add(q.q, ans('_c.' + q.id)));
-  return lines;
+  const groups = [];
+  const fmt = (q, v) => (Array.isArray(v) ? v.length : (v || '').trim()) ? `- ${(q.lbl || q.q).replace(/（[^）]*）$/, '').replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我')}：${Array.isArray(v) ? v.join('、') : v.trim()}` : '';
+  const group = (title, rows) => { const r = rows.filter(Boolean); if (r.length) groups.push(`【${title}】\n${r.join('\n')}`); };
+  group('這支影片', [
+    `- 領域：${domain()}`,
+    fmt(A_Q[0], ans('_c.source')),
+    `- 主題：${topic() || (aiTopic() ? '還沒決定，請你先提議' : '')}`,
+    ...DOMAIN_Q[dKey()].map(q => fmt(q, ans(q.id))),
+  ]);
+  if (hasProduct()) group('產品資訊', productQ().map(q => fmt(q, ans('_c.' + q.id))));
+  group('想要的感覺', C_Q.map(q => fmt(q, ans('_c.' + q.id))));
+  return groups;
 }
 const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 /* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
@@ -414,7 +478,8 @@ const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 const CUSTOM_SC = { 乾貨教學文: '「{n}」，我整理成 3 個重點', 避坑勸退文: '「{n}」這件事，千萬別犯這個錯', 故事觀點文: '我想分享「{n}」最真實的版本', 產品開箱評測: '「{n}」裡，我最常用的就是這個', '限時優惠/導購': '「{n}」需要的東西，我替你整理好了' };
 const CUSTOM_GOAL = { 快速漲粉: '「{n}」系列第 1 集，你絕對想不到', 建立專業信任: '{role}眼中的「{n}」', '提高產品轉換/銷售': '「{n}」能輕鬆一點，靠的是這個方法', 增加留言互動: '「{n}」，你也是這樣嗎？' };
 function sampleHooks() {
-  if (isCustomTopic()) return [CUSTOM_SC[S.scenario], CUSTOM_GOAL[S.goal], '「{n}」，大部分人只看到表面'].map(t => t.replace('{n}', topic()).replace('{role}', role()));
+  const hn = topic() || ((ans('_c.pname') || '').split('+')[0].trim()) || domain();
+  if (isCustomTopic()) return [CUSTOM_SC[S.scenario], CUSTOM_GOAL[S.goal], '「{n}」，大部分人只看到表面'].map(t => t.replace('{n}', hn).replace('{role}', role()));
   const dd = domainData(), sub = chosenSub() || dd.subs[0], custom = isCustomTopic();
   const v = { n: topic(), myth: sub.myth, trap: sub.trap, domain: domain(), product: dd.product, role: role() };
   const ok = t => !custom || !/\{(myth|trap)\}/.test(t);
@@ -422,7 +487,7 @@ function sampleHooks() {
   return [pickFrom(SCENARIO_TITLES[S.scenario]), pickFrom(GOAL_TITLES[S.goal]), pickFrom(COMMON_TITLES.slice(4))]
     .map(t => t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? ''));
 }
-const settingLine = () => `主題：${topic()}\n格式：${fmts().join('、')}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
+const settingLine = () => `主題：${topicLabel()}\n格式：${fmts().join('、')}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
 
 /* =========================================================
    TRACE 指令
@@ -431,30 +496,37 @@ function traceParts() {
   const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks(), F = fmts();
   const lenTxt = parseInt(S.len) + ' 秒', hasVo = F.includes('短影音口播稿');
   const out = ['研究筆記：先列出你查證過的 3～5 個關鍵知識點（例如原理、成分、數據、規定），每點標註資料來源類型；後面的文案要用上這些資訊', '3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試'];
-  if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}`);
-  if (F.includes('圖文貼文')) out.push('一篇完整圖文貼文：開頭一句抓住人，中間分段講清楚重點與知識，結尾收在行動，可以直接貼到社群');
+  const nv = parseInt(ans('_c.versions')) || 1;
+  const angles = hasProduct() ? '真實使用心得版、成分或原理解析版、生活情境版' : '經驗分享版、知識解析版、生活情境版';
+  const multi = n => n > 1 ? `；請寫 ${n} 個不同角度的版本（例如：${angles.split('、').slice(0, n).join('、')}），每個版本都要完整，不是換句話說` : '';
+  if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}${multi(nv)}`);
+  if (F.includes('圖文貼文')) out.push('完整圖文貼文：開頭一句抓住人，中間分段講清楚重點與知識，結尾收在行動，可以直接貼到社群' + (hasVo ? '' : multi(nv)));
   if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
-  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出【我的拍攝資訊】和【我的補充】各自用在文案的哪一句；漏掉的請補回文案再交給我');
+  out.push('結尾行動呼籲 CTA', '3 個爆款標題', '5 個 Hashtag', '自我檢查清單：逐條列出我提供的每一項資訊（這支影片、產品資訊、想要的感覺、補充）各自用在文案的哪一句；漏掉的請補回文案再交給我');
   const angle = sub ? `\n可以從這個角度切入：很多人以為「${sub.myth}」，但真正的關鍵是「${sub.truth}」。` : '';
   const il = interviewLines();
-  const mat = (il.length ? `\n\n【我的拍攝資訊】\n${il.join('\n')}` : '') + (material() ? `\n\n【我的補充（請先想清楚每一點想表達什麼，再用我的口吻自然融入文案；每一點都要出現，不可省略或淡化，也不要原封不動照貼）】\n${material()}` : '');
+  const mat = (il.length ? `\n\n${il.join('\n\n')}` : '') + (material() ? `\n\n【我的補充（請先想清楚每一點想表達什麼，再用我的口吻自然融入文案；每一點都要出現，不可省略或淡化，也不要原封不動照貼）】\n${material()}` : '');
   const cons = ['嚴禁使用「首先、此外、總結來說、綜上所述」等生硬連接詞。'];
   if (hasVo) cons.push(`口播文案約 ${chars} 字（${parseInt(S.len)} 秒左右的唸稿量），內容要完整、有細節，不要只寫幾句帶過。`);
   if (F.includes('圖文貼文')) cons.push('圖文貼文約 400～600 字，段落之間要有呼吸感。');
-  const feel = ans('_c.feel'), sp = SPONSOR_RULE[ans('_c.product')];
+  const feel = ans('_c.feel'), sp = SPONSOR_RULE[ans('_c.source')], avoid = Array.isArray(ans('_c.avoid')) ? ans('_c.avoid') : [];
   if (feel) cons.push(`呈現感覺：${FEEL_GUIDE[feel]}。`);
+  avoid.forEach(a => cons.push(`避免${a}：${AVOID_RULE[a]}。`));
   if (sp) cons.push(sp);
+  if (hasProduct() && (ans('_c.puse') || '').trim()) cons.push('介紹產品時，要依照我的使用順序和用法來講，順序不能錯。');
+  if (hasProduct() && BRIEF_RULE[ans('_c.pbriefMode')]) cons.push(BRIEF_RULE[ans('_c.pbriefMode')] + '。');
+  if ((ans('_c.catch') || '').trim()) cons.push(`自然穿插我的口頭禪或說話習慣：${ans('_c.catch').trim()}。`);
   cons.push('快節奏、不說教，每句盡量不超過 20 字。', '每種內容的最後都用一句金句收尾。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識、我的拍攝資訊和我的補充全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
+    { L: 'T', h: 'Task', zh: '任務', t: `${topic() ? `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。` : `這支的主題還沒決定。請先根據下方資訊提出 3 個主題方向（每個一句話，並說明為什麼適合我），再選你最推薦的一個，寫出可以直接在 ${S.platform} 發布的內容。`}\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識和我提供的每一項資訊全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
-    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對「${topic()}」這個主題特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
+    { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對${topic() ? `「${topic()}」這個主題` : '這支影片的主題'}特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
     { L: 'C', h: 'Constraint', zh: '限制', t: cons.map((x, i) => `${i + 1}. ${x}`).join('\n') },
     { L: 'E', h: 'Example', zh: '範例', t: `請融入小紅書與 IG 爆款的 Hook 結構與轉換邏輯：開頭 3 秒丟出痛點或反常識結論，中段用過來人經驗或數字清單給乾貨，結尾給明確行動。\n參考開場：\n${hooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n\n請參考這些開場的語氣與節奏寫出這一篇。中段要有具體知識、數字或步驟，不要只有情緒和口號。` },
   ];
 }
 const RULE = '━━━━━━━━━━━━━━━━━━';
-const traceText = () => [RULE, `TRACE 爆款指令｜${topic()}`, settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
+const traceText = () => [RULE, `TRACE 爆款指令｜${topicLabel()}`, settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
 
 /* =========================================================
    RENDER
@@ -466,17 +538,20 @@ function chipsFor(id) {
 const topicChipsHtml = () => domainData().subs.map(x => `<button class="chip" aria-pressed="${topic() === x.n}" data-topic="${esc(x.n)}">${esc(x.n)}</button>`).join('');
 function qHtml(q, key) {
   const v = ans(key);
-  if (q.t === 'text') return `<div class="field"><label for="q-${key}">${q.q}</label><input class="custom" id="q-${key}" data-q="${key}" maxlength="60" placeholder="${q.ph}" value="${esc(v || '')}" /></div>`;
+  if (q.t === 'text') return `<div class="field"><label for="q-${key}">${q.q}</label><input class="custom" id="q-${key}" data-q="${key}" maxlength="80" placeholder="${q.ph}" value="${esc(v || '')}" /></div>`;
+  if (q.t === 'area') return `<div class="field"><label for="q-${key}">${q.q}</label><textarea class="custom" id="q-${key}" data-q="${key}" rows="3" maxlength="400" placeholder="${q.ph}">${esc(v || '')}</textarea></div>`;
   const multi = q.t === 'multi', arr = Array.isArray(v) ? v : [];
   return `<div class="field"><p>${q.q}${multi ? '<small>可複選</small>' : ''}</p><div class="chips">${q.o.map(o => `<button class="chip" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${multi ? arr.includes(o) : v === o}" data-q="${key}" data-qv="${esc(o)}" data-multi="${multi ? 1 : ''}">${esc(o)}</button>`).join('')}</div></div>`;
 }
 function renderQuestions() {
-  const k = dKey();
-  $('#qBlock').innerHTML = [
-    ...DOMAIN_Q[k].map(q => qHtml(q, k + '.' + q.id)),
-    ...COMMON_Q.map(q => qHtml(q, '_c.' + q.id)),
-    ...(hasProduct() ? PRODUCT_Q.map(q => qHtml(q, '_c.' + q.id)) : []),
-  ].join('');
+  const k = dKey(), c = q => qHtml(q, '_c.' + q.id);
+  $('#qA').innerHTML = A_Q.map(c).join('');
+  $('#topicField').hidden = aiTopic();
+  $('#qDomain').innerHTML = DOMAIN_Q[k].map(q => qHtml(q, k + '.' + q.id)).join('');
+  $('#secB').hidden = !hasProduct();
+  $('#qB').innerHTML = hasProduct() ? productQ().map(c).join('') : '';
+  $('#qC').innerHTML = C_Q.map(c).join('');
+  $('#qD').innerHTML = D_Q.map(c).join('');
 }
 function renderToday() {
   $('#domainField').innerHTML = `<p>內容領域<small>DOMAIN</small></p><div class="chips" id="chips-domain" role="radiogroup" aria-label="內容領域">${chipsFor('domain')}</div><input class="custom" id="in-domain" maxlength="12" placeholder="或自訂領域，例如：寵物攝影" value="${esc(S.domainCustom || '')}" />`;
@@ -494,17 +569,17 @@ function renderFields() {
   }).join('');
 }
 function renderSummary() {
-  $('#summary').innerHTML = `這一篇：<b>${esc(topic() || '尚未填寫主題')}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
+  $('#summary').innerHTML = `這一篇：<b>${esc(topicLabel() || '尚未填寫主題')}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
 }
 function renderTrace() {
-  $('#copyTrace').disabled = !topic();
-  if (!topic()) {
+  $('#copyTrace').disabled = !canGen();
+  if (!canGen()) {
     $('#docTitle').textContent = '等待今天的主題';
     $('#traceTags').innerHTML = '';
-    $('#trace').innerHTML = '<div class="empty"><b>先告訴我今天要拍什麼</b>在上方「今天拍攝的主題」填一句話，<br />例如「35 歲上班族的一天」，這裡就會產生完整指令。</div>';
+    $('#trace').innerHTML = '<div class="empty"><b>先告訴我今天要拍什麼</b>在上方填一句你想拍的主題，<br />或在「主題想好了嗎？」選「還沒，請 AI 幫我想」，這裡就會產生完整指令。</div>';
     return;
   }
-  $('#docTitle').textContent = `「${topic()}」爆款指令`;
+  $('#docTitle').textContent = topic() ? `「${topic()}」爆款指令` : `${domain()}・主題由 AI 提議`;
   $('#traceTags').innerHTML = [...fmts(), role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
   $('#trace').innerHTML = traceParts().map(p => {
     const [main, ex] = p.L === 'E' ? p.t.split('參考開場：\n') : [p.t, ''];
@@ -556,14 +631,14 @@ $('#topicChips').addEventListener('click', e => {
   const b = e.target.closest('[data-topic]'); if (!b) return;
   S.topicText = b.dataset.topic; $('#topicIn').value = S.topicText; $('#topicChips').innerHTML = topicChipsHtml(); regen();
 });
-$('#qBlock').addEventListener('click', e => {
+$('#todayCard').addEventListener('click', e => {
   const b = e.target.closest('[data-qv]'); if (!b) return;
   const key = b.dataset.q, v = b.dataset.qv;
   if (b.dataset.multi) { const arr = Array.isArray(ans(key)) ? ans(key) : []; setAns(key, arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v]); }
   else setAns(key, ans(key) === v ? '' : v);
   renderQuestions(); regen();
 });
-$('#qBlock').addEventListener('input', e => { const i = e.target.closest('input[data-q]'); if (!i) return; setAns(i.dataset.q, i.value); regen(); });
+$('#todayCard').addEventListener('input', e => { const i = e.target.closest('[data-q]'); if (!i || i.dataset.qv) return; setAns(i.dataset.q, i.value); regen(); });
 $('#materialIn').addEventListener('input', e => { S.material = e.target.value; regen(); });
 $('#formatChips').addEventListener('click', e => {
   const b = e.target.closest('[data-fmt]'); if (!b) return;
@@ -586,6 +661,10 @@ $('#topicIn').value = S.topicText || '';
 $('#materialIn').value = S.material || '';
 if (!Array.isArray(S.formats) || !S.formats.length) S.formats = ['短影音口播稿'];
 if (!S.ans || typeof S.ans !== 'object') S.ans = {};
+{ const old = { 廠商提供: '廠商寄來的', '品牌合作（有酬）': '品牌有酬合作', 自己買的: '自己買的', 沒有產品: '沒有產品' };
+  if (S.ans['_c.product'] && !S.ans['_c.source']) S.ans['_c.source'] = old[S.ans['_c.product']] || '';
+  if (S.ans['_c.pfeel'] && !S.ans['_c.peffect']) S.ans['_c.peffect'] = S.ans['_c.pfeel'];
+  delete S.ans['_c.product']; delete S.ans['_c.pfeel']; }
 renderToday(); renderQuestions(); renderFields(); renderChecks(); regen();
 </script>
 </body>
