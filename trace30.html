@@ -71,6 +71,20 @@
 
   [hidden] { display: none !important; }
 
+  /* 沒有文本的人：範例答案、AI 訪問 */
+  .chip.ex { white-space: normal; text-align: left; border-radius: 14px; line-height: 1.6; }
+  .ex-cap { margin-top: 10px; font-size: 12px; color: var(--faint); letter-spacing: .04em; }
+  .ex-cap + .chips { margin-top: 6px; }
+  .iv { border: 1px solid var(--line); background: var(--soft); border-radius: 18px; padding: 16px; }
+  .iv-h b { display: block; font-family: var(--serif); font-size: 16.5px; letter-spacing: .04em; }
+  .iv-h small { display: block; margin-top: 4px; font-size: 13px; color: var(--mute); line-height: 1.7; }
+  .iv .bar { margin-top: 12px; }
+  .iv-log { display: grid; gap: 10px; margin-top: 14px; max-height: 440px; overflow: auto; }
+  .msg { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+  .msg.ai { justify-self: start; background: #fff; border: 1px solid var(--line); }
+  .msg.me { justify-self: end; background: var(--ink); color: #fff; }
+  .iv-state { margin-top: 8px; font-size: 12.5px; color: var(--mute); }
+
   .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
   .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 9px 15px; font-size: 13.5px; transition: border-color .2s, background .2s; }
   .btn:hover { border-color: #DCD2C6; background: var(--soft); }
@@ -141,6 +155,18 @@
     <div class="card-h"><span class="no">01</span><h2 id="todayH">今天要拍什麼？</h2><small>一題只問一件事，照著回答就好</small></div>
     <div class="fields">
       <div class="field" id="domainField"></div>
+
+      <div class="iv" id="ivCard">
+        <div class="iv-h"><b>腦中只有一個模糊的想法？</b><small>不用自己寫。讓 AI 一題一題問你，每題都有選項可以點，問完幫你把下面的題目填好。</small></div>
+        <div class="bar"><button class="btn dark" id="ivStart" hidden></button><button class="btn" id="ivCopy"></button></div>
+        <div id="ivChat" hidden>
+          <div class="iv-log" id="ivLog"></div>
+          <p class="iv-state" id="ivState"></p>
+          <div class="chips" id="ivOpts"></div>
+          <textarea class="custom" id="ivIn" rows="2" maxlength="300" placeholder="點上面的選項，或用自己的話回答，短短一句就好"></textarea>
+          <div class="bar"><button class="btn dark" id="ivSend">送出回答</button><button class="btn dark" id="ivFill" hidden>把答案填進下面的題目</button><button class="btn" id="ivStop" hidden>停止</button><button class="btn" id="ivReset">重新訪問</button></div>
+        </div>
+      </div>
 
       <h3 class="sec"><span>A</span>這支影片的起點</h3>
       <div id="qA" class="fields qbox"></div>
@@ -227,6 +253,12 @@
     <div class="reply" id="replyBox" hidden>
       <div class="reply-h"><b>Claude 的回覆</b><span id="replyState"></span></div>
       <div class="reply-t" id="replyText"></div>
+      <div class="field" id="pickBox" hidden style="margin-top:16px">
+        <p>你選哪一個方向？<small>也可以混搭</small></p>
+        <div class="chips" id="pickChips"></div>
+        <input class="custom" id="pickIn" maxlength="120" placeholder="例如：方向 1 的開頭，加上方向 3 的感覺" />
+        <div class="bar"><button class="btn dark" id="pickGo">用這個方向寫完整版</button></div>
+      </div>
       <div class="bar"><button class="btn dark" id="useReply"></button><button class="btn" id="copyReply"></button><button class="btn" id="stopReply" hidden>停止</button></div>
     </div>
     <div class="field" style="margin-top:22px">
@@ -272,7 +304,6 @@ const FIELD_META = [
   { id: 'role', label: '你的角色', en: 'ROLE', custom: '或自訂角色，例如：營養師' },
   { id: 'platform', label: '主要平台', en: 'PLATFORM' },
   { id: 'goal', label: '內容目標', en: 'GOAL' },
-  { id: 'scenario', label: '腳本風格場景', en: 'SCENARIO' },
   { id: 'len', label: '目標影片時長', en: 'LENGTH' },
 ];
 
@@ -435,12 +466,24 @@ const STORY_PH = {
   品牌打造: ['例如：顧客買的是他相信的故事，不只是產品', '例如：原本以為打折才賣得動，後來才發現把價值說清楚更有用', '例如：一直降價，結果利潤越來越薄', '例如：先講你為誰而做，再講你和別人不一樣的地方'],
   _custom: ['例如：這支影片最想讓人記住的一個觀念', '例如：原本以為…，後來才發現…', '例如：你或觀眾最常遇到的那個卡關畫面', '例如：想順便教觀眾的觀念或步驟'],
 };
-const storyQ = () => { const ph = STORY_PH[domain()] || STORY_PH._custom; return [
-  { id: 'takeaway', lbl: '觀眾看完要記住的一句話', q: '觀眾看完，你最希望他記住哪一句話？', t: 'area', ph: ph[0] },
-  { id: 'flip', lbl: '我的轉折（原本以為…後來才發現…）', q: '有沒有「我原本以為…，後來才發現…」的轉折？', t: 'area', ph: ph[1] },
-  { id: 'scene', lbl: '最常遇到的困擾畫面', q: '你或觀眾最常遇到的困擾畫面是什麼？', t: 'area', ph: ph[2] },
-  { id: 'teach', lbl: '想順便教的觀念或步驟', q: '想順便教觀眾什麼觀念或步驟？', t: 'area', ph: ph[3] },
+/* 沒有想法的人用：可以直接點的句型，＿＿是留給自己或 AI 填的空格 */
+const STORY_FRAMES = [
+  ['＿＿不是靠＿＿，而是靠＿＿', '其實只要做對＿＿，就能＿＿'],
+  ['原本以為＿＿，後來才發現＿＿', '我以前都＿＿，直到＿＿才知道'],
+  ['每次＿＿的時候，就會＿＿', '明明已經＿＿了，結果還是＿＿'],
+  ['先＿＿ → 再＿＿ → 最後＿＿', '記住一個原則：＿＿'],
+];
+const storyQ = () => { const ph = STORY_PH[domain()] || STORY_PH._custom, ex = i => [...(domain() in STORY_PH ? [ph[i].replace(/^例如：/, '')] : []), ...STORY_FRAMES[i]]; return [
+  { id: 'takeaway', lbl: '觀眾看完要記住的一句話', q: '觀眾看完，你最希望他記住哪一句話？', t: 'area', ph: ph[0], ex: ex(0) },
+  { id: 'flip', lbl: '我的轉折（原本以為…後來才發現…）', q: '有沒有「我原本以為…，後來才發現…」的轉折？', t: 'area', ph: ph[1], ex: ex(1) },
+  { id: 'scene', lbl: '最常遇到的困擾畫面', q: '你或觀眾最常遇到的困擾畫面是什麼？', t: 'area', ph: ph[2], ex: ex(2) },
+  { id: 'teach', lbl: '想順便教的觀念或步驟', q: '想順便教觀眾什麼觀念或步驟？', t: 'area', ph: ph[3], ex: ex(3) },
 ]; };
+const aiFlag = key => !!(S.ans || {})[key + '!ai'];
+const STORY_IDS = ['takeaway', 'flip', 'scene', 'teach'];
+/* 資訊少（故事題寫不到 2 題）時，預設先請 AI 給方向 */
+const thin = () => STORY_IDS.filter(k => (ans('_c.' + k) || '').trim()).length < 2;
+const dirMode = () => (ans('_c.deliver') || (thin() ? '先給我 3 個方向挑' : '直接寫完整版')) === '先給我 3 個方向挑';
 const C_Q = [
   { id: 'feel', q: '想呈現的感覺', t: 'chips', o: ['真實生活感', '專業教學感', '輕鬆幽默', '質感氛圍', '犀利直白'] },
   { id: 'avoid', q: '不想要的感覺', t: 'multi', o: ['太業配', '太像廣告台詞', '太說教', '太浮誇', '太冷冰冰', '太長太囉嗦'] },
@@ -452,6 +495,7 @@ const D_Q = [
   { id: 'ref', lbl: '喜歡的參考內容', q: '喜歡的參考內容（選填，只學結構與節奏，不照抄）', t: 'area', ph: '例如：最近發現不管是剛冒出來的痘痘、紅豆印，還是閉鎖粉刺，現在都有對應的保養方式' },
   { id: 'ending', lbl: '結尾想怎麼收', q: '結尾想怎麼收？', t: 'chips', o: ['自然帶到留言', '引導收藏', '引導追蹤', '不要 CTA，用一句話收尾'] },
   { id: 'versions', q: '要幾個版本？', t: 'chips', o: ['1 個', '2 個（不同角度）', '3 個（不同角度）'] },
+  { id: 'deliver', q: 'AI 要怎麼交稿？', t: 'chips', o: ['先給我 3 個方向挑', '直接寫完整版'], hint: 1 },
 ];
 const AVOID_RULE = {
   太業配: '不要出現「推薦給大家」「快去買」「必買」這類推銷句，也不要一直重複品牌名',
@@ -503,7 +547,7 @@ const CHECKS = [
    STATE
    ========================================================= */
 const KEY = 'trace-one-v3';
-let S = { role: '行銷顧問', domain: '美妝保養', ans: {}, platform: 'IG Reels', goal: '快速漲粉', scenario: '乾貨教學文', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topicText: '', material: '', formats: ['短影音口播稿'], checks: [] };
+let S = { role: '行銷顧問', domain: '美妝保養', ans: {}, platform: 'IG Reels', goal: '快速漲粉', len: '30秒黃金爆款', roleCustom: '', domainCustom: '', topicText: '', material: '', formats: ['短影音口播稿'], checks: [] };
 try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw === 'object') S = { ...S, ...raw }; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const $ = s => document.querySelector(s);
@@ -533,10 +577,12 @@ const setAns = (id, v) => { S.ans = S.ans || {}; S.ans[id] = v; };
 const hasProduct = () => { const p = ans('_c.source'); return !!p && p !== '沒有產品'; };
 const aiTopic = () => ans('_c.topicMode') === '還沒，請 AI 幫我想';
 const canGen = () => !!topic() || aiTopic();
-const topicLabel = () => aiTopic() && !topic() ? '由 AI 提議' : topic();
+const topicLabel = () => topic() || '由 AI 提議';
 function interviewLines() {
   const groups = [];
-  const fmt = (q, v) => (Array.isArray(v) ? v.length : (v || '').trim()) ? `- ${(q.lbl || q.q).replace(/（[^）]*）$/, '').replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我')}：${Array.isArray(v) ? v.join('、') : v.trim()}` : '';
+  const lbl = q => (q.lbl || q.q).replace(/（[^）]*）$/, '').replace(/？$/, '').replace(/你們/g, '我們').replace(/你/g, '我');
+  const fmt = (q, v) => (Array.isArray(v) ? v.length : (v || '').trim()) ? `- ${lbl(q)}：${Array.isArray(v) ? v.join('、') : v.trim()}` : '';
+  const story = q => fmt(q, ans('_c.' + q.id)) || (aiFlag('_c.' + q.id) ? `- ${lbl(q)}：我還沒想好，${dirMode() ? '請在每個方向裡各幫我想一個' : '請依照主題和研究結果幫我決定最適合的，並在自我檢查裡告訴我你選了什麼'}` : '');
   const group = (title, rows) => { const r = rows.filter(Boolean); if (r.length) groups.push(`【${title}】\n${r.join('\n')}`); };
   group('這支影片', [
     `- 領域：${domain()}`,
@@ -545,11 +591,13 @@ function interviewLines() {
     ...DOMAIN_Q[dKey()].map(q => fmt(q, ans(q.id))),
   ]);
   if (hasProduct()) group('產品資訊', productQ().map(q => fmt(q, ans('_c.' + q.id))));
-  group('我想說的故事與重點', storyQ().map(q => fmt(q, ans('_c.' + q.id))));
+  group('我想說的故事與重點', storyQ().map(story));
   group('想要的感覺', C_Q.map(q => fmt(q, ans('_c.' + q.id))));
   if (ans('_c.ending')) group('結尾', [fmt(D_Q[3], ans('_c.ending'))]);
   return groups;
 }
+/* 寫法不另外選，由內容推得：有產品走開箱，其餘看想要的感覺 */
+const style = () => hasProduct() ? '產品開箱評測' : ({ 專業教學感: '乾貨教學文', 犀利直白: '避坑勸退文', 真實生活感: '故事觀點文', 輕鬆幽默: '故事觀點文', 質感氛圍: '故事觀點文' }[ans('_c.feel')] || '乾貨教學文');
 const fmts = () => FORMATS.filter(f => S.formats.includes(f));
 /* 參考開場：場景、目標、通用各取一句；自訂主題時只用不依賴子題細節的句型 */
 /* 自訂主題用：任何一句話都讀得通的開場句型 */
@@ -557,27 +605,28 @@ const CUSTOM_SC = { 乾貨教學文: '「{n}」，我整理成 3 個重點', 避
 const CUSTOM_GOAL = { 快速漲粉: '「{n}」系列第 1 集，你絕對想不到', 建立專業信任: '{role}眼中的「{n}」', '提高產品轉換/銷售': '「{n}」能輕鬆一點，靠的是這個方法', 增加留言互動: '「{n}」，你也是這樣嗎？' };
 function sampleHooks() {
   const hn = topic() || ((ans('_c.pname') || '').split('+')[0].trim()) || domain();
-  if (isCustomTopic()) return [CUSTOM_SC[S.scenario], CUSTOM_GOAL[S.goal], '「{n}」，大部分人只看到表面'].map(t => t.replace('{n}', hn).replace('{role}', role()));
+  if (isCustomTopic()) return [CUSTOM_SC[style()], CUSTOM_GOAL[S.goal], '「{n}」，大部分人只看到表面'].map(t => t.replace('{n}', hn).replace('{role}', role()));
   const dd = domainData(), sub = chosenSub() || dd.subs[0], custom = isCustomTopic();
   const v = { n: topic(), myth: sub.myth, trap: sub.trap, domain: domain(), product: dd.product, role: role() };
   const ok = t => !custom || !/\{(myth|trap)\}/.test(t);
   const pickFrom = list => list.find(ok) || list[0];
-  return [pickFrom(SCENARIO_TITLES[S.scenario]), pickFrom(GOAL_TITLES[S.goal]), pickFrom(COMMON_TITLES.slice(4))]
+  return [pickFrom(SCENARIO_TITLES[style()]), pickFrom(GOAL_TITLES[S.goal]), pickFrom(COMMON_TITLES.slice(4))]
     .map(t => t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? ''));
 }
-const settingLine = () => `主題：${topicLabel()}\n格式：${fmts().join('、')}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　場景：${S.scenario}　時長：${S.len}`;
+const settingLine = () => `主題：${topicLabel()}\n格式：${fmts().join('、')}\n角色：${role()}　領域：${domain()}　平台：${S.platform}\n目標：${S.goal}　時長：${S.len}`;
 
 /* =========================================================
    TRACE 指令
    ========================================================= */
-function traceParts() {
+function traceParts(forceFull) {
+  const dir = !forceFull && dirMode();
   const dd = domainData(), chars = LEN_CHARS[S.len], sub = chosenSub(), hooks = sampleHooks(), F = fmts();
   const lenTxt = parseInt(S.len) + ' 秒', hasVo = F.includes('短影音口播稿');
   const out = ['研究筆記：先列出你查證過的 3～5 個關鍵知識點（例如原理、成分、數據、規定），每點標註資料來源類型；後面的文案要用上這些資訊', '3 個不同風格的黃金 3 秒開場鉤子，讓我做 A/B 測試'];
   const nv = parseInt(ans('_c.versions')) || 1;
   const angles = hasProduct() ? '真實使用心得版、成分或原理解析版、生活情境版' : '經驗分享版、知識解析版、生活情境版';
   const multi = n => n > 1 ? `；請寫 ${n} 個不同角度的版本（例如：${angles.split('、').slice(0, n).join('、')}），每個版本都要完整，不是換句話說` : '';
-  if (hasVo) out.push(`完整短影音口播文案，用「${S.scenario}」的寫法，長度約 ${lenTxt}${multi(nv)}`);
+  if (hasVo) out.push(`完整短影音口播文案，長度約 ${lenTxt}${multi(nv)}`);
   if (F.includes('圖文貼文')) out.push('完整圖文貼文：開頭一句抓住人，中間分段講清楚重點與知識，結尾收在行動，可以直接貼到社群' + (hasVo ? '' : multi(nv)));
   if (F.includes('輪播圖文案')) out.push('輪播圖文案 6～8 頁：第 1 頁是封面大字，最後一頁是行動呼籲，每頁不超過 30 字');
   const ending = ans('_c.ending');
@@ -605,9 +654,10 @@ function traceParts() {
   if (sv('teach')) cons.push('教觀念或步驟時，照我給的內容和順序講，用白話解釋為什麼。');
   if (hasProduct() && (ans('_c.pkey') || '').trim()) cons.push(`產品段落一定要清楚講到「${ans('_c.pkey').trim()}」，但要像分享，不像唸規格。`);
   if ((ans('_c.catch') || '').trim()) cons.push(`自然穿插我的口頭禪或說話習慣：${ans('_c.catch').trim()}。`);
+  if (/＿＿/.test(STORY_IDS.map(k => ans('_c.' + k) || '').join(''))) cons.push('我回答裡的「＿＿」是我還沒填完的空格，請依照主題幫我補上最合理的內容，並在自我檢查中告訴我補了什麼。');
   cons.push('句子和句子之間要接得順，唸起來不能卡或怪怪的。', '不要重複講同一件事，每一句都要帶來新資訊或新感受。', '效果只寫我實際感受到的，不要說太滿（例如不要說「通通消失」「完全改善」）。', '快節奏、不說教，每句盡量不超過 20 字。', '我的個人經歷和數字以我提供的為準，不要捏造。', '全文不使用 Emoji。', ending ? `結尾照我選的方式「${ending}」，寫法要符合 ${S.platform} 的使用習慣。` : `CTA 要符合 ${S.platform} 的使用習慣：${PLATFORM_CTA_HINT[S.platform]}。`);
   return [
-    { L: 'T', h: 'Task', zh: '任務', t: `${topic() ? `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。` : `這支的主題還沒決定。請先根據下方資訊提出 3 個主題方向（每個一句話，並說明為什麼適合我），再選你最推薦的一個，寫出可以直接在 ${S.platform} 發布的內容。`}\n請依序輸出：\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識和我提供的每一項資訊全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
+    { L: 'T', h: 'Task', zh: '任務', t: `${topic() ? `請針對主題「${topic()}」，幫我寫出可以直接在 ${S.platform} 發布的內容。` : `這支的主題還沒決定。請先根據下方資訊提出 3 個主題方向（每個一句話，並說明為什麼適合我），再選你最推薦的一個，寫出可以直接在 ${S.platform} 發布的內容。`}${dir ? `\n\n這一輪請先不要寫完整文案。我手上的資訊還不多，請先做下方工作順序的第一步（研究），然後給我 3 個明顯不同的方向，每個方向都包含：\n- 方向名稱與一句話說明在講什麼\n- 開場第一句（直接可以唸）\n- 中段要講的 2～3 個重點\n- 收尾一句\n- 適合的感覺\n最後告訴我你最推薦哪一個、為什麼。\n等我回覆選哪一個（也可能是「方向 1 的開頭加方向 3 的感覺」），再依照下方所有要求輸出：` : '\n請依序輸出：'}\n${out.map((x, i) => `${i + 1}. ${x}`).join('\n')}${angle}${mat}\n\n請按照這個順序工作：\n第一步，研究：${RESEARCH[dKey()]}。可以上網查就上網查；不能的話用你的專業知識，並標出不確定的地方。\n第二步，整合：把研究到的知識和我提供的每一項資訊全部放進文案，文案中至少要具體用上 2 個研究筆記裡的知識點。\n第三步，撰寫：用我的口吻寫成完整內容，知識由你負責正確，我的回答負責真實感。` },
     { L: 'R', h: 'Role', zh: '角色', t: `你是一位在「${domain()}」領域擁有 10 年實戰經驗的${role()}。\n說話像過來人：口語、直接、有溫度，擅長用「千萬別……」「內行人都知道……」「我踩過無數坑才明白……」這類句型抓住注意力。` },
     { L: 'A', h: 'Audience', zh: '受眾', t: `目標受眾是對${domain()}有興趣，但${dd.pain}的人，他們會對${topic() ? `「${topic()}」這個主題` : '這支影片的主題'}特別有共鳴。\n他們最想要的是${GOAL_NEED[S.goal]}。內容目標：${S.goal}。` },
     { L: 'C', h: 'Constraint', zh: '限制', t: cons.map((x, i) => `${i + 1}. ${x}`).join('\n') },
@@ -615,7 +665,7 @@ function traceParts() {
   ];
 }
 const RULE = '━━━━━━━━━━━━━━━━━━';
-const traceText = () => [RULE, `TRACE 爆款指令｜${topicLabel()}`, settingLine(), RULE, '', ...traceParts().map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
+const traceText = full => [RULE, `TRACE 爆款指令｜${topicLabel()}`, settingLine(), RULE, '', ...traceParts(full).map(p => `▍${p.L}｜${p.h}・${p.zh}\n${p.t}`).join('\n\n').split('\n'), '', RULE].join('\n');
 
 /* =========================================================
    RENDER
@@ -628,9 +678,13 @@ const topicChipsHtml = () => domainData().subs.map(x => `<button class="chip" ar
 function qHtml(q, key) {
   const v = ans(key);
   if (q.t === 'text') return `<div class="field"><label for="q-${key}">${q.q}</label><input class="custom" id="q-${key}" data-q="${key}" maxlength="80" placeholder="${q.ph}" value="${esc(v || '')}" /></div>`;
-  if (q.t === 'area') return `<div class="field"><label for="q-${key}">${q.q}</label><textarea class="custom" id="q-${key}" data-q="${key}" rows="3" maxlength="400" placeholder="${q.ph}">${esc(v || '')}</textarea></div>`;
+  if (q.t === 'area') {
+    const ai = q.ex && aiFlag(key) && !(v || '').trim();
+    const ex = q.ex ? `<p class="ex-cap">不知道怎麼寫？點一個再改成你的話</p><div class="chips">${q.ex.map(x => `<button class="chip ex" data-fill="${key}" data-fv="${esc(x)}">${esc(x)}</button>`).join('')}<button class="chip" aria-pressed="${ai}" data-aiq="${key}">不確定，請 AI 幫我想</button></div>` : '';
+    return `<div class="field"><label for="q-${key}">${q.q}</label><textarea class="custom" id="q-${key}" data-q="${key}" rows="3" maxlength="400" placeholder="${ai ? '已交給 AI 幫你想；想自己寫，直接打字就好' : q.ph}">${esc(v || '')}</textarea>${ex}</div>`;
+  }
   const multi = q.t === 'multi', arr = Array.isArray(v) ? v : [];
-  return `<div class="field"><p>${q.q}${multi ? '<small>可複選</small>' : ''}</p><div class="chips">${q.o.map(o => `<button class="chip" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${multi ? arr.includes(o) : v === o}" data-q="${key}" data-qv="${esc(o)}" data-multi="${multi ? 1 : ''}">${esc(o)}</button>`).join('')}</div></div>`;
+  return `<div class="field"><p>${q.q}${multi ? '<small>可複選</small>' : ''}${q.hint ? '<small id="deliverHint"></small>' : ''}</p><div class="chips">${q.o.map(o => `<button class="chip" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${multi ? arr.includes(o) : v === o}" data-q="${key}" data-qv="${esc(o)}" data-multi="${multi ? 1 : ''}">${esc(o)}</button>`).join('')}</div></div>`;
 }
 function renderQuestions() {
   const k = dKey(), c = q => qHtml(q, '_c.' + q.id);
@@ -659,7 +713,7 @@ function renderFields() {
   }).join('');
 }
 function renderSummary() {
-  $('#summary').innerHTML = `這一篇：<b>${esc(topicLabel() || '尚未填寫主題')}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.scenario)}・${esc(S.len)}`;
+  $('#summary').innerHTML = `這一篇：<b>${esc(topicLabel() || '尚未填寫主題')}</b>・${esc(role())}・${esc(domain())}・${esc(S.platform)}・${esc(S.goal)}・${esc(S.len)}`;
 }
 function renderTrace() {
   $('#copyTrace').disabled = !canGen();
@@ -670,8 +724,9 @@ function renderTrace() {
     $('#trace').innerHTML = '<div class="empty"><b>先告訴我今天要拍什麼</b>在上方填一句你想拍的主題，<br />或在「主題想好了嗎？」選「還沒，請 AI 幫我想」，這裡就會產生完整指令。</div>';
     return;
   }
+  $('#askFirst').textContent = dirMode() ? '請 Claude 先給 3 個方向' : '直接請 Claude 寫初稿';
   $('#docTitle').textContent = topic() ? `「${topic()}」爆款指令` : `${domain()}・主題由 AI 提議`;
-  $('#traceTags').innerHTML = [...fmts(), role(), domain(), S.platform, S.goal, S.scenario, S.len].map(x => `<span>${esc(x)}</span>`).join('');
+  $('#traceTags').innerHTML = [...fmts(), role(), domain(), S.platform, S.goal, S.len].map(x => `<span>${esc(x)}</span>`).join('');
   $('#trace').innerHTML = traceParts().map(p => {
     const [main, ex] = p.L === 'E' ? p.t.split('參考開場：\n') : [p.t, ''];
     const [quote, tail] = ex ? ex.split('\n\n') : ['', ''];
@@ -763,19 +818,21 @@ function insertMark(kind) {
 let sampleFn = null, askCtl = null;
 (window.claude && typeof window.claude.use === 'function' ? window.claude.use('sample').catch(() => null) : Promise.resolve(null)).then(fn => {
   sampleFn = fn; if (!fn) return;
+  $('#ivStart').hidden = false; $('#ivCopy').innerHTML = ico('copy') + '複製訪問指令（給其他 AI）';
   $('#askFirst').hidden = false; $('#askRv').hidden = false; renderRevise(); renderTrace();
 });
 const ASK_ERR = { rate_limited: '使用次數有點多，請稍等一下再試。', session_expired: '登入狀態過期了，請重新登入後再試。', refused: '這段內容 Claude 無法協助，請換個說法。', empty_completion: 'Claude 沒有寫出內容，請再試一次。', upstream_error: '連線中斷了，請再試一次。' };
-async function askClaude(prompt, intoDraft) {
+async function askClaude(prompt, intoDraft, asDirs) {
   if (!sampleFn) return;
   askCtl = new AbortController();
   $('#replyBox').hidden = false; $('#replyText').textContent = ''; $('#replyState').textContent = '思考中…（第一次使用會先詢問是否允許）';
-  $('#stopReply').hidden = false; $('#askRv').disabled = true; $('#askFirst').disabled = true;
+  $('#stopReply').hidden = false; $('#askRv').disabled = true; $('#askFirst').disabled = true; $('#pickBox').hidden = true;
   $('#replyBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   try {
     const { text } = await sampleFn(prompt, { signal: askCtl.signal, cache: false, onText: ({ text }) => { $('#replyText').textContent = text; $('#replyState').textContent = '撰寫中…'; } });
     $('#replyText').textContent = text; $('#replyState').textContent = '完成';
-    if (intoDraft) { S.draft = text; $('#draftIn').value = text; save(); renderRevise(); toast('初稿已放進「目前的文案」，可以開始來回修改'); }
+    if (asDirs) { S.angles = text; save(); renderPick(); $('#pickBox').hidden = false; $('#replyState').textContent = '完成，選一個方向'; }
+    else if (intoDraft) { S.draft = text; $('#draftIn').value = text; save(); renderRevise(); toast('初稿已放進「目前的文案」，可以開始來回修改'); }
   } catch (e) {
     const c = e && e.code;
     if (c === 'cancelled') $('#replyState').textContent = '已停止';
@@ -787,7 +844,86 @@ async function askClaude(prompt, intoDraft) {
   }
 }
 
-function regen() { renderSummary(); renderTrace(); if ($('#rvPrompt')) renderRevise(); save(); }
+/* =========================================================
+   AI 訪問：沒有文本的人，一題一題被問出來
+   ========================================================= */
+const FEELS = C_Q[0].o;
+const IV_MAP = { 主題: 'topic', 觀眾要記住的一句話: '_c.takeaway', 轉折: '_c.flip', 困擾畫面: '_c.scene', 想教的觀念或步驟: '_c.teach', 想要的感覺: '_c.feel' };
+function ivRules(inPage) {
+  const known = interviewLines().join('\n\n');
+  return `你是一位很會訪問的短影音文案教練。我想拍一支「${domain()}」領域的短影音，但腦中只有模糊的想法，也沒有任何草稿。請你訪問我，幫我把想法挖出來。
+訪問規則：
+1. 一次只問一題，用口語、好回答的方式問，不要一次丟很多問題。
+2. 每題附 3 個具體選項，格式是「A. …」「B. …」「C. …」各一行，選項要符合我的領域和前面的回答；我也可以用自己的話回答。
+3. 最多問 6 題，依序弄清楚：主題、觀眾看完要記住的一句話、我的轉折（原本以為…後來才發現…）、觀眾最常遇到的困擾畫面、想教的觀念或步驟、想要的感覺。下面已經知道的就不要再問。
+4. 我回答得很短也沒關係，請從我的回答幫我延伸，不要要求我寫長。
+5. 不使用 Emoji，不評論任何品牌。
+問完之後，用下面的格式把答案整理給我，每一項都用我的口吻寫成一句完整的話：
+〔整理〕
+主題：
+觀眾要記住的一句話：
+轉折：
+困擾畫面：
+想教的觀念或步驟：
+想要的感覺：（只能從 ${FEELS.join('、')} 選一個）
+〔/整理〕
+${inPage ? '整理之後不用寫文案。' : '整理完問我「這樣對嗎？」。我確認後，再依照最下面的 TRACE 指令寫出內容；訪問得到的答案優先，指令裡沒寫到的部分以訪問為準。'}
+
+【目前已經知道的】
+${known}`;
+}
+const ivPrompt = () => `${ivRules(false)}\n\n請從第一題開始問我。\n\n以下是訪問完要用的 TRACE 指令：\n\n${traceText()}`;
+const ivSummary = t => { const m = /〔整理〕([\s\S]*?)〔\/整理〕/.exec(t || ''); return m ? m[1] : ''; };
+function renderIv() {
+  const iv = S.iv || [];
+  $('#ivChat').hidden = !iv.length;
+  $('#ivLog').innerHTML = iv.map(m => `<div class="msg ${m.r}">${esc(m.t)}</div>`).join('');
+  $('#ivLog').scrollTop = $('#ivLog').scrollHeight;
+  const last = iv[iv.length - 1], done = last && last.r === 'ai' && !!ivSummary(last.t);
+  const opts = last && last.r === 'ai' && !done ? [...last.t.matchAll(/^\s*([A-D])[.．、]\s*(.+)$/gm)].map(x => x[2].trim()) : [];
+  $('#ivOpts').innerHTML = opts.map(o => `<button class="chip ex" data-ivo="${esc(o)}">${esc(o)}</button>`).join('');
+  $('#ivFill').hidden = !done;
+  $('#ivStart').textContent = iv.length ? '繼續訪問' : '開始被訪問';
+}
+let ivCtl = null;
+async function ivAsk(answer) {
+  if (!sampleFn || ivCtl) return;
+  S.iv = S.iv || [];
+  if (answer) S.iv.push({ r: 'me', t: answer });
+  save(); renderIv(); $('#ivChat').hidden = false;
+  const mine = S.iv.filter(m => m.r === 'me').length;
+  const log = S.iv.map(m => `${m.r === 'ai' ? '教練' : '我'}：${m.t}`).join('\n\n');
+  const prompt = `${ivRules(true)}\n\n${log ? `【到目前為止的訪問】\n${log}\n\n` : ''}${mine >= 6 ? '已經問夠了，請直接輸出〔整理〕。' : log ? '請接著問下一題（只輸出這一題和選項）；如果已經問夠了，就輸出〔整理〕。' : '請問第一題（只輸出這一題和選項）。'}`;
+  ivCtl = new AbortController();
+  $('#ivState').textContent = '教練在想下一題…（第一次使用會先詢問是否允許）'; $('#ivStop').hidden = false; $('#ivSend').disabled = true;
+  const live = document.createElement('div'); live.className = 'msg ai'; $('#ivLog').appendChild(live);
+  try {
+    const { text } = await sampleFn(prompt, { signal: ivCtl.signal, cache: false, onText: ({ text }) => { live.textContent = text; $('#ivLog').scrollTop = $('#ivLog').scrollHeight; } });
+    S.iv.push({ r: 'ai', t: text.trim() }); $('#ivState').textContent = ivSummary(text) ? '訪問完成，確認整理沒問題就填進下面' : '';
+  } catch (e) {
+    const c = e && e.code;
+    $('#ivState').textContent = c === 'cancelled' ? '已停止，可以再按「繼續訪問」' : ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c) ? '這裡無法直接訪問，請改用「複製訪問指令」貼到其他 AI' : (ASK_ERR[c] || ASK_ERR.upstream_error);
+  } finally {
+    ivCtl = null; $('#ivStop').hidden = true; $('#ivSend').disabled = false; save(); renderIv();
+  }
+}
+function ivFill() {
+  const iv = S.iv || [], sum = ivSummary((iv[iv.length - 1] || {}).t); let n = 0;
+  sum.split('\n').forEach(line => {
+    const m = /^\s*([^：:]+)[：:]\s*(.+)$/.exec(line); if (!m) return;
+    const k = IV_MAP[m[1].trim()], v = m[2].trim(); if (!k || !v) return;
+    if (k === 'topic') { S.topicText = v.slice(0, 30); $('#topicIn').value = S.topicText; setAns('_c.topicMode', '想好了'); n++; return; }
+    if (k === '_c.feel') { const f = FEELS.find(x => v.includes(x)); if (f) { setAns(k, f); n++; } return; }
+    setAns(k, v); setAns(k + '!ai', false); n++;
+  });
+  renderToday(); renderQuestions(); regen();
+  toast(n ? `已填好 ${n} 題，往下看看還想改什麼` : '整理的格式讀不到，請再按一次「繼續訪問」');
+  if (n) $('#qStory').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function regen() {
+  const h = $('#deliverHint'); if (h && !ans('_c.deliver')) h.textContent = thin() ? '沒選的話：資訊還少，會先給 3 個方向' : '沒選的話：會直接寫完整版'; else if (h) h.textContent = '';
+  renderSummary(); renderTrace(); if ($('#rvPrompt')) renderRevise(); save(); }
 
 /* =========================================================
    COPY / TOAST
@@ -825,13 +961,20 @@ $('#topicChips').addEventListener('click', e => {
   S.topicText = b.dataset.topic; $('#topicIn').value = S.topicText; $('#topicChips').innerHTML = topicChipsHtml(); regen();
 });
 $('#todayCard').addEventListener('click', e => {
+  const f = e.target.closest('[data-fill]'), a = e.target.closest('[data-aiq]');
+  if (f) { setAns(f.dataset.fill, f.dataset.fv); setAns(f.dataset.fill + '!ai', false); renderQuestions(); regen(); const t = $('#q-' + CSS.escape(f.dataset.fill)); if (t) { t.focus(); const i = t.value.indexOf('＿＿'); if (i >= 0) t.setSelectionRange(i, i + 2); } return; }
+  if (a) { const k = a.dataset.aiq, on = !aiFlag(k) || !!(ans(k) || '').trim(); setAns(k + '!ai', on); if (on) setAns(k, ''); renderQuestions(); regen(); return; }
   const b = e.target.closest('[data-qv]'); if (!b) return;
   const key = b.dataset.q, v = b.dataset.qv;
   if (b.dataset.multi) { const arr = Array.isArray(ans(key)) ? ans(key) : []; setAns(key, arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v]); }
   else setAns(key, ans(key) === v ? '' : v);
   renderQuestions(); regen();
 });
-$('#todayCard').addEventListener('input', e => { const i = e.target.closest('[data-q]'); if (!i || i.dataset.qv) return; setAns(i.dataset.q, i.value); regen(); });
+$('#todayCard').addEventListener('input', e => {
+  const i = e.target.closest('[data-q]'); if (!i || i.dataset.qv) return; setAns(i.dataset.q, i.value);
+  if (aiFlag(i.dataset.q) && i.value.trim()) { setAns(i.dataset.q + '!ai', false); const c = i.parentElement.querySelector('[data-aiq]'); if (c) c.setAttribute('aria-pressed', 'false'); }
+  regen();
+});
 $('#materialIn').addEventListener('input', e => { S.material = e.target.value; regen(); });
 $('#formatChips').addEventListener('click', e => {
   const b = e.target.closest('[data-fmt]'); if (!b) return;
@@ -839,8 +982,25 @@ $('#formatChips').addEventListener('click', e => {
   if (on && S.formats.length === 1) { toast('至少要選一種輸出格式'); return; }
   S.formats = on ? S.formats.filter(x => x !== f) : [...S.formats, f]; renderToday(); regen();
 });
+$('#ivCopy').addEventListener('click', async () => copied(await copy(ivPrompt()), '訪問指令已複製，貼到 ChatGPT、Gemini 或 Claude，它會一題一題問你'));
+$('#ivStart').addEventListener('click', () => ivAsk(''));
+$('#ivSend').addEventListener('click', () => { const v = $('#ivIn').value.trim(); if (!v) { toast('點一個選項，或寫一句你的回答'); return; } $('#ivIn').value = ''; ivAsk(v); });
+$('#ivOpts').addEventListener('click', e => { const b = e.target.closest('[data-ivo]'); if (b) ivAsk(b.dataset.ivo); });
+$('#ivStop').addEventListener('click', () => ivCtl && ivCtl.abort());
+$('#ivFill').addEventListener('click', ivFill);
+$('#ivReset').addEventListener('click', e => {
+  const b = e.currentTarget; if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = '再按一次確認清空'; setTimeout(() => { b.dataset.sure = ''; b.textContent = '重新訪問'; }, 3000); return; }
+  b.dataset.sure = ''; b.textContent = '重新訪問'; S.iv = []; save(); renderIv(); $('#ivState').textContent = '';
+});
 $('#copyTrace').addEventListener('click', async () => copied(await copy(traceText()), 'TRACE 指令已複製'));
-$('#askFirst').addEventListener('click', () => askClaude(traceText(), true));
+$('#askFirst').addEventListener('click', () => dirMode() ? askClaude(traceText(), false, true) : askClaude(traceText(), true));
+function renderPick() { $('#pickChips').innerHTML = [1, 2, 3].map(n => `<button class="chip" aria-pressed="${S.pick === '方向 ' + n}" data-pick="方向 ${n}">方向 ${n}</button>`).join('') + `<button class="chip" aria-pressed="${S.pick === '你最推薦的那個'}" data-pick="你最推薦的那個">照你推薦的</button>`; }
+$('#pickChips').addEventListener('click', e => { const b = e.target.closest('[data-pick]'); if (!b) return; S.pick = b.dataset.pick; save(); renderPick(); });
+$('#pickGo').addEventListener('click', () => {
+  const pick = [S.pick, $('#pickIn').value.trim()].filter(Boolean).join('；');
+  if (!pick) { toast('先選一個方向，或寫下你想怎麼混搭'); return; }
+  askClaude(`${traceText(true)}\n\n【上一輪你給我的方向】\n${S.angles || ''}\n\n【我的選擇】\n${pick}\n請照我選的方向，直接輸出上面要求的完整內容。`, true);
+});
 $('#draftIn').addEventListener('input', e => { S.draft = e.target.value; save(); renderRevise(); });
 $('#markBar').addEventListener('click', e => {
   const m = e.target.closest('[data-mark]'); if (m) { insertMark(m.dataset.mark); return; }
@@ -890,7 +1050,8 @@ if (!S.ans || typeof S.ans !== 'object') S.ans = {};
   if (S.ans['_c.product'] && !S.ans['_c.source']) S.ans['_c.source'] = old[S.ans['_c.product']] || '';
   if (S.ans['_c.pfeel'] && !S.ans['_c.peffect']) S.ans['_c.peffect'] = S.ans['_c.pfeel'];
   delete S.ans['_c.product']; delete S.ans['_c.pfeel']; }
-renderToday(); renderQuestions(); renderFields(); renderChecks(); renderVersions(); regen();
+$('#ivCopy').innerHTML = ico('copy') + '複製訪問指令，貼到 AI 被問';
+renderToday(); renderQuestions(); renderFields(); renderChecks(); renderVersions(); renderIv(); renderPick(); regen();
 </script>
 </body>
 </html>
